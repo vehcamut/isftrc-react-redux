@@ -1,8 +1,9 @@
-import React, { FunctionComponent, PropsWithChildren } from "react";
-import { IPost } from "../models";
-import { postSlice } from "../app/reducers/PostSlice";
-import { useDispatch } from "react-redux";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import React, { FunctionComponent, PropsWithChildren } from 'react';
+
+// import { useDispatch } from 'react-redux';
+import { IPost } from '../models';
+// import { postSlice } from '../app/reducers/PostSlice';
+// import { useAppDispatch, useAppSelector } from '../app/hooks';
 
 interface PostItemProps extends PropsWithChildren {
   post: IPost;
@@ -11,12 +12,7 @@ interface PostItemProps extends PropsWithChildren {
   update: (post: IPost) => void;
 }
 
-const PostItem: FunctionComponent<PostItemProps> = ({
-  post,
-  remove,
-  update,
-  color_prop,
-}) => {
+const PostItem: FunctionComponent<PostItemProps> = ({ post, remove, update, color_prop }) => {
   const handleRemove = (event: React.MouseEvent) => {
     event.stopPropagation();
     remove(post);
@@ -24,24 +20,23 @@ const PostItem: FunctionComponent<PostItemProps> = ({
 
   const handleUpdate = (event: React.MouseEvent) => {
     event.stopPropagation();
-    //dispatch(colored("#ea3838"));
-    const title = prompt("Title?") || "";
-    const color = prompt("Title?", "#ea3838") || "#ea3838";
+    // dispatch(colored("#ea3838"));
+    const title = prompt('Title?') || '';
+    const color = prompt('Title?', '#ea3838') || '#ea3838';
     update({ ...post, title, color });
   };
 
-  const { color } = useAppSelector((state) => state.postReducer);
-  const { colored } = postSlice.actions;
-  const dispatch = useAppDispatch();
+  // const { color } = useAppSelector((state) => state.postReducer);
+  // const { colored } = postSlice.actions;
+  // const dispatch = useAppDispatch();
 
   return (
-    <div
-      className="post"
-      onClick={handleUpdate}
-      style={{ backgroundColor: color_prop }}
-    >
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+    <div className="post" onClick={handleUpdate} style={{ backgroundColor: color_prop }}>
       {post.id}. {post.title}
-      <button onClick={handleRemove}>Delete</button>
+      <button onClick={handleRemove} type="button" style={{ marginTop: '40px' }}>
+        Delete
+      </button>
     </div>
   );
 };

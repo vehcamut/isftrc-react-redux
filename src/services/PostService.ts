@@ -1,46 +1,48 @@
-//import { build } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/cacheLifecycle";
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IPost } from "../models";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+// import { build } from "@reduxjs/toolkit/dist/query/core/buildMiddleware/cacheLifecycle";
+import { IPost } from '../models';
 
-export const postAPI = createApi({
-  reducerPath: "postAPI",
+const postAPI = createApi({
+  reducerPath: 'postAPI',
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:5000/",
+    baseUrl: 'http://localhost:3000/',
   }),
-  tagTypes: ["Post"],
+  tagTypes: ['Post'],
   endpoints: (build) => ({
     fetchAllPosts: build.query<IPost[], number>({
-      query: (limit: number = 5) => ({
-        url: "/posts",
+      query: (limit = 5) => ({
+        url: '/posts',
         params: {
           _limit: limit,
         },
       }),
-      providesTags: (result) => ["Post"],
+      providesTags: ['Post'], // (result) => ['Post'],
     }),
     createPost: build.mutation<IPost, IPost>({
       query: (post) => ({
-        url: "/posts",
-        method: "POST",
+        url: '/posts',
+        method: 'POST',
         body: post,
       }),
-      invalidatesTags: ["Post"],
+      invalidatesTags: ['Post'],
     }),
     updatePost: build.mutation<IPost, IPost>({
       query: (post) => ({
         url: `/posts/${post.id}`,
-        method: "PUT",
+        method: 'PUT',
         body: post,
       }),
-      invalidatesTags: ["Post"],
+      invalidatesTags: ['Post'],
     }),
     deletePost: build.mutation<IPost, IPost>({
       query: (post) => ({
         url: `/posts/${post.id}`,
-        method: "DELETE",
+        method: 'DELETE',
         body: post,
       }),
-      invalidatesTags: ["Post"],
+      invalidatesTags: ['Post'],
     }),
   }),
 });
+
+export default postAPI;

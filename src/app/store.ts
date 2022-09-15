@@ -1,26 +1,27 @@
-import { postAPI } from "./../services/PostService";
-import { userAPI } from "./../services/UserServise";
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import userReducer from "./reducers/UserSlice";
-import postReducer from "./reducers/PostSlice";
+import { configureStore } from '@reduxjs/toolkit';
+import loginFormReducer from './reducers/LoginFormSlice';
+import postAPI from '../services/PostService';
+import signinAPI from '../services/SignInService';
+// import userReducer from './reducers/UserSlice';
+import postReducer from './reducers/PostSlice';
 
 export const store = configureStore({
   reducer: {
-    userReducer,
+    // userReducer,
     postReducer,
-    [userAPI.reducerPath]: userAPI.reducer,
+    loginFormReducer,
+    [signinAPI.reducerPath]: signinAPI.reducer,
     [postAPI.reducerPath]: postAPI.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(userAPI.middleware, postAPI.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(postAPI.middleware, signinAPI.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-/*export type AppThunk<ReturnType = void> = ThunkAction<
+/* export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,
   unknown,
   Action<string>
->;*/
+>; */
