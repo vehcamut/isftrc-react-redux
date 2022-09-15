@@ -53,9 +53,7 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
       const response: any = await signin({ email: login, password } as IUser);
       if (response?.error?.data.statusCode === 403) dispatch(setLoginHelper('Неправильный логин или пароль'));
       else {
-        console.log('AA');
-
-        navigate('/posts');
+        navigate('/auth');
       }
     }
     // email: '1sdfdsf', password: 'asdasd'

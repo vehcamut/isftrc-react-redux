@@ -7,6 +7,8 @@ import { store } from './app/store';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import SignIn from './routes/SignIn';
+import Auth from './routes/Auth';
+import RolesAuthRoute from './app/RolesAuthRoute';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
@@ -15,6 +17,14 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <SignIn />,
+  },
+  {
+    path: '/auth',
+    element: (
+      <RolesAuthRoute roles={['admin', 'user']}>
+        <Auth />
+      </RolesAuthRoute>
+    ),
   },
 ]);
 
