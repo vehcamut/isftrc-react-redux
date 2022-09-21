@@ -1,11 +1,15 @@
-// import React, { FunctionComponent, PropsWithChildren, ReactNode } from 'react';
+import { ButtonGroup, IconButton, TableCell, TableRow } from '@mui/material';
+import React, { FunctionComponent, PropsWithChildren /* , ReactNode */ } from 'react';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import classes from './MyTable.module.scss';
 
 export {};
 
-// // import { useDispatch } from 'react-redux';
-// // import { IPost } from '../models';
-// // import { postSlice } from '../app/reducers/PostSlice';
-// // import { useAppDispatch, useAppSelector } from '../app/hooks';
+// import { useDispatch } from 'react-redux';
+// import { IPost } from '../models';
+// import { postSlice } from '../app/reducers/PostSlice';
+// import { useAppDispatch, useAppSelector } from '../app/hooks';
 
 // interface ISpecialistTypes {
 //   name: string;
@@ -17,9 +21,10 @@ export {};
 //   component: string;
 // }
 
-// interface ITableProps {
-
-// }
+interface IMyTableRowProps extends PropsWithChildren {
+  name: string;
+  note: string;
+}
 
 // interface ITableRowProps extends PropsWithChildren {
 //   cells: ITableCellProps[];
@@ -29,33 +34,55 @@ export {};
 //   update: (post: IPost) => void;
 // }
 
-// const PostItem: FunctionComponent<PostItemProps> = ({ post, remove, update, color_prop }) => {
-//   const handleRemove = (event: React.MouseEvent) => {
-//     event.stopPropagation();
-//     remove(post);
-//   };
+const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note }) => {
+  const handleRemove = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    console.log(event);
+    //
+    // remove(post);
+  };
 
-//   const handleUpdate = (event: React.MouseEvent) => {
-//     event.stopPropagation();
-//     // dispatch(colored("#ea3838"));
-//     const title = prompt('Title?') || '';
-//     const color = prompt('Title?', '#ea3838') || '#ea3838';
-//     update({ ...post, title, color });
-//   };
+  const handleEdit = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    console.log(event);
+    // dispatch(colored("#ea3838"));
+    // const title = prompt('Title?') || '';
+    // const color = prompt('Title?', '#ea3838') || '#ea3838';
+    // update({ ...post, title, color });
+  };
 
-//   // const { color } = useAppSelector((state) => state.postReducer);
-//   // const { colored } = postSlice.actions;
-//   // const dispatch = useAppDispatch();
+  // const { color } = useAppSelector((state) => state.postReducer);
+  // const { colored } = postSlice.actions;
+  // const dispatch = useAppDispatch();
 
-//   return (
-//     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
-//     <div className="post" onClick={handleUpdate} style={{ backgroundColor: color_prop }}>
-//       {post.id}. {post.title}
-//       <button onClick={handleRemove} type="button" style={{ marginTop: '40px' }}>
-//         Delete
-//       </button>
-//     </div>
-//   );
-// };
+  return (
+    <TableRow key={name} style={{ height: 33 }} className={classes['my-table__row']}>
+      <TableCell component="th" scope="row" className={classes['my-table__cell']}>
+        {name}
+      </TableCell>
+      <TableCell component="th" scope="row" className={classes['my-table__cell']}>
+        {note}
+      </TableCell>
+      <TableCell
+        style={{ width: 160, padding: 0 }}
+        className={[classes['my-table__cell'], classes['my-table__cell_small']].join(' ')}
+        align="right"
+      >
+        <ButtonGroup
+          orientation="horizontal"
+          aria-label="vertical outlined button group"
+          style={{ paddingRight: '15px' }}
+        >
+          <IconButton onClick={handleEdit} key="one" color="info" size="small">
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={handleRemove} key="two" color="error" sx={{ padding: 0 }}>
+            <DeleteIcon />
+          </IconButton>
+        </ButtonGroup>
+      </TableCell>
+    </TableRow>
+  );
+};
 
-// export default PostItem;
+export default MyTableRow;

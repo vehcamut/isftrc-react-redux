@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import loginFormReducer from './reducers/LoginFormSlice';
+import specialistTypesTableReducer from './reducers/SpecialistTypesTableSlice';
 import postAPI from '../services/PostService';
 import signinAPI from '../services/SignInService';
 import specialistAPI from '../services/SpecialistsService';
@@ -9,6 +10,7 @@ export const store = configureStore({
   reducer: {
     // userReducer,
     postReducer,
+    specialistTypesTableReducer,
     loginFormReducer,
     [signinAPI.reducerPath]: signinAPI.reducer,
     [specialistAPI.reducerPath]: specialistAPI.reducer,

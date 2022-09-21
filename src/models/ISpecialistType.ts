@@ -12,3 +12,8 @@ export interface ISpecialistTypeQuery {
   name?: string;
   note?: string;
 }
+
+export interface ISpecialistTypeResponse {
+  data: ISpecialistType[];
+  count: number;
+}
