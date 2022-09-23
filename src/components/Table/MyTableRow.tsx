@@ -3,6 +3,7 @@ import React, { FunctionComponent, PropsWithChildren /* , ReactNode */ } from 'r
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import classes from './MyTable.module.scss';
+import { ISpecialistType } from '../../models';
 
 export {};
 
@@ -24,6 +25,8 @@ export {};
 interface IMyTableRowProps extends PropsWithChildren {
   name: string;
   note: string;
+  id: string;
+  update: (data: ISpecialistType) => void;
 }
 
 // interface ITableRowProps extends PropsWithChildren {
@@ -34,7 +37,7 @@ interface IMyTableRowProps extends PropsWithChildren {
 //   update: (post: IPost) => void;
 // }
 
-const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note }) => {
+const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note, update, id }) => {
   const handleRemove = (event: React.MouseEvent) => {
     event.stopPropagation();
     console.log(event);
@@ -44,7 +47,8 @@ const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note }) => {
 
   const handleEdit = (event: React.MouseEvent) => {
     event.stopPropagation();
-    console.log(event);
+    update({ name, note, _id: id });
+    // console.log(event);
     // dispatch(colored("#ea3838"));
     // const title = prompt('Title?') || '';
     // const color = prompt('Title?', '#ea3838') || '#ea3838';

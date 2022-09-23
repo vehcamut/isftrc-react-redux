@@ -18,13 +18,20 @@ import specialistAPI from '../../services/SpecialistsService';
 // import { /* ISpecialistType */ ISpecialistTypeQuery } from '../../models';
 import TablePaginationActions from './TablePaginationActions';
 import MyTableRow from './MyTableRow';
+import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
+import FormDialog from '../FormDialog/FormDialog';
+import { ISpecialistType } from '../../models';
 
 export default function CustomPaginationActionsTable() {
   const dispatch = useAppDispatch();
   const { page, rowsPerPage, filter } = useAppSelector((state) => state.specialistTypesTableReducer);
   const { setPage, setRowsPerPage, setFilter } = specialistTypesTableSlice.actions;
   const { data: rows, isLoading, error } = specialistAPI.useGetTypesQuery(filter);
-
+  const [updateType] = specialistAPI.useEditMutation();
+  // const { visible, name, note } = useAppSelector((state) => state.formDialogReducer);
+  const { switchVisible, setName, setNote, setId } = formDialogSlice.actions;
+  // let name = '';
+  // let note = '';
   // Avoid a layout jump when reaching the last page with empty rows.
   // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - (rows?.data.length || 0)) : 0;
   // setRowsPerPage(5);
@@ -33,6 +40,18 @@ export default function CustomPaginationActionsTable() {
     dispatch(setFilter({ page: newPage + 1 }));
     // console.log(filter, newPage);
     // console.log('sp', specialistTypes);
+  };
+
+  const update = (data: ISpecialistType) => {
+    dispatch(switchVisible());
+    // name = data.name;
+    // note = data.note;
+    dispatch(setNote(data.note));
+    dispatch(setName(data.name));
+    // eslint-disable-next-line no-underscore-dangle
+    dispatch(setId(data._id));
+    // eslint-disable-next-line no-underscore-dangle
+    console.log(data.name, data.note, data._id);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -48,6 +67,13 @@ export default function CustomPaginationActionsTable() {
 
   const backward = () => {
     dispatch(setFilter({ page: 1 }));
+  };
+  const switchVisible1 = () => {
+    dispatch(switchVisible());
+  };
+  const handleSave = async (data: ISpecialistType) => {
+    await updateType(data);
+    console.log(data.name, data.note);
   };
   // console.log(dispatch(getLOL(typeFilter)));
   const theme = createTheme({}, ruRU);
@@ -76,11 +102,8 @@ export default function CustomPaginationActionsTable() {
                     Примечание
                   </TableCell>
                   <TableCell
-                    className={[
-                      classes['my-table__cell_align-right'],
-                      classes['my-table__cell'],
-                      classes['my-table__cell_small'],
-                    ].join(' ')}
+                    style={{ textAlign: 'end' }}
+                    className={[classes['my-table__cell'], classes['my-table__cell_small']].join(' ')}
                   >
                     <IconButton key="one" color="info" size="small">
                       <AddBoxIcon />
@@ -96,7 +119,7 @@ export default function CustomPaginationActionsTable() {
                   // )
                   rows.data.map((row) => (
                     // eslint-disable-next-line no-underscore-dangle
-                    <MyTableRow name={row.name} note={row.note} key={row._id} />
+                    <MyTableRow name={row.name} note={row.note} key={row._id} id={row._id} update={update} />
                   ))
                 }
                 {/* {emptyRows > 0 && (
@@ -131,6 +154,15 @@ export default function CustomPaginationActionsTable() {
           </TableContainer>
         </ThemeProvider>
       )}
+      <Button onClick={switchVisible1}>открыть</Button>
+      <FormDialog
+        // visible={visible}
+        switchVisible1={switchVisible1}
+        onSave={handleSave}
+        // name={name}
+        // note={note}
+        title="Редатирование записи"
+      />
     </div>
   );
 }

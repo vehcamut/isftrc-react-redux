@@ -7,6 +7,7 @@ const specialistsAPI = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:3333/specialists',
   }),
+  tagTypes: ['SpecialistTypes'],
   endpoints: (build) => ({
     getTypes: build.query<ISpecialistTypeResponse, ISpecialistTypeQuery>({
       query: (user) => ({
@@ -18,6 +19,7 @@ const specialistsAPI = createApi({
         //   return { data: response.json(), count } as ISpecialistTypeResponse;
         // },
       }),
+      providesTags: ['SpecialistTypes'],
       transformResponse(apiRespons: ISpecialistType[], meta): ISpecialistTypeResponse {
         // meta?.response?.headers.forEach((h) => console.log(h));
         // console.log(apiRespons);
@@ -26,6 +28,15 @@ const specialistsAPI = createApi({
         return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
         // return { apiResponse, totalCount: Number(meta.response.headers.get('X-Total-Count')) };
       },
+    }),
+    edit: build.mutation<string, ISpecialistType>({
+      query: (body) => ({
+        url: '/types/update',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['SpecialistTypes'],
     }),
   }),
 });
