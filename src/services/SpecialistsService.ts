@@ -38,6 +38,24 @@ const specialistsAPI = createApi({
       }),
       invalidatesTags: ['SpecialistTypes'],
     }),
+    add: build.mutation<string, ISpecialistType>({
+      query: (body) => ({
+        url: '/types/add',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['SpecialistTypes'],
+    }),
+    remove: build.mutation<string, ISpecialistType>({
+      query: (body) => ({
+        url: '/types/remove',
+        method: 'DELETE',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['SpecialistTypes'],
+    }),
   }),
 });
 

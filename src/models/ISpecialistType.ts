@@ -1,5 +1,5 @@
 export interface ISpecialistType {
-  _id: string;
+  _id?: string;
   name: string;
   note: string;
 }

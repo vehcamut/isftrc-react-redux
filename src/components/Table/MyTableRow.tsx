@@ -26,6 +26,7 @@ interface IMyTableRowProps extends PropsWithChildren {
   name: string;
   note: string;
   id: string;
+  remove: (data: ISpecialistType) => void;
   update: (data: ISpecialistType) => void;
 }
 
@@ -37,10 +38,11 @@ interface IMyTableRowProps extends PropsWithChildren {
 //   update: (post: IPost) => void;
 // }
 
-const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note, update, id }) => {
+const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note, update, remove, id }) => {
   const handleRemove = (event: React.MouseEvent) => {
     event.stopPropagation();
-    console.log(event);
+    remove({ name, note, _id: id });
+    // console.log(event);
     //
     // remove(post);
   };

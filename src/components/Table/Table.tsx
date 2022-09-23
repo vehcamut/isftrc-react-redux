@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -21,6 +22,8 @@ import MyTableRow from './MyTableRow';
 import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
 import FormDialog from '../FormDialog/FormDialog';
 import { ISpecialistType } from '../../models';
+import { alertDialogSlice } from '../../app/reducers/AlertDialog.slice';
+import AlertDialog from '../AletrtDialog.tsx/AlertDialog';
 
 export default function CustomPaginationActionsTable() {
   const dispatch = useAppDispatch();
@@ -28,8 +31,23 @@ export default function CustomPaginationActionsTable() {
   const { setPage, setRowsPerPage, setFilter } = specialistTypesTableSlice.actions;
   const { data: rows, isLoading, error } = specialistAPI.useGetTypesQuery(filter);
   const [updateType] = specialistAPI.useEditMutation();
+  const [addType] = specialistAPI.useAddMutation();
+  const [removeType] = specialistAPI.useRemoveMutation();
   // const { visible, name, note } = useAppSelector((state) => state.formDialogReducer);
-  const { switchVisible, setName, setNote, setId } = formDialogSlice.actions;
+  const {
+    switchVisible: switchFormDialogVisible,
+    setName,
+    setNote,
+    setId: setFormDialogId,
+    setTitle: setFormDialogTitle,
+    setType,
+  } = formDialogSlice.actions;
+  const {
+    switchVisible: switchAlertDialogVisible,
+    setTitle: setAlertDialogTitle,
+    setId: setAlertDialogId,
+    setBody: setAlertDialogBody,
+  } = alertDialogSlice.actions;
   // let name = '';
   // let note = '';
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -40,18 +58,6 @@ export default function CustomPaginationActionsTable() {
     dispatch(setFilter({ page: newPage + 1 }));
     // console.log(filter, newPage);
     // console.log('sp', specialistTypes);
-  };
-
-  const update = (data: ISpecialistType) => {
-    dispatch(switchVisible());
-    // name = data.name;
-    // note = data.note;
-    dispatch(setNote(data.note));
-    dispatch(setName(data.name));
-    // eslint-disable-next-line no-underscore-dangle
-    dispatch(setId(data._id));
-    // eslint-disable-next-line no-underscore-dangle
-    console.log(data.name, data.note, data._id);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -69,11 +75,39 @@ export default function CustomPaginationActionsTable() {
     dispatch(setFilter({ page: 1 }));
   };
   const switchVisible1 = () => {
-    dispatch(switchVisible());
+    dispatch(switchFormDialogVisible());
   };
-  const handleSave = async (data: ISpecialistType) => {
-    await updateType(data);
-    console.log(data.name, data.note);
+  const handleSave = async (data: ISpecialistType, type: string) => {
+    if (type === 'EDIT') await updateType(data);
+    if (type === 'ADD') await addType({ name: data.name, note: data.note });
+  };
+  const handleRemoveBtnClick = (data: ISpecialistType) => {
+    console.log(data._id);
+    dispatch(setAlertDialogTitle('Удаление записи'));
+    dispatch(setAlertDialogId(data._id));
+    dispatch(setAlertDialogBody('Вы точно хотите удалить данную запись?'));
+    dispatch(switchAlertDialogVisible());
+    // removeType(data);
+  };
+  const remove = (flag: boolean, id: string) => {
+    if (flag) removeType({ _id: id } as ISpecialistType);
+  };
+  const update = (data: ISpecialistType) => {
+    dispatch(switchFormDialogVisible());
+    dispatch(setNote(data.note));
+    dispatch(setName(data.name));
+    dispatch(setFormDialogTitle('Редатирование записи'));
+    dispatch(setType('EDIT'));
+    dispatch(setFormDialogId(data._id));
+    console.log(data.name, data.note, data._id);
+  };
+  const handleAdd = () => {
+    dispatch(switchFormDialogVisible());
+    dispatch(setNote(''));
+    dispatch(setName(''));
+    dispatch(setFormDialogId(undefined));
+    dispatch(setType('ADD'));
+    dispatch(setFormDialogTitle('Добавление записи'));
   };
   // console.log(dispatch(getLOL(typeFilter)));
   const theme = createTheme({}, ruRU);
@@ -105,7 +139,7 @@ export default function CustomPaginationActionsTable() {
                     style={{ textAlign: 'end' }}
                     className={[classes['my-table__cell'], classes['my-table__cell_small']].join(' ')}
                   >
-                    <IconButton key="one" color="info" size="small">
+                    <IconButton key="one" color="info" size="small" onClick={handleAdd}>
                       <AddBoxIcon />
                     </IconButton>
                   </TableCell>
@@ -118,8 +152,14 @@ export default function CustomPaginationActionsTable() {
                   //   : rows.data
                   // )
                   rows.data.map((row) => (
-                    // eslint-disable-next-line no-underscore-dangle
-                    <MyTableRow name={row.name} note={row.note} key={row._id} id={row._id} update={update} />
+                    <MyTableRow
+                      name={row.name}
+                      note={row.note}
+                      key={row._id}
+                      id={row._id || row.name}
+                      update={update}
+                      remove={handleRemoveBtnClick}
+                    />
                   ))
                 }
                 {/* {emptyRows > 0 && (
@@ -161,8 +201,9 @@ export default function CustomPaginationActionsTable() {
         onSave={handleSave}
         // name={name}
         // note={note}
-        title="Редатирование записи"
+        // title="Редатирование записи"
       />
+      <AlertDialog onConfirm={remove} />
     </div>
   );
 }
