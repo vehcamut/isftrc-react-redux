@@ -5,8 +5,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import classes from './MyTable.module.scss';
 import { ISpecialistType } from '../../models';
 
-export {};
-
 // import { useDispatch } from 'react-redux';
 // import { IPost } from '../models';
 // import { postSlice } from '../app/reducers/PostSlice';

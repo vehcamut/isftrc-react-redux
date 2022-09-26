@@ -2,7 +2,7 @@
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { Button, createTheme, IconButton, TableHead, ThemeProvider } from '@mui/material';
+import { Button, CircularProgress, createTheme, IconButton, TableHead, ThemeProvider } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
@@ -12,7 +12,7 @@ import Paper from '@mui/material/Paper';
 import { ruRU } from '@mui/material/locale';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import classes from './MyTable.module.scss';
-
+import { ISpecialistType } from '../../models';
 import { specialistTypesTableSlice } from '../../app/reducers/SpecialistTypesTableSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import specialistAPI from '../../services/SpecialistsService';
@@ -21,9 +21,10 @@ import TablePaginationActions from './TablePaginationActions';
 import MyTableRow from './MyTableRow';
 import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
 import FormDialog from '../FormDialog/FormDialog';
-import { ISpecialistType } from '../../models';
 import { alertDialogSlice } from '../../app/reducers/AlertDialog.slice';
 import AlertDialog from '../AletrtDialog.tsx/AlertDialog';
+import { notificatinBarSlice } from '../../app/reducers/NotificatinBar.slise';
+import NotificationsBar from '../NotificationsBar/NotificationBar';
 
 export default function CustomPaginationActionsTable() {
   const dispatch = useAppDispatch();
@@ -48,6 +49,11 @@ export default function CustomPaginationActionsTable() {
     setId: setAlertDialogId,
     setBody: setAlertDialogBody,
   } = alertDialogSlice.actions;
+  const {
+    switchVisible: switchNotBarVisible,
+    setText: setNotBarText,
+    setType: setNotBarType,
+  } = notificatinBarSlice.actions;
   // let name = '';
   // let note = '';
   // Avoid a layout jump when reaching the last page with empty rows.
@@ -78,8 +84,16 @@ export default function CustomPaginationActionsTable() {
     dispatch(switchFormDialogVisible());
   };
   const handleSave = async (data: ISpecialistType, type: string) => {
-    if (type === 'EDIT') await updateType(data);
-    if (type === 'ADD') await addType({ name: data.name, note: data.note });
+    dispatch(setNotBarType('success'));
+    if (type === 'EDIT') {
+      await updateType(data);
+      dispatch(setNotBarText('Запись обновлена'));
+    }
+    if (type === 'ADD') {
+      await addType({ name: data.name, note: data.note });
+      dispatch(setNotBarText('Запись добавлена'));
+    }
+    dispatch(switchNotBarVisible());
   };
   const handleRemoveBtnClick = (data: ISpecialistType) => {
     console.log(data._id);
@@ -91,6 +105,9 @@ export default function CustomPaginationActionsTable() {
   };
   const remove = (flag: boolean, id: string) => {
     if (flag) removeType({ _id: id } as ISpecialistType);
+    dispatch(setNotBarText('Запись удалена'));
+    dispatch(setNotBarType('success'));
+    dispatch(switchNotBarVisible());
   };
   const update = (data: ISpecialistType) => {
     dispatch(switchFormDialogVisible());
@@ -116,7 +133,7 @@ export default function CustomPaginationActionsTable() {
     <div>
       <Button onClick={backward}>назад</Button>
       <Button onClick={forward}>вперед</Button>
-      {isLoading && <h1>Идет загрузка...</h1>}
+      {isLoading && <CircularProgress />}
       {error && <h1>Произошла ошибка</h1>}
       {rows && (
         <ThemeProvider theme={theme}>
@@ -204,6 +221,7 @@ export default function CustomPaginationActionsTable() {
         // title="Редатирование записи"
       />
       <AlertDialog onConfirm={remove} />
+      <NotificationsBar />
     </div>
   );
 }
