@@ -29,14 +29,30 @@ const specialistsAPI = createApi({
         // return { apiResponse, totalCount: Number(meta.response.headers.get('X-Total-Count')) };
       },
     }),
-    edit: build.mutation<string, ISpecialistType>({
+    edit: build.mutation<object, ISpecialistType>({
       query: (body) => ({
         url: '/types/update',
         method: 'POST',
         credentials: 'include',
         body,
+        // responseHandler: (response) => {
+        //   // const count = Number(response.headers.get('X-Total-Count'));
+        //   return response.json().then(
+        //     (e) => {
+        //       console.log('F', e);
+        //       e.message = e.message.split(':');
+        //       return e;
+        //     },
+        //     (e) => {
+        //       console.log('R', e);
+        //       return e;
+        //     },
+        //   );
+        // },
       }),
-      invalidatesTags: ['SpecialistTypes'],
+      invalidatesTags: (result, error) => {
+        return error ? [] : [{ type: 'SpecialistTypes' }];
+      },
     }),
     add: build.mutation<string, ISpecialistType>({
       query: (body) => ({

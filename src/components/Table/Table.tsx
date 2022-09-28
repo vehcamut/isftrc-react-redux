@@ -2,7 +2,7 @@
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { Button, CircularProgress, createTheme, IconButton, TableHead, ThemeProvider } from '@mui/material';
+import { CircularProgress, createTheme, IconButton, TableHead, TextField, ThemeProvider } from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
@@ -16,7 +16,6 @@ import { ISpecialistType } from '../../models';
 import { specialistTypesTableSlice } from '../../app/reducers/SpecialistTypesTableSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import specialistAPI from '../../services/SpecialistsService';
-// import { /* ISpecialistType */ ISpecialistTypeQuery } from '../../models';
 import TablePaginationActions from './TablePaginationActions';
 import MyTableRow from './MyTableRow';
 import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
@@ -28,13 +27,9 @@ import NotificationsBar from '../NotificationsBar/NotificationBar';
 
 export default function CustomPaginationActionsTable() {
   const dispatch = useAppDispatch();
-  const { page, rowsPerPage, filter } = useAppSelector((state) => state.specialistTypesTableReducer);
-  const { setPage, setRowsPerPage, setFilter } = specialistTypesTableSlice.actions;
-  const { data: rows, isLoading, error } = specialistAPI.useGetTypesQuery(filter);
-  const [updateType] = specialistAPI.useEditMutation();
-  const [addType] = specialistAPI.useAddMutation();
-  const [removeType] = specialistAPI.useRemoveMutation();
-  // const { visible, name, note } = useAppSelector((state) => state.formDialogReducer);
+  const [, startTransition] = React.useTransition();
+  const { page, rowsPerPage, filter, searchField } = useAppSelector((state) => state.specialistTypesTableReducer);
+  const { setPage, setRowsPerPage, setFilter, setSearchField } = specialistTypesTableSlice.actions;
   const {
     switchVisible: switchFormDialogVisible,
     setName,
@@ -54,11 +49,12 @@ export default function CustomPaginationActionsTable() {
     setText: setNotBarText,
     setType: setNotBarType,
   } = notificatinBarSlice.actions;
-  // let name = '';
-  // let note = '';
-  // Avoid a layout jump when reaching the last page with empty rows.
-  // const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - (rows?.data.length || 0)) : 0;
-  // setRowsPerPage(5);
+
+  const { data: rows, isLoading, error } = specialistAPI.useGetTypesQuery(filter);
+  const [updateType] = specialistAPI.useEditMutation();
+  const [addType] = specialistAPI.useAddMutation();
+  const [removeType] = specialistAPI.useRemoveMutation();
+
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     dispatch(setPage(newPage));
     dispatch(setFilter({ page: newPage + 1 }));
@@ -73,25 +69,28 @@ export default function CustomPaginationActionsTable() {
     dispatch(setPage(0));
   };
 
-  const forward = () => {
-    dispatch(setFilter({ page: 2 }));
-  };
-
-  const backward = () => {
-    dispatch(setFilter({ page: 1 }));
-  };
-  const switchVisible1 = () => {
-    dispatch(switchFormDialogVisible());
-  };
   const handleSave = async (data: ISpecialistType, type: string) => {
-    dispatch(setNotBarType('success'));
     if (type === 'EDIT') {
-      await updateType(data);
-      dispatch(setNotBarText('Запись обновлена'));
+      try {
+        await updateType(data).unwrap();
+        dispatch(setNotBarType('success'));
+        dispatch(setNotBarText('Запись обновлена'));
+        dispatch(switchFormDialogVisible());
+      } catch (e) {
+        dispatch(setNotBarType('error'));
+        dispatch(setNotBarText('Запись с таким названием уже существует'));
+      }
     }
     if (type === 'ADD') {
-      await addType({ name: data.name, note: data.note });
-      dispatch(setNotBarText('Запись добавлена'));
+      try {
+        await addType({ name: data.name, note: data.note }).unwrap();
+        dispatch(setNotBarType('success'));
+        dispatch(setNotBarText('Запись добавлена'));
+        dispatch(switchFormDialogVisible());
+      } catch (e) {
+        dispatch(setNotBarType('error'));
+        dispatch(setNotBarText('Запись с таким названием уже существует'));
+      }
     }
     dispatch(switchNotBarVisible());
   };
@@ -103,11 +102,18 @@ export default function CustomPaginationActionsTable() {
     dispatch(switchAlertDialogVisible());
     // removeType(data);
   };
-  const remove = (flag: boolean, id: string) => {
-    if (flag) removeType({ _id: id } as ISpecialistType);
-    dispatch(setNotBarText('Запись удалена'));
-    dispatch(setNotBarType('success'));
-    dispatch(switchNotBarVisible());
+  const remove = async (flag: boolean, id: string) => {
+    if (flag) {
+      try {
+        await removeType({ _id: id } as ISpecialistType);
+        dispatch(setNotBarType('success'));
+        dispatch(setNotBarText('Запись удалена'));
+      } catch (e) {
+        dispatch(setNotBarType('error'));
+        dispatch(setNotBarText('Произошла непредвиденная ошибка'));
+      }
+      dispatch(switchNotBarVisible());
+    }
   };
   const update = (data: ISpecialistType) => {
     dispatch(switchFormDialogVisible());
@@ -126,13 +132,20 @@ export default function CustomPaginationActionsTable() {
     dispatch(setType('ADD'));
     dispatch(setFormDialogTitle('Добавление записи'));
   };
-  // console.log(dispatch(getLOL(typeFilter)));
+
+  const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const temp = event.target.value;
+    dispatch(setSearchField(temp));
+    startTransition(() => {
+      dispatch(setFilter({ ...filter, page: 0, name: temp }));
+      dispatch(setPage(0));
+    });
+  };
   const theme = createTheme({}, ruRU);
 
   return (
     <div>
-      <Button onClick={backward}>назад</Button>
-      <Button onClick={forward}>вперед</Button>
+      <TextField id="table-search" label="Поиск" variant="standard" onChange={onChangeHandler} value={searchField} />
       {isLoading && <CircularProgress />}
       {error && <h1>Произошла ошибка</h1>}
       {rows && (
@@ -163,27 +176,24 @@ export default function CustomPaginationActionsTable() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {
-                  // (rowsPerPage > 0
-                  //   ? rows.data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  //   : rows.data
-                  // )
-                  rows.data.map((row) => (
-                    <MyTableRow
-                      name={row.name}
-                      note={row.note}
-                      key={row._id}
-                      id={row._id || row.name}
-                      update={update}
-                      remove={handleRemoveBtnClick}
-                    />
-                  ))
-                }
-                {/* {emptyRows > 0 && (
-                  <TableRow style={{ height: 53 * emptyRows }}>
+                {rows.data.map((row) => (
+                  <MyTableRow
+                    name={row.name}
+                    note={row.note}
+                    key={row._id}
+                    id={row._id || row.name}
+                    update={update}
+                    remove={handleRemoveBtnClick}
+                  />
+                ))}
+                {rows.data.length < rowsPerPage && rowsPerPage < rows.count && (
+                  <TableRow
+                    style={{ height: 40 * (rowsPerPage - rows.data.length) }}
+                    className={[classes['my-table__row'], classes['my-table__row_nohover']].join(' ')}
+                  >
                     <TableCell colSpan={3} />
                   </TableRow>
-                )} */}
+                )}
               </TableBody>
               <TableFooter>
                 <TableRow>
@@ -192,7 +202,7 @@ export default function CustomPaginationActionsTable() {
                     colSpan={3}
                     count={rows?.count}
                     rowsPerPage={rowsPerPage}
-                    labelRowsPerPage="Показано записей:"
+                    labelRowsPerPage="Записей на странице:"
                     page={page}
                     SelectProps={{
                       inputProps: {
@@ -201,7 +211,6 @@ export default function CustomPaginationActionsTable() {
                       native: false,
                     }}
                     onPageChange={handleChangePage}
-                    // onChangeRowsPerPage={handleChangeRowsPerPage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                     ActionsComponent={TablePaginationActions}
                   />
@@ -211,15 +220,7 @@ export default function CustomPaginationActionsTable() {
           </TableContainer>
         </ThemeProvider>
       )}
-      <Button onClick={switchVisible1}>открыть</Button>
-      <FormDialog
-        // visible={visible}
-        switchVisible1={switchVisible1}
-        onSave={handleSave}
-        // name={name}
-        // note={note}
-        // title="Редатирование записи"
-      />
+      <FormDialog onSave={handleSave} />
       <AlertDialog onConfirm={remove} />
       <NotificationsBar />
     </div>

@@ -13,6 +13,7 @@ interface ISpecialistTypesTableState {
   typeFilter: ISpecialistTypeQuery;
   rowsPerPage: number;
   emptyRows: number;
+  searchField: string;
   filter: ISpecialistTypeQuery;
   isLoading: boolean | undefined;
   error: FetchBaseQueryError | SerializedError | undefined;
@@ -20,6 +21,7 @@ interface ISpecialistTypesTableState {
 
 const initialState: ISpecialistTypesTableState = {
   specialistTypes: [],
+  searchField: '',
   // rowsPerTable: 0,
   page: 0,
   rowsCount: 0,
@@ -53,6 +55,9 @@ export const specialistTypesTableSlice = createSlice({
     setFilter(state: ISpecialistTypesTableState, action: PayloadAction<ISpecialistTypeQuery>) {
       Object.assign(state.filter, action.payload);
       // = {...state.filter}
+    },
+    setSearchField(state: ISpecialistTypesTableState, action: PayloadAction<string>) {
+      state.searchField = action.payload;
     },
   },
   // extraReducers: (builder) => {

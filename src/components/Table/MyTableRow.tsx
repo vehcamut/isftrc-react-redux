@@ -60,7 +60,7 @@ const MyTableRow: FunctionComponent<IMyTableRowProps> = ({ name, note, update, r
   // const dispatch = useAppDispatch();
 
   return (
-    <TableRow key={name} style={{ height: 33 }} className={classes['my-table__row']}>
+    <TableRow key={name} style={{ height: 40 }} className={classes['my-table__row']}>
       <TableCell component="th" scope="row" className={classes['my-table__cell']}>
         {name}
       </TableCell>
