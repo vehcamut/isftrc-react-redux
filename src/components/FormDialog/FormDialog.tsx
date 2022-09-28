@@ -5,17 +5,16 @@ import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
 import { ISpecialistType } from '../../models';
 
 interface FormDialogProps extends PropsWithChildren {
-  switchVisible1: () => void;
   onSave: (data: ISpecialistType, type: string) => void;
 }
 
-const FormDialog: FunctionComponent<FormDialogProps> = ({ switchVisible1, onSave }) => {
+const FormDialog: FunctionComponent<FormDialogProps> = ({ onSave }) => {
   const { visible, name, note, id, title, type } = useAppSelector((state) => state.formDialogReducer);
   const { setName, setNote, switchVisible } = formDialogSlice.actions;
   const dispatch = useAppDispatch();
 
-  const handleClose = (event: object, reason: string) => {
-    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') switchVisible();
+  const onClose = (event: object, reason: string) => {
+    if (reason !== 'backdropClick' && reason !== 'escapeKeyDown') dispatch(switchVisible());
   };
   const handleChangeName = (event: React.ChangeEvent<HTMLInputElement>) => {
     // eslint-disable-next-line no-param-reassign
@@ -25,11 +24,14 @@ const FormDialog: FunctionComponent<FormDialogProps> = ({ switchVisible1, onSave
     dispatch(setNote(event.target.value));
   };
   const handleSave = () => {
-    dispatch(switchVisible());
+    // dispatch(switchVisible());
     onSave({ _id: id, name, note }, type);
   };
+  const handleClose = () => {
+    dispatch(switchVisible());
+  };
   return (
-    <Dialog open={visible} onClose={handleClose}>
+    <Dialog open={visible} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <TextField
@@ -56,7 +58,7 @@ const FormDialog: FunctionComponent<FormDialogProps> = ({ switchVisible1, onSave
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={switchVisible1}>Отменить</Button>
+        <Button onClick={handleClose}>Отменить</Button>
         <Button onClick={handleSave} color="success">
           Сохранить
         </Button>
