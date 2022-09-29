@@ -12,10 +12,10 @@ import Paper from '@mui/material/Paper';
 import { ruRU } from '@mui/material/locale';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import classes from './MyTable.module.scss';
-import { ISpecialistType } from '../../models';
+import { ISpecialistType, ISpecialistTypeQuery } from '../../models';
 import { specialistTypesTableSlice } from '../../app/reducers/SpecialistTypesTableSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import specialistAPI from '../../services/SpecialistsService';
+import specialistAPI from '../../app/services/SpecialistsService';
 import TablePaginationActions from './TablePaginationActions';
 import MyTableRow from './MyTableRow';
 import { formDialogSlice } from '../../app/reducers/FormDialog.slice';
@@ -57,7 +57,7 @@ export default function CustomPaginationActionsTable() {
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     dispatch(setPage(newPage));
-    dispatch(setFilter({ page: newPage + 1 }));
+    dispatch(setFilter({ page: newPage + 1 } as ISpecialistTypeQuery));
     // console.log(filter, newPage);
     // console.log('sp', specialistTypes);
   };

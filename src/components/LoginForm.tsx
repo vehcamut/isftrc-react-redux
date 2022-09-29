@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { loginFormSlice } from '../app/reducers/LoginFormSlice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import signinAPI from '../services/SignInService';
+import signinAPI from '../app/services/SignInService';
 import { IUser } from '../models';
 
 const LoginForm: FunctionComponent<PropsWithChildren> = () => {

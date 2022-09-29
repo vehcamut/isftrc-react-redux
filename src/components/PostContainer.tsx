@@ -1,6 +1,6 @@
 import React from 'react';
 import { IPost } from '../models';
-import postAPI from '../services/PostService';
+import postAPI from '../app/services/PostService';
 import PostItem from './PostItem';
 
 // type Props = {};
