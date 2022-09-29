@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { IResponse } from '../models/IResonse';
-import { ISpecialistType, ISpecialistTypeQuery, ISpecialistTypeResponse } from '../models';
+import { ISpecialistType, ISpecialistTypeQuery, ISpecialistTypeResponse } from '../../models';
 
 const specialistsAPI = createApi({
   reducerPath: 'specialistsAPI',

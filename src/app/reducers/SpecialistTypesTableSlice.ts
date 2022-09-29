@@ -26,7 +26,10 @@ const initialState: ISpecialistTypesTableState = {
   page: 0,
   rowsCount: 0,
   rowsPerPage: 5,
-  typeFilter: {},
+  typeFilter: {
+    page: 0,
+    limit: -1,
+  },
   emptyRows: 0,
   filter: {
     limit: 5,

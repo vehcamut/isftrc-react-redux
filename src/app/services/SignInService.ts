@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 // import { IResponse } from '../models/IResonse';
-import { IUser } from '../models/IUser';
+import { IUser } from '../../models/IUser';
 
 const singinAPI = createApi({
   reducerPath: 'singinAPI',
