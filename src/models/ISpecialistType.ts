@@ -5,8 +5,8 @@ export interface ISpecialistType {
 }
 
 export interface ISpecialistTypeQuery {
-  page?: number;
-  limit?: number;
+  page: number;
+  limit: number;
   order?: number | string;
   sort?: string;
   name?: string;

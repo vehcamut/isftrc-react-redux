@@ -1,7 +1,15 @@
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import { CircularProgress, createTheme, IconButton, TableHead, TextField, ThemeProvider } from '@mui/material';
+import {
+  CircularProgress,
+  createTheme,
+  IconButton,
+  TableHead,
+  TextField,
+  ThemeProvider,
+  Typography,
+} from '@mui/material';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableFooter from '@mui/material/TableFooter';
@@ -10,6 +18,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { ruRU } from '@mui/material/locale';
 import AddBoxIcon from '@mui/icons-material/AddBox';
+import Stack from '@mui/material/Stack';
 import classes from './MyTable.module.scss';
 import { ISpecialistType, ISpecialistTypeQuery } from '../../models';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -78,12 +87,6 @@ export default function SpecTypesTable() {
     }
     dispatch(switchNotBarVisible());
   };
-  const handleRemoveBtnClick = (data: ISpecialistType) => {
-    dispatch(setCurrentData(data));
-    dispatch(setConfirmDialogTitle('Удаление записи'));
-    dispatch(setConfirmDialogBody('Вы точно хотите удалить данную запись?'));
-    dispatch(switchConfirmDialogVisible());
-  };
   const handleRemove = async () => {
     try {
       await removeType({ _id: currentData._id } as ISpecialistType);
@@ -95,12 +98,18 @@ export default function SpecTypesTable() {
     }
     dispatch(switchNotBarVisible());
   };
-  const handleUpdate = (data: ISpecialistType) => {
+  const handleRemoveBtnClick = (data: ISpecialistType) => {
+    dispatch(setCurrentData(data));
+    dispatch(setConfirmDialogTitle('Удаление записи'));
+    dispatch(setConfirmDialogBody('Вы точно хотите удалить данную запись?'));
+    dispatch(switchConfirmDialogVisible());
+  };
+  const handleUpdateBtnClick = (data: ISpecialistType) => {
     dispatch(setCurrentData(data));
     dispatch(setDialogType('UPDATE'));
     dispatch(switchDialogVisible());
   };
-  const handleAdd = () => {
+  const handleAddBtnClick = () => {
     dispatch(setCurrentData({ name: '', note: '', _id: undefined }));
     dispatch(setDialogType('ADD'));
     dispatch(switchDialogVisible());
@@ -110,18 +119,26 @@ export default function SpecTypesTable() {
     const temp = event.target.value;
     dispatch(setSearchField(temp));
     startTransition(() => {
-      dispatch(setFilter({ ...filter, page: 0, name: temp }));
-      // dispatch(setPage(0));
+      dispatch(setFilter({ ...filter, page: 0, name: temp, note: temp }));
     });
   };
   const theme = createTheme({}, ruRU);
 
   return (
     <div>
-      <TextField id="table-search" label="Поиск" variant="standard" onChange={onChangeHandler} value={searchField} />
-      {isLoading && <CircularProgress />}
-      {error && <h1>Произошла ошибка</h1>}
-      {rows && (
+      <Typography variant="h4" component="h1">
+        Справочник специальностей
+      </Typography>
+      <Stack alignItems="flex-end">
+        <TextField
+          id="spec-table-search"
+          label="Поиск по таблице"
+          variant="standard"
+          size="small"
+          onChange={onChangeHandler}
+          value={searchField}
+        />
+
         <ThemeProvider theme={theme}>
           <TableContainer component={Paper}>
             <Table
@@ -142,22 +159,44 @@ export default function SpecTypesTable() {
                     style={{ textAlign: 'end' }}
                     className={[classes['my-table__cell'], classes['my-table__cell_small']].join(' ')}
                   >
-                    <IconButton key="one" color="info" size="small" onClick={handleAdd}>
+                    <IconButton key="one" color="info" size="small" onClick={handleAddBtnClick}>
                       <AddBoxIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.data.map((row) => (
-                  <MyTableRow data={row} key={row._id} update={handleUpdate} remove={handleRemoveBtnClick} />
-                ))}
-                {rows.data.length < filter.limit && filter.limit < rows.count && (
+                {isLoading && (
+                  <TableRow className={[classes['my-table__row'], classes['my-table__row_nohover']].join(' ')}>
+                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                      <CircularProgress />
+                    </TableCell>
+                  </TableRow>
+                )}
+                {error && (
+                  <TableRow className={[classes['my-table__row'], classes['my-table__row_nohover']].join(' ')}>
+                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                      <h1>Произошла ошибка</h1>
+                    </TableCell>
+                  </TableRow>
+                )}
+                {rows &&
+                  rows.data.map((row) => (
+                    <MyTableRow data={row} key={row._id} update={handleUpdateBtnClick} remove={handleRemoveBtnClick} />
+                  ))}
+                {rows && rows.data.length < filter.limit && filter.limit < rows.count && (
                   <TableRow
                     style={{ height: 40 * (filter.limit - rows.data.length) }}
                     className={[classes['my-table__row'], classes['my-table__row_nohover']].join(' ')}
                   >
                     <TableCell colSpan={3} />
+                  </TableRow>
+                )}
+                {rows && !rows.count && (
+                  <TableRow className={[classes['my-table__row'], classes['my-table__row_nohover']].join(' ')}>
+                    <TableCell colSpan={3} style={{ textAlign: 'center' }}>
+                      <h1>Ничего не найдено</h1>
+                    </TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -166,7 +205,7 @@ export default function SpecTypesTable() {
                   <TablePagination
                     rowsPerPageOptions={[5, 10, 25, { label: 'Все', value: -1 }]}
                     colSpan={3}
-                    count={rows?.count}
+                    count={rows?.count || 0}
                     rowsPerPage={filter?.limit === 0 ? -1 : filter?.limit}
                     labelRowsPerPage="Записей на странице:"
                     page={filter?.page}
@@ -185,7 +224,8 @@ export default function SpecTypesTable() {
             </Table>
           </TableContainer>
         </ThemeProvider>
-      )}
+      </Stack>
+
       <SpecTypesDialog onSave={handleSave} />
       <ConfirmDialog onConfirm={handleRemove} />
       <NotificationsBar />

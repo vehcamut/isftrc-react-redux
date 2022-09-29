@@ -16,7 +16,7 @@ const initialState: ISpecialistTypesTableState = {
   currentData: {} as ISpecialistType,
   rowsCount: 0,
   filter: {
-    limit: 5,
+    limit: 10,
     page: 0,
     sort: 'name',
     order: 0,
