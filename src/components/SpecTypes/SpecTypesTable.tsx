@@ -1,4 +1,3 @@
-/* eslint-disable no-underscore-dangle */
 import * as React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,16 +12,14 @@ import { ruRU } from '@mui/material/locale';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import classes from './MyTable.module.scss';
 import { ISpecialistType, ISpecialistTypeQuery } from '../../models';
-// import { specialistTypesTableSlice } from '../../app/reducers/SpecialistTypesTableSlice';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import specialistAPI from '../../app/services/SpecialistsService';
 import TablePaginationActions from '../TablePaginationActions';
 import MyTableRow from './SpecTypesTableRow';
-import { alertDialogSlice } from '../../app/reducers/AlertDialog.slice';
-import AlertDialog from '../AletrtDialog.tsx/AlertDialog';
+import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import { notificatinBarSlice } from '../../app/reducers/NotificatinBar.slise';
 import NotificationsBar from '../NotificationsBar/NotificationBar';
-import { specTypesDialogSlice, specTypesTableSlice } from '../../app/reducers';
+import { specTypesDialogSlice, specTypesTableSlice, confirmDialogSlice } from '../../app/reducers';
 import SpecTypesDialog from './SpecTypesDialog';
 
 export default function SpecTypesTable() {
@@ -32,11 +29,10 @@ export default function SpecTypesTable() {
   const { setCurrentData, setFilter, setSearchField } = specTypesTableSlice.actions;
   const { setType: setDialogType, switchVisible: switchDialogVisible } = specTypesDialogSlice.actions;
   const {
-    switchVisible: switchAlertDialogVisible,
-    setTitle: setAlertDialogTitle,
-    setId: setAlertDialogId,
-    setBody: setAlertDialogBody,
-  } = alertDialogSlice.actions;
+    switchVisible: switchConfirmDialogVisible,
+    setTitle: setConfirmDialogTitle,
+    setMessage: setConfirmDialogBody,
+  } = confirmDialogSlice.actions;
   const {
     switchVisible: switchNotBarVisible,
     setText: setNotBarText,
@@ -83,27 +79,23 @@ export default function SpecTypesTable() {
     dispatch(switchNotBarVisible());
   };
   const handleRemoveBtnClick = (data: ISpecialistType) => {
-    console.log(data._id);
-    dispatch(setAlertDialogTitle('Удаление записи'));
-    dispatch(setAlertDialogId(data._id));
-    dispatch(setAlertDialogBody('Вы точно хотите удалить данную запись?'));
-    dispatch(switchAlertDialogVisible());
-    // removeType(data);
+    dispatch(setCurrentData(data));
+    dispatch(setConfirmDialogTitle('Удаление записи'));
+    dispatch(setConfirmDialogBody('Вы точно хотите удалить данную запись?'));
+    dispatch(switchConfirmDialogVisible());
   };
-  const remove = async (flag: boolean, id: string) => {
-    if (flag) {
-      try {
-        await removeType({ _id: id } as ISpecialistType);
-        dispatch(setNotBarType('success'));
-        dispatch(setNotBarText('Запись удалена'));
-      } catch (e) {
-        dispatch(setNotBarType('error'));
-        dispatch(setNotBarText('Произошла непредвиденная ошибка'));
-      }
-      dispatch(switchNotBarVisible());
+  const handleRemove = async () => {
+    try {
+      await removeType({ _id: currentData._id } as ISpecialistType);
+      dispatch(setNotBarType('success'));
+      dispatch(setNotBarText('Запись удалена'));
+    } catch (e) {
+      dispatch(setNotBarType('error'));
+      dispatch(setNotBarText('Произошла непредвиденная ошибка'));
     }
+    dispatch(switchNotBarVisible());
   };
-  const update = (data: ISpecialistType) => {
+  const handleUpdate = (data: ISpecialistType) => {
     dispatch(setCurrentData(data));
     dispatch(setDialogType('UPDATE'));
     dispatch(switchDialogVisible());
@@ -131,7 +123,7 @@ export default function SpecTypesTable() {
       {error && <h1>Произошла ошибка</h1>}
       {rows && (
         <ThemeProvider theme={theme}>
-          <TableContainer component={Paper} sx={{ overflowX: 'hidden' }}>
+          <TableContainer component={Paper}>
             <Table
               sx={{ minWidth: 500 }}
               className={classes['my-table']}
@@ -158,7 +150,7 @@ export default function SpecTypesTable() {
               </TableHead>
               <TableBody>
                 {rows.data.map((row) => (
-                  <MyTableRow data={row} key={row._id} update={update} remove={handleRemoveBtnClick} />
+                  <MyTableRow data={row} key={row._id} update={handleUpdate} remove={handleRemoveBtnClick} />
                 ))}
                 {rows.data.length < filter.limit && filter.limit < rows.count && (
                   <TableRow
@@ -195,7 +187,7 @@ export default function SpecTypesTable() {
         </ThemeProvider>
       )}
       <SpecTypesDialog onSave={handleSave} />
-      <AlertDialog onConfirm={remove} />
+      <ConfirmDialog onConfirm={handleRemove} />
       <NotificationsBar />
     </div>
   );

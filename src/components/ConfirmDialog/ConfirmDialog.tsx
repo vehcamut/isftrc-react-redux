@@ -6,16 +6,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { alertDialogSlice } from '../../app/reducers/AlertDialog.slice';
+import { confirmDialogSlice } from '../../app/reducers';
 // import { ISpecialistType } from '../../models';
 
-interface AlertDialogProps extends PropsWithChildren {
-  onConfirm: (flag: boolean, id: string) => void;
+interface ConfirmDialogProps extends PropsWithChildren {
+  onConfirm: () => void;
 }
 
-const AlertDialog: FunctionComponent<AlertDialogProps> = ({ onConfirm }) => {
-  const { visible, title, body, id } = useAppSelector((state) => state.alertDialogReducer);
-  const { switchVisible } = alertDialogSlice.actions;
+const ConfirmDialog: FunctionComponent<ConfirmDialogProps> = ({ onConfirm }) => {
+  const { visible, title, message } = useAppSelector((state) => state.confirmDialogReducer);
+  const { switchVisible } = confirmDialogSlice.actions;
   const dispatch = useAppDispatch();
 
   const handleClose = (event: object, reason: string) => {
@@ -24,13 +24,11 @@ const AlertDialog: FunctionComponent<AlertDialogProps> = ({ onConfirm }) => {
 
   const handleConfirm = () => {
     dispatch(switchVisible());
-    onConfirm(true, id || '');
+    onConfirm();
   };
 
   const handleRefuse = () => {
-    console.log(id);
     dispatch(switchVisible());
-    onConfirm(false, id || '');
   };
   return (
     <Dialog
@@ -41,7 +39,7 @@ const AlertDialog: FunctionComponent<AlertDialogProps> = ({ onConfirm }) => {
     >
       <DialogTitle id="alert-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">{body}</DialogContentText>
+        <DialogContentText id="alert-dialog-description">{message}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleConfirm} color="error">
@@ -53,4 +51,4 @@ const AlertDialog: FunctionComponent<AlertDialogProps> = ({ onConfirm }) => {
   );
 };
 
-export default AlertDialog;
+export default ConfirmDialog;
