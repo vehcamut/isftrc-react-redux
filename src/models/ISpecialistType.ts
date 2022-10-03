@@ -7,7 +7,7 @@ export interface ISpecialistType {
 export interface ISpecialistTypeQuery {
   page: number;
   limit: number;
-  order?: number | string;
+  order?: 'desc' | 'asc' | undefined;
   sort?: string;
   name?: string;
   note?: string;

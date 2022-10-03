@@ -19,7 +19,7 @@ const initialState: ISpecialistTypesTableState = {
     limit: 10,
     page: 0,
     sort: 'name',
-    order: 0,
+    order: undefined,
   },
   searchField: '',
 };

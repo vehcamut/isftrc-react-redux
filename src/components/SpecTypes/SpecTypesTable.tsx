@@ -6,6 +6,7 @@ import {
   createTheme,
   IconButton,
   TableHead,
+  TableSortLabel,
   TextField,
   ThemeProvider,
   Typography,
@@ -26,9 +27,8 @@ import specialistAPI from '../../app/services/SpecialistsService';
 import TablePaginationActions from '../TablePaginationActions';
 import MyTableRow from './SpecTypesTableRow';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
-import { notificatinBarSlice } from '../../app/reducers/NotificatinBar.slise';
-import NotificationsBar from '../NotificationsBar/NotificationBar';
-import { specTypesDialogSlice, specTypesTableSlice, confirmDialogSlice } from '../../app/reducers';
+import Alert from '../Alert/Alert';
+import { specTypesDialogSlice, specTypesTableSlice, confirmDialogSlice, alertSlice } from '../../app/reducers';
 import SpecTypesDialog from './SpecTypesDialog';
 
 export default function SpecTypesTable() {
@@ -42,11 +42,7 @@ export default function SpecTypesTable() {
     setTitle: setConfirmDialogTitle,
     setMessage: setConfirmDialogBody,
   } = confirmDialogSlice.actions;
-  const {
-    switchVisible: switchNotBarVisible,
-    setText: setNotBarText,
-    setType: setNotBarType,
-  } = notificatinBarSlice.actions;
+  const { switchVisible: switchAlertVisible, setText: setAlertText, setType: setAlertType } = alertSlice.actions;
 
   const { data: rows, isLoading, error } = specialistAPI.useGetTypesQuery(filter);
   const [updateType] = specialistAPI.useEditMutation();
@@ -66,37 +62,37 @@ export default function SpecTypesTable() {
     if (type === 'UPDATE') {
       try {
         await updateType(currentData).unwrap();
-        dispatch(setNotBarType('success'));
-        dispatch(setNotBarText('Запись обновлена'));
+        dispatch(setAlertType('success'));
+        dispatch(setAlertText('Запись обновлена'));
         dispatch(switchDialogVisible());
       } catch (e) {
-        dispatch(setNotBarType('error'));
-        dispatch(setNotBarText('Запись с таким названием уже существует'));
+        dispatch(setAlertType('error'));
+        dispatch(setAlertText('Запись с таким названием уже существует'));
       }
     }
     if (type === 'ADD') {
       try {
         await addType(currentData).unwrap();
-        dispatch(setNotBarType('success'));
-        dispatch(setNotBarText('Запись добавлена'));
+        dispatch(setAlertType('success'));
+        dispatch(setAlertText('Запись добавлена'));
         dispatch(switchDialogVisible());
       } catch (e) {
-        dispatch(setNotBarType('error'));
-        dispatch(setNotBarText('Запись с таким названием уже существует'));
+        dispatch(setAlertType('error'));
+        dispatch(setAlertText('Запись с таким названием уже существует'));
       }
     }
-    dispatch(switchNotBarVisible());
+    dispatch(switchAlertVisible());
   };
   const handleRemove = async () => {
     try {
       await removeType({ _id: currentData._id } as ISpecialistType);
-      dispatch(setNotBarType('success'));
-      dispatch(setNotBarText('Запись удалена'));
+      dispatch(setAlertType('success'));
+      dispatch(setAlertText('Запись удалена'));
     } catch (e) {
-      dispatch(setNotBarType('error'));
-      dispatch(setNotBarText('Произошла непредвиденная ошибка'));
+      dispatch(setAlertType('error'));
+      dispatch(setAlertText('Произошла непредвиденная ошибка'));
     }
-    dispatch(switchNotBarVisible());
+    dispatch(switchAlertVisible());
   };
   const handleRemoveBtnClick = (data: ISpecialistType) => {
     dispatch(setCurrentData(data));
@@ -114,7 +110,14 @@ export default function SpecTypesTable() {
     dispatch(setDialogType('ADD'));
     dispatch(switchDialogVisible());
   };
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleSort = (name: string) => (event: React.MouseEvent<unknown>) => {
+    if (filter.sort === name)
+      dispatch(setFilter({ order: filter.order === 'asc' ? 'desc' : 'asc', page: 0 } as ISpecialistTypeQuery));
+    else {
+      dispatch(setFilter({ sort: name, order: 'asc', page: 0 } as ISpecialistTypeQuery));
+    }
+  };
   const onChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const temp = event.target.value;
     dispatch(setSearchField(temp));
@@ -126,19 +129,20 @@ export default function SpecTypesTable() {
 
   return (
     <div>
-      <Typography variant="h4" component="h1">
-        Справочник специальностей
-      </Typography>
-      <Stack alignItems="flex-end">
-        <TextField
-          id="spec-table-search"
-          label="Поиск по таблице"
-          variant="standard"
-          size="small"
-          onChange={onChangeHandler}
-          value={searchField}
-        />
-
+      <Stack>
+        <Stack direction="row" justifyContent="space-between">
+          <Typography variant="h4" component="h1">
+            Справочник специальностей
+          </Typography>
+          <TextField
+            id="spec-table-search"
+            label="Поиск по таблице"
+            variant="standard"
+            size="small"
+            onChange={onChangeHandler}
+            value={searchField}
+          />
+        </Stack>
         <ThemeProvider theme={theme}>
           <TableContainer component={Paper}>
             <Table
@@ -150,10 +154,22 @@ export default function SpecTypesTable() {
               <TableHead>
                 <TableRow style={{ height: 55, fontWeight: 'bold' }}>
                   <TableCell sx={{ fontWeight: 'bold' }} className={classes['my-table__cell']}>
-                    Название специальности
+                    <TableSortLabel
+                      active={filter.sort === 'name'}
+                      direction={filter.sort === 'name' ? filter.order : 'asc'}
+                      onClick={handleSort('name')}
+                    >
+                      Название специальности
+                    </TableSortLabel>
                   </TableCell>
                   <TableCell sx={{ fontWeight: 'bold' }} className={classes['my-table__cell']}>
-                    Примечание
+                    <TableSortLabel
+                      active={filter.sort === 'note'}
+                      direction={filter.sort === 'note' ? filter.order : 'asc'}
+                      onClick={handleSort('note')}
+                    >
+                      Примечание
+                    </TableSortLabel>
                   </TableCell>
                   <TableCell
                     style={{ textAlign: 'end' }}
@@ -228,7 +244,7 @@ export default function SpecTypesTable() {
 
       <SpecTypesDialog onSave={handleSave} />
       <ConfirmDialog onConfirm={handleRemove} />
-      <NotificationsBar />
+      <Alert />
     </div>
   );
 }
