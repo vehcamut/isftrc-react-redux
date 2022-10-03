@@ -1,25 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { specTypesDialogReducer, specTypesTableReducer, confirmDialogReducer } from './reducers';
-import formDialogReducer from './reducers/FormDialog.slice';
+import { specTypesDialogReducer, specTypesTableReducer, confirmDialogReducer, alertReducer } from './reducers';
 import loginFormReducer from './reducers/LoginFormSlice';
-import notificationBarReducer from './reducers/NotificatinBar.slise';
-import specialistTypesTableReducer from './reducers/SpecialistTypesTableSlice';
 import postAPI from './services/PostService';
 import signinAPI from './services/SignInService';
 import specialistAPI from './services/SpecialistsService';
-import postReducer from './reducers/PostSlice';
 
 export const store = configureStore({
   reducer: {
     specTypesDialogReducer,
     specTypesTableReducer,
-    // userReducer,
-    postReducer,
-    specialistTypesTableReducer,
+    alertReducer,
     loginFormReducer,
-    formDialogReducer,
     confirmDialogReducer,
-    notificationBarReducer,
     [signinAPI.reducerPath]: signinAPI.reducer,
     [specialistAPI.reducerPath]: specialistAPI.reducer,
     [postAPI.reducerPath]: postAPI.reducer,
