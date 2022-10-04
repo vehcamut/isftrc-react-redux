@@ -1,23 +1,21 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-// import { IResponse } from '../models/IResonse';
 import { ISpecialistType, ISpecialistTypeQuery, ISpecialistTypeResponse } from '../../models';
+import backendAPI from './main.service';
 
-const specialistsAPI = createApi({
-  reducerPath: 'specialistsAPI',
-  baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:3333/specialists',
-  }),
-  tagTypes: ['SpecialistTypes'],
+const specTypesAPI = backendAPI.injectEndpoints({
   endpoints: (build) => ({
-    getTypes: build.query<ISpecialistTypeResponse, ISpecialistTypeQuery>({
+    getSpecTypes: build.query<ISpecialistTypeResponse, ISpecialistTypeQuery>({
       query: (user) => ({
-        url: '/types/get',
+        url: 'specialists/types/get',
         params: user,
         credentials: 'include',
-        // responseHandler: (response) => {
-        //   const count = Number(response.headers.get('X-Total-Count'));
-        //   return { data: response.json(), count } as ISpecialistTypeResponse;
-        // },
+        responseHandler: async (response) => {
+          // const res = await response.json();
+          // if (res.message === 'jwt expired') console.log(res);
+          // console.log(.then((e) => console.log(e)));
+          // const count = Number(response.headers.get('X-Total-Count'));
+          // return { data: response.json(), count } as ISpecialistTypeResponse;
+          return response.json();
+        },
       }),
       providesTags: ['SpecialistTypes'],
       transformResponse(apiRespons: ISpecialistType[], meta): ISpecialistTypeResponse {
@@ -29,9 +27,9 @@ const specialistsAPI = createApi({
         // return { apiResponse, totalCount: Number(meta.response.headers.get('X-Total-Count')) };
       },
     }),
-    edit: build.mutation<object, ISpecialistType>({
+    editSpecType: build.mutation<object, ISpecialistType>({
       query: (body) => ({
-        url: '/types/update',
+        url: 'specialists/types/update',
         method: 'POST',
         credentials: 'include',
         body,
@@ -54,18 +52,18 @@ const specialistsAPI = createApi({
         return error ? [] : [{ type: 'SpecialistTypes' }];
       },
     }),
-    add: build.mutation<string, ISpecialistType>({
+    addSpecType: build.mutation<string, ISpecialistType>({
       query: (body) => ({
-        url: '/types/add',
+        url: 'specialists/types/add',
         method: 'POST',
         credentials: 'include',
         body,
       }),
       invalidatesTags: ['SpecialistTypes'],
     }),
-    remove: build.mutation<string, ISpecialistType>({
+    removeSpecType: build.mutation<string, ISpecialistType>({
       query: (body) => ({
-        url: '/types/remove',
+        url: 'specialists/types/remove',
         method: 'DELETE',
         credentials: 'include',
         body,
@@ -73,6 +71,7 @@ const specialistsAPI = createApi({
       invalidatesTags: ['SpecialistTypes'],
     }),
   }),
+  overrideExisting: false,
 });
 
-export default specialistsAPI;
+export default specTypesAPI;

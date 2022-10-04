@@ -10,18 +10,23 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { loginFormSlice } from '../app/reducers/LoginFormSlice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import signinAPI from '../app/services/SignInService';
-import { IUser } from '../models';
+import signinAPI from '../app/services/auth.servicec';
+import { authSlice } from '../app/reducers';
+// import extendedApi from '../app/services/auth.servicec';
+// import { IUser } from '../models';
 
 const LoginForm: FunctionComponent<PropsWithChildren> = () => {
   const navigate = useNavigate();
 
+  // const [signIN] = extendedApi.useSigninMutation();
   const [signin] = signinAPI.useSigninMutation();
   const { login, password, showPassword, loginInputHelper, passwordInputHelper } = useAppSelector(
     (state) => state.loginFormReducer,
   );
   const { switchShowedPassword, changedLogin, changedPassword, setLoginHelper, setPasswordHelper } =
     loginFormSlice.actions;
+  const { setIsAuth } = authSlice.actions;
+  const { isAuth } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
 
   const handleClickShowPassword = (): void => {
@@ -50,11 +55,20 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
       dispatch(setPasswordHelper('Это поле должно быть заполнено'));
     }
     if (password && login) {
-      const response: any = await signin({ email: login, password } as IUser);
-      if (response?.error?.data.statusCode === 403) dispatch(setLoginHelper('Неправильный логин или пароль'));
-      else {
+      try {
+        // await signIN({ login, password }).unwrap();
+        await signin({ login, password }).unwrap();
+        console.log('sdfdf');
+        if (!isAuth) dispatch(setIsAuth(true));
         navigate('/auth');
+      } catch (e) {
+        dispatch(setLoginHelper('Неправильный логин или пароль'));
       }
+      // const response: any = await signin({ email: login, password } as IUser);
+      // if (response?.error?.data.statusCode === 403) dispatch(setLoginHelper('Неправильный логин или пароль'));
+      // else {
+      //   navigate('/auth');
+      // }
     }
     // email: '1sdfdsf', password: 'asdasd'
   };

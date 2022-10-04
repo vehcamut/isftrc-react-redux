@@ -8,7 +8,8 @@ import reportWebVitals from './reportWebVitals';
 import './index.css';
 import SignIn from './routes/SignIn';
 import Auth from './routes/Auth';
-import RolesAuthRoute from './app/RolesAuthRoute';
+// import RolesAuthRoute from './app/RolesAuthRoute';
+import RequireAuth from './components/RequireAuth';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
@@ -19,12 +20,17 @@ const router = createBrowserRouter([
     element: <SignIn />,
   },
   {
-    path: '/auth',
-    element: (
-      <RolesAuthRoute roles={['admin', 'user']}>
-        <Auth />
-      </RolesAuthRoute>
-    ),
+    children:
+      // <RolesAuthRoute roles={['admin', 'user']}>
+      [
+        {
+          path: '/auth',
+          element: <Auth />,
+        },
+      ],
+    // </RolesAuthRoute>
+
+    element: <RequireAuth />,
   },
 ]);
 
