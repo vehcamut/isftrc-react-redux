@@ -20,23 +20,16 @@ import Paper from '@mui/material/Paper';
 import { ruRU } from '@mui/material/locale';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import Stack from '@mui/material/Stack';
-// import { skipToken } from '@reduxjs/toolkit/dist/query';
 import classes from './MyTable.module.scss';
 import { ISpecialistType, ISpecialistTypeQuery } from '../../models';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-// import specialistAPI from '../../app/services/SpecialistsService';
-import specialistAPI from '../../app/services/specTypes.service';
+import { specialistsAPI } from '../../app/services';
 import TablePaginationActions from '../TablePaginationActions';
 import MyTableRow from './SpecTypesTableRow';
 import ConfirmDialog from '../ConfirmDialog/ConfirmDialog';
 import Alert from '../Alert/Alert';
 import { specTypesDialogSlice, specTypesTableSlice, confirmDialogSlice, alertSlice } from '../../app/reducers';
 import SpecTypesDialog from './SpecTypesDialog';
-
-// import authApi from '../../app/services/auth.servicec';
-// import backendAPI from '../../app/services/main.service';
-// import authApi from '../../app/services/auth.servicec';
-// import authApi from '../../app/services/auth.servicec';
 
 export default function SpecTypesTable() {
   const dispatch = useAppDispatch();
@@ -50,15 +43,11 @@ export default function SpecTypesTable() {
     setMessage: setConfirmDialogBody,
   } = confirmDialogSlice.actions;
   const { switchVisible: switchAlertVisible, setText: setAlertText, setType: setAlertType } = alertSlice.actions;
-  // authApi.endpoints.refreshToken.useQuerySubscription({}, { skip: true }); // ({ count: 1 }, { subscribe: true });
-  // const x = {};
-  // const { data: lol } = authApi.useRefreshTokenQuery(x);
-  // console.log(lol);
-  // authApi.util.
-  const { data: rows, isLoading, error } = specialistAPI.useGetSpecTypesQuery(filter);
-  const [updateType] = specialistAPI.useEditSpecTypeMutation();
-  const [addType] = specialistAPI.useAddSpecTypeMutation();
-  const [removeType] = specialistAPI.useRemoveSpecTypeMutation();
+
+  const { data: rows, isLoading, error } = specialistsAPI.useGetTypesQuery(filter);
+  const [updateType] = specialistsAPI.useEditTypeMutation();
+  const [addType] = specialistsAPI.useAddTypeMutation();
+  const [removeType] = specialistsAPI.useRemoveTypeMutation();
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     dispatch(setFilter({ page: newPage } as ISpecialistTypeQuery));

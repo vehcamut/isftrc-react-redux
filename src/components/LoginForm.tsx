@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { loginFormSlice } from '../app/reducers/LoginFormSlice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import signinAPI from '../app/services/auth.servicec';
+import { authAPI } from '../app/services';
 import { authSlice } from '../app/reducers';
 // import extendedApi from '../app/services/auth.servicec';
 // import { IUser } from '../models';
@@ -19,7 +19,7 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
   const navigate = useNavigate();
 
   // const [signIN] = extendedApi.useSigninMutation();
-  const [signin] = signinAPI.useSigninMutation();
+  const [signin] = authAPI.useSigninMutation();
   const { login, password, showPassword, loginInputHelper, passwordInputHelper } = useAppSelector(
     (state) => state.loginFormReducer,
   );
