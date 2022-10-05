@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface INotificatinBarState {
+interface IAlertState {
   visible: boolean;
   text: string;
   type: 'error' | 'info' | 'success' | 'warning';
 }
 
-const initialState: INotificatinBarState = {
+const initialState: IAlertState = {
   visible: false,
   text: 'alert text',
   type: 'info',
@@ -16,13 +16,13 @@ export const alertSlice = createSlice({
   name: 'alert',
   initialState,
   reducers: {
-    switchVisible(state: INotificatinBarState) {
+    switchVisible(state: IAlertState) {
       state.visible = !state.visible;
     },
-    setText(state: INotificatinBarState, action: PayloadAction<string>) {
+    setText(state: IAlertState, action: PayloadAction<string>) {
       state.text = action.payload;
     },
-    setType(state: INotificatinBarState, action: PayloadAction<'error' | 'info' | 'success' | 'warning'>) {
+    setType(state: IAlertState, action: PayloadAction<'error' | 'info' | 'success' | 'warning'>) {
       state.type = action.payload;
     },
   },

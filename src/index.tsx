@@ -30,7 +30,7 @@ const router = createBrowserRouter([
       ],
     // </RolesAuthRoute>
 
-    element: <RequireAuth />,
+    element: <RequireAuth requiredRoles={['registrator']} />,
   },
 ]);
 

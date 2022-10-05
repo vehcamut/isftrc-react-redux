@@ -12,6 +12,7 @@ import { loginFormSlice } from '../app/reducers/LoginFormSlice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { authAPI } from '../app/services';
 import { authSlice } from '../app/reducers';
+import getTokenPayload from '../app/tokenHendler';
 // import extendedApi from '../app/services/auth.servicec';
 // import { IUser } from '../models';
 
@@ -25,7 +26,7 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
   );
   const { switchShowedPassword, changedLogin, changedPassword, setLoginHelper, setPasswordHelper } =
     loginFormSlice.actions;
-  const { setIsAuth } = authSlice.actions;
+  const { setIsAuth, setRoles } = authSlice.actions;
   const { isAuth } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
 
@@ -58,8 +59,10 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
       try {
         // await signIN({ login, password }).unwrap();
         await signin({ login, password }).unwrap();
-        console.log('sdfdf');
+        // console.log('sdfdf');
         if (!isAuth) dispatch(setIsAuth(true));
+        dispatch(setRoles(getTokenPayload()?.roles || []));
+        // const payload = getTokenPayload()?.roles;
         navigate('/auth');
       } catch (e) {
         dispatch(setLoginHelper('Неправильный логин или пароль'));

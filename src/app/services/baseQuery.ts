@@ -14,6 +14,7 @@ export default async (args: string | FetchArgs, api: BaseQueryApi, extraOptions:
     if (refreshResult.error?.status === 403) {
       document.cookie = '';
       api.dispatch(authSlice.actions.setIsAuth(false));
+      api.dispatch(authSlice.actions.setRoles([]));
     }
     result = await baseQuery(args, api, extraOptions);
   }

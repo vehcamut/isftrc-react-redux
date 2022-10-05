@@ -1,7 +1,7 @@
+/* eslint-disable no-useless-escape */
 import { ITokenPayload } from '../models/ITokenPayload';
 
 function getCookie(name: string) {
-  /* eslint-disable no-useless-escape */
   const matches = document.cookie.match(
     new RegExp(`(?:^|; )${name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1')}=([^;]*)`),
   );
