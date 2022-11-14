@@ -15,5 +15,19 @@ export const authAPI = createApi({
         credentials: 'include',
       }),
     }),
+    refreshToken: build.query({
+      query: () => ({
+        url: 'auth/refresh',
+        method: 'PATCH',
+        credentials: 'include',
+      }),
+    }),
+    test: build.mutation({
+      query: () => ({
+        method: 'POST',
+        url: 'auth/test',
+        credentials: 'include',
+      }),
+    }),
   }),
 });

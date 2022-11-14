@@ -6,9 +6,8 @@ import {
   specTypesTableReducer,
   confirmDialogReducer,
   alertReducer,
-  regectedActionReducer,
+  loginFormReducer,
 } from './reducers';
-import loginFormReducer from './reducers/LoginFormSlice';
 
 export const store = configureStore({
   reducer: {
@@ -17,7 +16,6 @@ export const store = configureStore({
     alertReducer,
     loginFormReducer,
     confirmDialogReducer,
-    regectedActionReducer,
     authReducer,
     [authAPI.reducerPath]: authAPI.reducer,
     [specialistsAPI.reducerPath]: specialistsAPI.reducer,

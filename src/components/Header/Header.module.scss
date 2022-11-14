@@ -1,0 +1,17 @@
+@import "../../app/scss/vars.scss";
+@import '~antd/dist/antd.css';
+.header {
+  background-color:$secondaryColor;
+  color: $primaryColor;
+}
+.header__toolbar {
+  display: flex;
+  justify-content: space-between;
+}
+.header__logo {
+  height: 50px;
+  width: 233px;
+}
+.ant-page-header-footer {
+  margin-top: 0px;
+}

@@ -3,10 +3,8 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface ILoginFormState {
   login: string;
-  // loginInputError: boolean;
   loginInputHelper: string;
   password: string;
-  // passwordInputError: boolean;
   passwordInputHelper: string;
   showPassword: boolean;
 }
@@ -16,7 +14,6 @@ const initialState: ILoginFormState = {
   loginInputHelper: '',
   password: '',
   showPassword: false,
-
   passwordInputHelper: '',
 };
 
@@ -42,4 +39,4 @@ export const loginFormSlice = createSlice({
   },
 });
 
-export default loginFormSlice.reducer;
+export const loginFormReducer = loginFormSlice.reducer;

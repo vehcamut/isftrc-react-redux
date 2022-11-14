@@ -9,29 +9,55 @@ import './index.css';
 import SignIn from './routes/SignIn';
 import Auth from './routes/Auth';
 // import RolesAuthRoute from './app/RolesAuthRoute';
-import RequireAuth from './components/RequireAuth';
+// import RequireAuth from './components/RequireAuth';
+import Main from './routes/Main';
+import AuthGuard from './components/guards/authGuard';
+import RolesGuard from './components/guards/rolesGuard';
+// import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: 'auth/signin',
     element: <SignIn />,
   },
   {
-    children:
-      // <RolesAuthRoute roles={['admin', 'user']}>
-      [
-        {
-          path: '/auth',
-          element: <Auth />,
-        },
-      ],
-    // </RolesAuthRoute>
-
-    element: <RequireAuth requiredRoles={['registrator']} />,
+    children: [
+      {
+        children: [
+          {
+            path: '/auth',
+            element: <Auth />,
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        path: '/',
+        element: <Main />,
+      },
+    ],
+    element: <AuthGuard />,
   },
+  // {
+  //   children: [
+  //     {
+  //       path: '/auth',
+  //       element: <Auth />,
+  //     },
+  //   ],
+  //   element: <RequireAuth requiredRoles={['registrator']} />,
+  // },
+  // {
+  //   children: [
+  //     {
+  //       path: '/',
+  //       element: <Main />,
+  //     },
+  //   ],
+  // },
 ]);
 
 root.render(

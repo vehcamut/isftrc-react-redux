@@ -8,7 +8,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
-import { loginFormSlice } from '../app/reducers/LoginFormSlice';
+import { loginFormSlice } from '../app/reducers/loginForm.slice';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { authAPI } from '../app/services';
 import { authSlice } from '../app/reducers';
@@ -18,7 +18,6 @@ import getTokenPayload from '../app/tokenHendler';
 
 const LoginForm: FunctionComponent<PropsWithChildren> = () => {
   const navigate = useNavigate();
-
   // const [signIN] = extendedApi.useSigninMutation();
   const [signin] = authAPI.useSigninMutation();
   const { login, password, showPassword, loginInputHelper, passwordInputHelper } = useAppSelector(
@@ -27,7 +26,7 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
   const { switchShowedPassword, changedLogin, changedPassword, setLoginHelper, setPasswordHelper } =
     loginFormSlice.actions;
   const { setIsAuth, setRoles } = authSlice.actions;
-  const { isAuth } = useAppSelector((state) => state.authReducer);
+  // const { isAuth } = useAppSelector((state) => state.authReducer);
   const dispatch = useAppDispatch();
 
   const handleClickShowPassword = (): void => {
@@ -60,7 +59,8 @@ const LoginForm: FunctionComponent<PropsWithChildren> = () => {
         // await signIN({ login, password }).unwrap();
         await signin({ login, password }).unwrap();
         // console.log('sdfdf');
-        if (!isAuth) dispatch(setIsAuth(true));
+        // if (!isAuth)
+        dispatch(setIsAuth(true));
         dispatch(setRoles(getTokenPayload()?.roles || []));
         // const payload = getTokenPayload()?.roles;
         navigate('/auth');
