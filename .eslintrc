@@ -31,6 +31,7 @@
     "plugin:react/recommended"
   ],
   "rules": {
+    // "@typescript-eslint/indent": ["error", 2],
     "prettier/prettier": "error",
     "react/function-component-definition": [
       2,

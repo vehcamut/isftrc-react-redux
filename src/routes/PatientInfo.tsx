@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Box, Container } from '@mui/material';
 // import Layout, { Content /* , Header */, Header } from 'antd/lib/layout/layout';
-import React, { useEffect /* useState */ } from 'react';
+import React, { useEffect, useMemo /* useState */ } from 'react';
 import {
   Typography,
   Table,
@@ -36,6 +36,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 // import AppBar from '../components/Header/Header';
 import { AppstoreOutlined, MailOutlined, SettingOutlined } from '@ant-design/icons';
 import type { TabsProps, MenuProps } from 'antd';
+import dayjs from 'dayjs';
 import classes from './style.module.scss';
 import './antd.rewrite.scss';
 import { patientsAPI } from '../app/services';
@@ -230,9 +231,22 @@ const PatientInfo = () => {
   // const addClass = (...cs: string[]): string =>
   //   cs.reduce((res, current) => (res === '' ? classes[current] : `${res} ${classes[current]}`), '');
   // const navigate = useNavigate();
-  useEffect(() => {
-    console.log({ ...patient });
-    form.setFieldsValue({ ...patient });
+
+  useMemo(() => {
+    // console.log('USEEFFETC', {
+    //   ...patient,
+    //   dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+    // });
+    // console.log(patient?.dateOfBirth, typeof patient?.dateOfBirth);
+    // // console.log({ ...patient });
+    // // form.setFieldsValue(patient);
+    form.setFieldsValue(
+      {
+        ...patient,
+        dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+        // dateOfBirth: dayjs(patient?.dateOfBirth),
+      } /* patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined } */,
+    );
   }, [patient]);
   return (
     <>
@@ -288,10 +302,27 @@ const PatientInfo = () => {
           ]}
         />
       </Skeleton> */}
-      <Spin tip="Loading" size="large" spinning={isLoading}>
+      <Spin
+        tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>}
+        size="large"
+        // style={{ left: '49.5%' }}
+        spinning={isLoading}
+      >
         <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
           <Col>
-            {isLoading ? (
+            <Typography.Title level={2} style={{ margin: 0 }}>
+              {!isLoading && patient
+                ? `Пациент №${patient?.number}. ` +
+                  `${patient?.surname} ${patient?.name.slice(0, 1)}.` +
+                  `${patient?.patronymic.slice(0, 1)}.` +
+                  ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                  })}`
+                : 'Пациент'}
+            </Typography.Title>
+            {/* {isLoading ? (
               <div />
             ) : (
               // <Skeleton
@@ -300,16 +331,8 @@ const PatientInfo = () => {
               //   title={{ width: '400px', style: { height: '30px', margin: 0 } }}
               //   paragraph={{ rows: 0 }}
               // />
-              <Typography.Title level={2} style={{ margin: 0 }}>
-                Пациент {patient?.number}. {patient?.surname} {patient?.name.slice(0, 1)}.
-                {patient?.patronymic.slice(0, 1)}.{' '}
-                {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-                  year: 'numeric',
-                  month: 'numeric',
-                  day: 'numeric',
-                })}
-              </Typography.Title>
-            )}
+              
+            )} */}
           </Col>
           <Col>
             <Button type="link" onClick={onAddClick}>

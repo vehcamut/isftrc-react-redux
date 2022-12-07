@@ -22,14 +22,11 @@ interface FormDialogProps extends PropsWithChildren {
 }
 
 const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, onReset, defaultValue, disabled }) => {
-  const { data, query } = useAppSelector((state) => state.addPatientReducer);
-  const { setData, setQuery } = addPatientSlice.actions;
-  const dispatch = useAppDispatch();
-  // const [query, setQuery] = useState('');
+  const [query, setQuery] = useState('');
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
-  // dispatch()
+
   const onSearchAC: any = debounce((searchText) => {
-    dispatch(setQuery(searchText));
+    setQuery(searchText);
     console.log(searchText);
   }, 800);
 
@@ -42,9 +39,11 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
   //   console.log('Success:', values);
   //   console.log(JSON.stringify(values));
   // };
-  const onChange = (e: any) => {
-    console.log(e);
+
+  const onFieldsChange = (values: any) => {
+    console.log('CHAG:', values);
   };
+
   return (
     <Form
       form={form}
@@ -52,45 +51,40 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
       labelCol={{ span: 4 }}
       wrapperCol={{ span: 17 }}
       colon={false}
-      onFieldsChange={onChange}
-      onChange={onChange}
       onFinish={onFinish}
       disabled={disabled}
+      // validateTrigger={}
       initialValues={defaultValue}
+      onChange={onFieldsChange}
     >
       <Form.Item
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Фамилия</div>}
         name="surname"
-        initialValue={data?.surname}
       >
-        <Input
-          id="surname"
-          // defaultValue={defaultValue?.surname ? defaultValue.surname : ''}
-          value={data?.surname}
-          onChange={onChange}
-        />
+        <Input id="surname" />
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Имя" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Имя</div>}
         name="name"
       >
-        <Input id="name" defaultValue={defaultValue?.name ? defaultValue.name : ''} />
+        {/* defaultValue={defaultValue?.name ? defaultValue.name : ''} */}
+        <Input id="name" />
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Отчество" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Отчество</div>}
         name="patronymic"
       >
-        <Input id="patronymic" defaultValue={defaultValue?.patronymic ? defaultValue.patronymic : ''} />
+        <Input id="patronymic" />
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Пол" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Пол</div>}
         name="gender"
       >
-        <Radio.Group name="radiogroup" id="gender" defaultValue={defaultValue?.gender ? defaultValue.gender : ''}>
+        <Radio.Group name="radiogroup" id="gender">
           <Radio value="мужской">Мужской</Radio>
           <Radio value="женский">Женский</Radio>
         </Radio.Group>
@@ -98,12 +92,15 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
       <Form.Item
         rules={[{ required: true, message: 'Поле "Дата рождения" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Дата рождения</div>}
-        name="dateOdfBirth"
+        name="dateOfBirth"
       >
+        {/* patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined */}
+        {/* defaultValue={defaultValue?.dateOfBirth ? dayjs(defaultValue.dateOfBirth) : undefined} */}
         <DatePicker
+          format="DD.MM.YYYY"
           id="dateOfBirth"
+
           // defaultValue
-          defaultValue={defaultValue?.dateOfBirth ? dayjs(defaultValue.dateOfBirth) : undefined}
         />
       </Form.Item>
       <Form.Item
@@ -118,11 +115,10 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
           filterOption={false}
           notFoundContent={addressIsLoading ? <Spin size="small" /> : null}
           onSearch={onSearchAC}
-          defaultValue={defaultValue?.address ? defaultValue.address : ''}
         />
       </Form.Item>
       <Form.Item label={<div className={addClass(classes, 'form-item')}>Примечание</div>} name="note">
-        <TextArea rows={4} id="note" defaultValue={defaultValue?.note ? defaultValue.note : ''} />
+        <TextArea rows={4} id="note" />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 16, span: 8 }}>
         <Button
