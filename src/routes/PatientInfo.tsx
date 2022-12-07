@@ -231,7 +231,8 @@ const PatientInfo = () => {
   //   cs.reduce((res, current) => (res === '' ? classes[current] : `${res} ${classes[current]}`), '');
   // const navigate = useNavigate();
   useEffect(() => {
-    form.setFieldsValue(patient);
+    console.log({ ...patient });
+    form.setFieldsValue({ ...patient });
   }, [patient]);
   return (
     <>

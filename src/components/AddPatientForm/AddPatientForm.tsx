@@ -44,19 +44,6 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
   // };
   const onChange = (e: any) => {
     console.log(e);
-    dispatch(
-      setData({
-        _id: '11',
-        name: '11',
-        surname: '11',
-        patronymic: '11',
-        address: '11',
-        dateOfBirth: '22-03-23',
-        gender: 'мужской',
-        isActive: true,
-        number: 121,
-      }),
-    );
   };
   return (
     <Form
@@ -111,7 +98,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ form, onFinish, on
       <Form.Item
         rules={[{ required: true, message: 'Поле "Дата рождения" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Дата рождения</div>}
-        name="dateOfBirth"
+        name="dateOdfBirth"
       >
         <DatePicker
           id="dateOfBirth"
