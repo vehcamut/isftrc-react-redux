@@ -27,7 +27,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
           colorFillAlter: '#1677FF', // '#25ab25', // '#a5cdff',
           colorPrimary: '#1677FF',
           colorBorder: '#9f9f9f',
-          colorBgContainerDisabled: '#ffffff',
+          colorBgContainerDisabled: '#ffffd8',
           colorTextDisabled: '#727272',
           // colorTextHeading: '#FFFFFF',
         },

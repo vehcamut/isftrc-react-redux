@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Box, Container } from '@mui/material';
 // import Layout, { Content /* , Header */, Header } from 'antd/lib/layout/layout';
-import React, { useEffect, useMemo /* useState */ } from 'react';
+import React, { useLayoutEffect, useState, useEffect, useMemo /* useState */ } from 'react';
 import {
   Typography,
   Table,
@@ -26,6 +26,7 @@ import { Sticky, StickyContainer } from 'react-sticky';
 
 // import 'antd/dist/reset.css';
 // import qs from 'qs';
+import debounce from 'lodash.debounce';
 
 import type { ColumnsType, TablePaginationConfig /* , TablePaginationConfig */ } from 'antd/es/table';
 // import ruRU from 'antd/es/locale/ru_RU';
@@ -96,28 +97,20 @@ const renderTabBar: TabsProps['renderTabBar'] = (props, DefaultTabBar) => (
 );
 
 const PatientInfo = () => {
-  const [form] = Form.useForm(); // Form.useFormInstance();
-
+  const [form] = Form.useForm();
+  // const userName = Form.useWatch('addPatient', form);
   const [messageApi, contextHolder] = message.useMessage();
-  // const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const params = useParams();
-  console.log(params);
+  const [isDisabled, setIsDisabled] = useState(true);
+  // const [patientId, setPatientId] = useState({ id: params?.id || '' });
+  // console.log(isActive);
+  // console.log(params);
   const { data: patient, isLoading } = patientsAPI.useGetByIdQuery({ id: params?.id || '' });
-  // const { limit, page, filter } = useAppSelector((state) => state.patientTableReducer);
-  // const { data, isLoading } = patientsAPI.useGetQuery({ limit, page, filter });
-  // const patient: IPatient = {
-  //   _id: 'ddddddddddd',
-  //   number: 1,
-  //   surname: 'Толстов',
-  //   name: 'Игорь',
-  //   patronymic: 'Олегович',
-  //   dateOfBirth: new Date('2008-01-21'),
-  //   gender: 'мужской',
-  //   address: 'Город Улица Село',
-  //   isActive: true,
-  // };
+  // const { data: patient, isLoading } = patientsAPI.useGetByIdQuery(patientId);
+  const [updatePatient] = patientsAPI.useUpdateMutation();
+  // console.log(userName);
   const columns: ColumnsType<IPatient> = [
     {
       title: 'Номер карты',
@@ -158,32 +151,19 @@ const PatientInfo = () => {
   ];
   const { setPage, setLimit, setFilter } = patientTableSlice.actions;
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, FilterValue | null>,
-    sorter: SorterResult<IPatient> | SorterResult<IPatient>[],
-  ) => {
-    console.log(pagination, filters, sorter);
-    dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
-    dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
-
-    // setTableParams({
-    //   pagination,
-    //   filters,
-    //   ...sorter,
-    // });
-  };
   const onFinish = async (values: any) => {
+    console.log('FINISH');
     try {
-      // await addPatient(values).unwrap();
+      await updatePatient({ ...patient, ...values }).unwrap();
       // setIsAdded(true);
       // navigate('/patients', { replace: true });
-      // messageApi.open({
-      //   type: 'success',
-      //   content: 'Пациент успешно добавлен',
-      //   onClose: () => navigate('/patients', { replace: true, state: { add: true } }),
-      //   // 'Ошибка связи с сервером',
-      // });
+      messageApi.open({
+        type: 'success',
+        content: 'Данные пациента успешно обновлены',
+        // onClose: () => navigate('/patients', { replace: true, state: { add: true } }),
+        // 'Ошибка связи с сервером',
+      });
+      setIsDisabled(true);
       // navigate('/patients', { replace: true });
     } catch (e) {
       messageApi.open({
@@ -199,109 +179,59 @@ const PatientInfo = () => {
     // // console.log(JSON.stringify(values));
     // navigate('/patients', { replace: true });
   };
+  const onActivate = () => {
+    // setPatientId
 
+    setIsDisabled(false);
+    console.log('ACTIVE');
+  };
   const onReset = () => {
-    navigate('/patients', { replace: true });
+    console.log(dayjs('Mon, 21 Jan 2008 00:00:00 GMT'));
+    form.setFieldsValue({
+      ...patient,
+      dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+    });
+    // setPatientId(patientId);
+    setIsDisabled(true);
+    // navigate('./', { replace: true });
+    // dispatch(patientsAPI.util.invalidateTags(['patients']));
+
+    // navigate('/patients', { replace: true });
   };
   const onSearch = (value: string) => {
     dispatch(setFilter(value));
     console.log(value);
   };
   const onAddClick = () => {
-    form.setFieldsValue({ surnmae: 'sds' });
+    form.setFieldsValue({ surname: 'sds' });
     // navigate('/patients/add', { replace: true });
   };
-  // console.log(props);
-  // // eslint-disable-next-line react/destructuring-assignment
-  // if (props?.location?.state?.add === true) {
-  //   messageApi.open({
-  //     type: 'success',
-  //     content: 'Пациент успешно добавлен',
-  //     // onClose: () => navigate('/patients', { replace: true, state: { add: true } }),
-  //     // 'Ошибка связи с сервером',
-  //   });
-  // }
+
   const onChange = (key: string) => {
     console.log(key);
     navigate(`./../${key}`, { replace: true });
   };
-  // const onClick: MenuProps['onClick'] = (e) => {
-  //   console.log('click ', e);
-  // };
-  // const addClass = (...cs: string[]): string =>
-  //   cs.reduce((res, current) => (res === '' ? classes[current] : `${res} ${classes[current]}`), '');
-  // const navigate = useNavigate();
+  // form.setFieldsValue({
+  //   ...patient,
+  //   dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+  // });
+  // useEffect(() => {
+  //   // console.log('EFFECT');
+  //   form.setFieldsValue({
+  //     ...patient,
+  //     dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+  //   });
+  // }, [patient, form]);
 
-  useMemo(() => {
-    // console.log('USEEFFETC', {
-    //   ...patient,
-    //   dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
-    // });
-    // console.log(patient?.dateOfBirth, typeof patient?.dateOfBirth);
-    // // console.log({ ...patient });
-    // // form.setFieldsValue(patient);
-    form.setFieldsValue(
-      {
-        ...patient,
-        dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
-        // dateOfBirth: dayjs(patient?.dateOfBirth),
-      } /* patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined } */,
-    );
-  }, [patient]);
+  // useMemo(() => {
+  //   form.setFieldsValue({
+  //     ...patient,
+  //     dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+  //   });
+  // }, [patient, form]);
   return (
     <>
-      {/* // <Skeleton active loading={isLoading} /> */}
-      {/* <Skeleton active loading={isLoading} paragraph={{ rows: 20 }}>
-        <Skeleton.Avatar />
-        <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
-          <Col>
-            {isLoading ? (
-              <div />
-            ) : (
-              // <Skeleton
-              //   loading={isLoading}
-              //   style={{ margin: 0 }}
-              //   title={{ width: '400px', style: { height: '30px', margin: 0 } }}
-              //   paragraph={{ rows: 0 }}
-              // />
-              <Typography.Title level={2} style={{ margin: 0 }}>
-                Пациент {patient?.number}. {patient?.surname} {patient?.name.slice(0, 1)}.
-                {patient?.patronymic.slice(0, 1)}.{' '}
-                {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-                  year: 'numeric',
-                  month: 'numeric',
-                  day: 'numeric',
-                })}
-              </Typography.Title>
-            )}
-          </Col>
-          <Col>
-            <Button type="link" onClick={onAddClick}>
-              Добавить пациента
-            </Button>
-          </Col>
-        </Row>
-        <Tabs
-          size="small"
-          onChange={onChange}
-          type="line"
-          tabPosition="left"
-          // className={addClass(classes, 'site-custom-tab-bar')}
-          items={[
-            {
-              label: 'Данные',
-              key: 'info',
-              children: <AddPatientForm disabled onFinish={onFinish} onReset={onReset} defaultValue={patient} />,
-            },
-            { label: 'Курсы', key: 'shedules' },
-            { label: 'Расписание', key: 'patients' },
-            { label: 'Документы', key: 'representatives' },
-            // { label: 'Специалисты', key: 'specialists' },
-            // { label: 'Справочники', key: 'handbooks' },
-            // { label: 'Очтеты', key: 'reports' },
-          ]}
-        />
-      </Skeleton> */}
+      {contextHolder}
       <Spin
         tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>}
         size="large"
@@ -322,17 +252,6 @@ const PatientInfo = () => {
                   })}`
                 : 'Пациент'}
             </Typography.Title>
-            {/* {isLoading ? (
-              <div />
-            ) : (
-              // <Skeleton
-              //   loading={isLoading}
-              //   style={{ margin: 0 }}
-              //   title={{ width: '400px', style: { height: '30px', margin: 0 } }}
-              //   paragraph={{ rows: 0 }}
-              // />
-              
-            )} */}
           </Col>
           <Col>
             <Button type="link" onClick={onAddClick}>
@@ -351,15 +270,19 @@ const PatientInfo = () => {
               label: 'Данные',
               key: 'info',
               children: (
-                <AddPatientForm form={form} disabled onFinish={onFinish} onReset={onReset} defaultValue={patient} />
+                <AddPatientForm
+                  form={form}
+                  disabled={isDisabled}
+                  onFinish={onFinish}
+                  onReset={onReset}
+                  onActivate={onActivate}
+                  defaultValue={patient}
+                />
               ),
             },
             { label: 'Курсы', key: 'shedules' },
             { label: 'Расписание', key: 'patients' },
             { label: 'Документы', key: 'representatives' },
-            // { label: 'Специалисты', key: 'specialists' },
-            // { label: 'Справочники', key: 'handbooks' },
-            // { label: 'Очтеты', key: 'reports' },
           ]}
         />
       </Spin>

@@ -39,6 +39,15 @@ export const patientsAPI = createApi({
       }),
       invalidatesTags: ['patients'],
     }),
+    update: build.mutation<any, IPatient>({
+      query: (body) => ({
+        url: 'patients/update',
+        method: 'PUT',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({
     //     url: 'specialists/types/update',
