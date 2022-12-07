@@ -13,6 +13,11 @@ import Auth from './routes/Auth';
 import Main from './routes/Main';
 import AuthGuard from './components/guards/authGuard';
 import RolesGuard from './components/guards/rolesGuard';
+import SSS from './routes/SSS';
+import Patients from './routes/Patients';
+import Template from './routes/Template';
+import AddPatient from './routes/AddPatients';
+import PatientInfo from './routes/PatientInfo';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -30,6 +35,67 @@ const router = createBrowserRouter([
           {
             path: '/auth',
             element: <Auth />,
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/sss',
+            element: <SSS />,
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/patients',
+            element: (
+              <Template activeKey="patients">
+                <Patients />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/patients/add',
+            element: (
+              <Template activeKey="patients">
+                <AddPatient />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/patients/:id/info',
+            element: (
+              <Template activeKey="patients">
+                <PatientInfo />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/patients/:id/shedules',
+            element: (
+              <Template activeKey="patients">
+                <PatientInfo />
+              </Template>
+            ),
           },
         ],
         element: <RolesGuard requiredRoles={['registrator']} />,

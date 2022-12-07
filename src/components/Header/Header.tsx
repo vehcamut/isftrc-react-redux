@@ -1,37 +1,68 @@
-import { PageHeader } from 'antd';
+// import { PageHeader } from 'antd';
 import React, { FunctionComponent, PropsWithChildren } from 'react';
 // import 'antd/dist/antd.css';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, import/order
 import classes from './Header.module.scss';
-import '~antd/dist/antd.compact.less';
-import Button from 'antd/lib/button';
+// import { Header } from 'antd/lib/layout/layout';
+// import 'antd/dist/reset.css';
+// import Button from 'antd/lib/button';
 import Tabs from 'antd/lib/tabs';
-import TabPane from 'antd/lib/tabs/TabPane';
+// import TabPane from 'antd/lib/tabs/TabPane';
+import Typography from 'antd/lib/typography';
+import { useNavigate } from 'react-router-dom';
+import { Button /* , Col, Row */ } from 'antd';
 import logo from './logo.svg';
+import { addClass } from '../../app/common';
 
-type ConfirmDialogProps = PropsWithChildren;
+const { Text } = Typography;
 
-const Header: FunctionComponent<ConfirmDialogProps> = () => {
+interface ConfirmDialogProps extends PropsWithChildren {
+  // defaultActiveKey: string;
+  activeKey: string;
+}
+
+const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, */ activeKey }) => {
+  const navigate = useNavigate();
   return (
-    <PageHeader
-      onBack={() => window.history.back()}
-      className="site-page-header"
-      title={<img alt="Реацентр Астрахань" src={logo} />}
-      extra={[<Button key="1">Справка</Button>, <Button key="2">Выйти</Button>]}
-      subTitle="Иванов И.И."
-      footer={
-        <Tabs defaultActiveKey="1">
-          <TabPane tab="Личные данные" key="1" />
-          <TabPane tab="Расписание" key="2" />
-          <TabPane tab="Пациенты" key="3" />
-          <TabPane tab="Представители" key="4" />
-          <TabPane tab="Специалисты" key="5" />
-          <TabPane tab="Справочники" key="6" />
-          <TabPane tab="Очтеты" key="7" />
-        </Tabs>
-      }
-    />
+    // style={{ backgroundColor: '#ffffff', lineHeight: '0px' }}
+    // <Header className={addClass(classes, 'header')}>
+    //   {/* <AppBar defaultActiveKey="patients" /> */}
+    // </Header>
+    <>
+      <div className={addClass(classes, 'header-top')}>
+        <img alt="Реацентр Астрахань" src={logo} />
+        <div className={addClass(classes, 'header-top__menu')}>
+          <Button key="1" type="primary">
+            Справка
+          </Button>
+          <Button key="2" type="primary">
+            Выйти
+          </Button>
+          <Text key="0" strong>
+            Иванов И.И.
+          </Text>
+        </div>
+      </div>
+      <Tabs
+        onChange={(path) => {
+          navigate(`/${path}`);
+        }}
+        activeKey={activeKey}
+        // defaultActiveKey={defaultActiveKey}
+        items={[
+          { label: 'Личные данные', key: 'profile' },
+          { label: 'Расписание', key: 'shedules' },
+          { label: 'Пациенты', key: 'patients' },
+          { label: 'Представители', key: 'representatives' },
+          { label: 'Специалисты', key: 'specialists' },
+          { label: 'Справочники', key: 'handbooks' },
+          { label: 'Очтеты', key: 'reports' },
+        ]}
+        size="small"
+        tabBarStyle={{ marginBottom: '0px' }}
+      />
+    </>
   );
 };
 
-export default Header;
+export default MyHeader;

@@ -7,11 +7,11 @@ import SpecTypesTable from '../components/SpecTypes/SpecTypesTable';
 // import EnhancedTable from '../components/NewTable';
 // import CustomPaginationActionsTable from '../components/Table/Table';
 
-const Auth = () => {
+const SSS = () => {
   return (
     // <RolesAuthRoute roles={['admin', 'user']}>
     <>
-      <DrawerAppBar activeKey="4" />
+      <DrawerAppBar activeKey="2" />
       <Container>
         <SpecTypesTable />
         <Box sx={{ my: 2 }}>
@@ -39,4 +39,4 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`,
   );
 };
 
-export default Auth;
+export default SSS;

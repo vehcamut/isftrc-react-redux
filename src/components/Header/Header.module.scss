@@ -1,8 +1,17 @@
 @import "../../app/scss/vars.scss";
-@import '~antd/dist/antd.css';
+//@import '~antd/dist/antd.css';
 .header {
-  background-color:$secondaryColor;
-  color: $primaryColor;
+  &-top {
+    display: flex;
+    padding-top: 10px;
+    justify-content: space-between;
+    align-items: center;
+    &__menu {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+  }
 }
 .header__toolbar {
   display: flex;

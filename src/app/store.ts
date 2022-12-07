@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { specialistsAPI, authAPI } from './services';
+import { addPatientReducer } from './reducers/patientForm.slise';
+import { specialistsAPI, authAPI, patientsAPI, dadataAPI } from './services';
 import { authReducer } from './reducers/auth.slise';
 import {
   specTypesDialogReducer,
@@ -7,6 +8,7 @@ import {
   confirmDialogReducer,
   alertReducer,
   loginFormReducer,
+  patientTableReducer,
 } from './reducers';
 
 export const store = configureStore({
@@ -16,11 +18,21 @@ export const store = configureStore({
     alertReducer,
     loginFormReducer,
     confirmDialogReducer,
+    patientTableReducer,
     authReducer,
+    addPatientReducer,
     [authAPI.reducerPath]: authAPI.reducer,
+    [patientsAPI.reducerPath]: patientsAPI.reducer,
     [specialistsAPI.reducerPath]: specialistsAPI.reducer,
+    [dadataAPI.reducerPath]: dadataAPI.reducer,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(authAPI.middleware, specialistsAPI.middleware),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(
+      authAPI.middleware,
+      specialistsAPI.middleware,
+      patientsAPI.middleware,
+      dadataAPI.middleware,
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
