@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Dayjs } from 'dayjs';
+
 export interface IPatient {
   _id: string;
   number: number;
@@ -9,7 +12,8 @@ export interface IPatient {
   name: string;
   surname: string;
   patronymic: string;
-  dateOfBirth: Date;
+  dateOfBirth: Dayjs;
+  // dateOfBirth: Date;
   // dateOfBirth: string;
   gender: string;
   address: string;
@@ -20,4 +24,24 @@ export interface IPatient {
 export interface IPatientData {
   data: IPatient[];
   count: number;
+}
+
+export interface IPatientd {
+  _id?: string;
+  number?: number;
+  // name: {
+  //   first: string;
+  //   last: string;
+  //   patronymic: string;
+  // };
+  name?: string;
+  surname?: string;
+  patronymic?: string;
+  dateOfBirth?: Date;
+  // dateOfBirth: Date;
+  // dateOfBirth: string;
+  gender?: string;
+  address?: string;
+  isActive?: boolean;
+  note?: string;
 }

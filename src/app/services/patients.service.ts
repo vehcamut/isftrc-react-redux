@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
 import { IGet, IGetByID, IPatient, IPatientData } from '../../models';
@@ -47,6 +48,10 @@ export const patientsAPI = createApi({
         body,
       }),
       invalidatesTags: ['patients'],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      transformResponse(apiResponse: any, meta): IPatient {
+        return { ...apiResponse, dateOfBirth: new Dayjs(apiResponse.dateOfBirth) };
+      },
     }),
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({

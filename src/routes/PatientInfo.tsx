@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // import { Box, Container } from '@mui/material';
@@ -189,7 +190,7 @@ const PatientInfo = () => {
     console.log(dayjs('Mon, 21 Jan 2008 00:00:00 GMT'));
     form.setFieldsValue({
       ...patient,
-      dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+      // dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
     });
     // setPatientId(patientId);
     setIsDisabled(true);
@@ -215,6 +216,7 @@ const PatientInfo = () => {
   //   ...patient,
   //   dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
   // });
+
   // useEffect(() => {
   //   // console.log('EFFECT');
   //   form.setFieldsValue({
@@ -244,13 +246,14 @@ const PatientInfo = () => {
               {!isLoading && patient
                 ? `Пациент №${patient?.number}. ` +
                   `${patient?.surname} ${patient?.name.slice(0, 1)}.` +
-                  `${patient?.patronymic.slice(0, 1)}.` +
-                  ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                  })}`
-                : 'Пациент'}
+                  `${patient?.patronymic.slice(0, 1)}.` //+
+                : // ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                  //   year: 'numeric',
+                  //   month: 'numeric',
+                  //   day: 'numeric',
+                  // })}`
+                  // ` ${patient?.dateOfBirth?.format('DD.MM.YYYY')}`
+                  'Пациент'}
             </Typography.Title>
           </Col>
           <Col>

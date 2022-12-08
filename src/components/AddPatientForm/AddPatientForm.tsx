@@ -5,7 +5,7 @@ import { AutoComplete, Button, Form, Input, Radio, Row, Spin, Col, DatePicker } 
 // import type { Moment } from 'moment';
 // import generatePicker from 'antd/es/date-picker/generatePicker';
 
-import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
+import React, { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
 import debounce from 'lodash.debounce';
 import dayjs from 'dayjs';
 import { addClass } from '../../app/common';
@@ -36,11 +36,15 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
   onActivate,
   disabled,
 }) => {
-  const [query, setQuery] = useState('');
+  const [form] =
+  // const [query, setQuery] = useState('');
+  const dispatch = useAppDispatch();
+  const { data, query } = useAppSelector((state) => state.addPatientReducer);
+  const { setData, setQuery, setDataField } = addPatientSlice.actions;
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
   const onSearchAC: any = debounce((searchText) => {
-    setQuery(searchText);
+    dispatch(setQuery(searchText));
     console.log(searchText);
   }, 800);
 
@@ -59,14 +63,29 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
   //   if (onActivate) onActivate();
   // };
   const onFieldsChange = (values: any) => {
+    // values?.forEach((element))
     console.log('CHAG:', values);
+    values?.forEach((field: any) => dispatch(setDataField({ [field?.name[0]]: field?.value })));
+    console.log('data:', data);
   };
 
   const onFinish1 = (values: any) => {
     console.log('CHAG:', values);
   };
 
-  console.log(defaultValue);
+  useEffect(() => {
+    dispatch(setDataField({ surname: 'sdsds' }));
+    console.log(defaultValue);
+    if (defaultValue) dispatch(setData(defaultValue));
+    // defaultValue
+    // // console.log('EFFECT');
+    // form.setFieldsValue({
+    //   ...patient,
+    //   dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+    // });
+  }, [defaultValue]);
+
+  console.log(typeof defaultValue?.dateOfBirth);
 
   return (
     <Form
@@ -79,15 +98,16 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
       onFinish={onFinish}
       disabled={disabled}
       // validateTrigger={}
-      initialValues={defaultValue}
-      // onChange={onFieldsChange}
+      initialValues={data}
+      onFieldsChange={onFieldsChange}
     >
+      <div>{data?.surname}</div>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Фамилия</div>}
         name="surname"
       >
-        <Input id="surname" />
+        <Input id="surname" value={data ? data.surname : ''} />
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Имя" не должно быть пустым' }]}
