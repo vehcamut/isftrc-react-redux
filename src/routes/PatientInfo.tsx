@@ -104,11 +104,20 @@ const PatientInfo = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const params = useParams();
-  const [isDisabled, setIsDisabled] = useState(true);
+  // const [isDisabled, setIsDisabled] = useState(true);
+  const isDisabled = true;
+  const setIsDisabled = (value: any) => {
+    console.log('dfdsfdsfds');
+  };
   // const [patientId, setPatientId] = useState({ id: params?.id || '' });
   // console.log(isActive);
   // console.log(params);
-  const { data: patient, isLoading } = patientsAPI.useGetByIdQuery({ id: params?.id || '' });
+  const {
+    data: patient,
+    isLoading,
+    currentData,
+    requestId: temp,
+  } = patientsAPI.useGetByIdQuery({ id: params?.id || '' });
   // const { data: patient, isLoading } = patientsAPI.useGetByIdQuery(patientId);
   const [updatePatient] = patientsAPI.useUpdateMutation();
   // console.log(userName);
@@ -235,6 +244,7 @@ const PatientInfo = () => {
     <>
       {contextHolder}
       <Spin
+        delay={10}
         tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>}
         size="large"
         // style={{ left: '49.5%' }}
@@ -279,7 +289,8 @@ const PatientInfo = () => {
                   onFinish={onFinish}
                   onReset={onReset}
                   onActivate={onActivate}
-                  defaultValue={patient}
+                  defaultValue={currentData}
+                  temp={temp}
                 />
               ),
             },

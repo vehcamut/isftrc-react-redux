@@ -1,4 +1,5 @@
-import { Dayjs } from 'dayjs';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
 import { IGet, IGetByID, IPatient, IPatientData } from '../../models';
@@ -27,6 +28,14 @@ export const patientsAPI = createApi({
         credentials: 'include',
       }),
       providesTags: ['patients'],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      // transformResponse(apiResponse: any, meta): IPatient {
+      //   const x = dayjs(apiResponse.dateOfBirth);
+      //   return { ...apiResponse, dateOfBirth: x };
+      // },
+      // onCacheEntryAdded(arg: any, api: any) {
+      //   console.log('API', arg, api.getCacheEntry());
+      // },
       // transformResponse(apiRespons: IPatient[], meta): IPatientData {
       //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       // },
@@ -48,10 +57,6 @@ export const patientsAPI = createApi({
         body,
       }),
       invalidatesTags: ['patients'],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      transformResponse(apiResponse: any, meta): IPatient {
-        return { ...apiResponse, dateOfBirth: new Dayjs(apiResponse.dateOfBirth) };
-      },
     }),
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({
