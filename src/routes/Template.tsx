@@ -38,6 +38,10 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
           Input: {
             colorBorder: '#9f9f9f',
           },
+          // Descriptions: {
+          //   colorBorder: '#000000',
+          //   size
+          // },
           // Input: {
 
           // }

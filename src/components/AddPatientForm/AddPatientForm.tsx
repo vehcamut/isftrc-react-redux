@@ -38,16 +38,16 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
   disabled: sss,
   temp,
 }) => {
-  const [form1] = Form.useForm();
-  const disabled = true;
-  // const [query, setQuery] = useState('');
+  // const [form1] = Form.useForm();
+  // const disabled = true;
+  const [query, setQuery] = useState('');
   // const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
-  const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery('');
+  const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
-  // const onSearchAC: any = debounce((searchText) => {
-  //   setQuery(searchText);
-  //   console.log(searchText);
-  // }, 800);
+  const onSearchAC: any = debounce((searchText) => {
+    setQuery(searchText);
+    console.log(searchText);
+  }, 800);
 
   // const onFinish = (values: any) => {
   //   console.log('Success:', values);
@@ -63,43 +63,44 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
   //   console.log(e);
   //   if (onActivate) onActivate();
   // };
-  const onFieldsChange = (values: any) => {
-    console.log('CHAG:', values);
-  };
+  // const onFieldsChange = (values: any) => {
+  //   console.log('CHAG:', values);
+  // };
 
-  const onFinish1 = (values: any) => {
-    console.log('CHAG:', values);
-  };
+  // const onFinish1 = (values: any) => {
+  //   console.log('CHAG:', values);
+  // };
 
-  useMemo(() => {
-    let x = defaultValue?.dateOfBirth;
-    if (typeof defaultValue?.dateOfBirth === 'string') x = dayjs(defaultValue.dateOfBirth);
-    console.log('EFFECT_FORM: ', defaultValue);
-    setTimeout(() => {
-      form1?.setFieldsValue({
-        ...defaultValue,
-        dateOfBirth: x || undefined,
-      });
-    }, 1000);
-  }, [defaultValue, form1, temp]);
+  // useMemo(() => {
+  //   const x = defaultValue?.dateOfBirth;
+  //   // if (typeof defaultValue?.dateOfBirth === 'string') x = dayjs(defaultValue.dateOfBirth);
+  //   console.log('EFFECT_FORM: ', defaultValue);
+  //   setTimeout(() => {
+  //     form1?.setFieldsValue({
+  //       ...defaultValue,
+  //       dateOfBirth: x || undefined,
+  //     });
+  //   }, 1000);
+  // }, [defaultValue, form1, temp]);
 
-  console.log(defaultValue, form1);
+  // console.log(defaultValue, form1);
 
   return (
     <Form
-      name="addPatient"
-      form={form1}
+      // name="addPatient"
+      // form={form1}
       labelWrap
       labelCol={{ span: 4 }}
       wrapperCol={{ span: 18 }}
       colon={false}
       onFinish={onFinish}
-      disabled={disabled}
+      // disabled={disabled}
       // validateTrigger={}
-      initialValues={defaultValue}
+      // initialValues={defaultValue}
       // onChange={onFieldsChange}
     >
       <Form.Item
+        initialValue={defaultValue?.surname ? defaultValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Фамилия</div>}
         name="surname"
@@ -107,6 +108,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
         <Input id="surname" />
       </Form.Item>
       <Form.Item
+        initialValue={defaultValue?.name ? defaultValue.name : ''}
         rules={[{ required: true, message: 'Поле "Имя" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Имя</div>}
         name="name"
@@ -115,6 +117,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
         <Input id="name" />
       </Form.Item>
       <Form.Item
+        initialValue={defaultValue?.patronymic ? defaultValue.patronymic : ''}
         rules={[{ required: true, message: 'Поле "Отчество" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Отчество</div>}
         name="patronymic"
@@ -122,6 +125,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
         <Input id="patronymic" />
       </Form.Item>
       <Form.Item
+        initialValue={defaultValue?.gender ? defaultValue.gender : ''}
         rules={[{ required: true, message: 'Поле "Пол" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Пол</div>}
         name="gender"
@@ -132,19 +136,20 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
         </Radio.Group>
       </Form.Item>
       <Form.Item
-        normalize={(e, x, y) => console.log(e, x, y)}
+        // normalize={(e, x, y) => console.log(e, x, y)}
         rules={[
           {
             required: true,
             message: 'Поле "Дата рождения" не должно быть пустым',
-            transform: (value) => {
-              console.log(typeof value);
-              return dayjs(value);
-            },
+            // transform: (value) => {
+            //   console.log(typeof value);
+            //   return dayjs(value);
+            // },
           },
         ]}
         label={<div className={addClass(classes, 'form-item')}>Дата рождения</div>}
         name="dateOfBirth"
+        initialValue={defaultValue?.dateOfBirth ? dayjs(defaultValue.dateOfBirth) : undefined}
       >
         {/* patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined */}
         {/* defaultValue={defaultValue?.dateOfBirth ? dayjs(defaultValue.dateOfBirth) : undefined} */}
@@ -161,6 +166,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
         rules={[{ required: true, message: 'Поле "Адрес" не должно быть пустым' }]}
         label={<div className={addClass(classes, 'form-item')}>Адрес</div>}
         name="address"
+        initialValue={defaultValue?.address ? defaultValue.address : ''}
       >
         <AutoComplete
           id="address"
@@ -168,13 +174,17 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
           options={options}
           filterOption={false}
           notFoundContent={addressIsLoading ? <Spin size="small" /> : null}
-          // onSearch={onSearchAC}
+          onSearch={onSearchAC}
         />
       </Form.Item>
-      <Form.Item label={<div className={addClass(classes, 'form-item')}>Прdddимечание</div>} name="note">
+      <Form.Item
+        label={<div className={addClass(classes, 'form-item')}>Прdddимечание</div>}
+        name="note"
+        initialValue={defaultValue?.note ? defaultValue.note : ''}
+      >
         <TextArea rows={4} id="note" />
       </Form.Item>
-      <Form.Item wrapperCol={{ offset: 0, span: 22 }}>
+      <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             {/* <Button
@@ -186,7 +196,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
             >
               Редактировать
             </Button> */}
-            {disabled ? (
+            {/* {disabled ? (
               <Button
                 style={{ marginRight: '10px' }}
                 htmlType="button"
@@ -200,7 +210,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
             ) : (
               // eslint-disable-next-line react/jsx-no-useless-fragment
               <></>
-            )}
+            )} */}
             <Button
               type="primary"
               htmlType="submit"
@@ -215,7 +225,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({
           </Col>
         </Row>
       </Form.Item>
-      `
+
       {/* <Form.Item wrapperCol={{ offset: 0, span: 22 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>

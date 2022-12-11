@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Dayjs } from 'dayjs';
+import { DatePickRef } from 'antd/lib/date-picker/generatePicker/interface';
+// import { Dayjs } from 'dayjs';
 
 export interface IPatient {
   _id: string;
@@ -12,7 +13,7 @@ export interface IPatient {
   name: string;
   surname: string;
   patronymic: string;
-  dateOfBirth: Dayjs;
+  dateOfBirth: Date;
   // dateOfBirth: Date;
   // dateOfBirth: string;
   gender: string;

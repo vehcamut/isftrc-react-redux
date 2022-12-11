@@ -19,6 +19,8 @@ import {
   Spin,
   Skeleton,
   Form,
+  Descriptions,
+  Modal,
 } from 'antd';
 // import RolesAuthRoute from '../components/RolesAuthRoute';
 // import ResponsiveAppBar from '../components/AppBar/AppBar';
@@ -47,6 +49,7 @@ import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { patientTableSlice } from '../app/reducers';
 import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
+// import { FALSE } from 'sass';
 // const { Title } = Typography;
 const { Search } = Input;
 const { Header, Sider, Content } = Layout;
@@ -99,6 +102,8 @@ const renderTabBar: TabsProps['renderTabBar'] = (props, DefaultTabBar) => (
 
 const PatientInfo = () => {
   const [form] = Form.useForm();
+  const [open, setOpen] = useState(false);
+
   // const userName = Form.useWatch('addPatient', form);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -196,25 +201,30 @@ const PatientInfo = () => {
     console.log('ACTIVE');
   };
   const onReset = () => {
-    console.log(dayjs('Mon, 21 Jan 2008 00:00:00 GMT'));
-    form.setFieldsValue({
-      ...patient,
-      // dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
-    });
+    setOpen(false);
+    // console.log(dayjs('Mon, 21 Jan 2008 00:00:00 GMT'));
+    // form.setFieldsValue({
+    //   ...patient,
+    //   // dateOfBirth: patient?.dateOfBirth ? dayjs(patient.dateOfBirth) : undefined,
+    // });
     // setPatientId(patientId);
-    setIsDisabled(true);
+    // setIsDisabled(true);
     // navigate('./', { replace: true });
     // dispatch(patientsAPI.util.invalidateTags(['patients']));
 
     // navigate('/patients', { replace: true });
+  };
+  const onEdit = () => {
+    setOpen(true);
+    console.log('value');
   };
   const onSearch = (value: string) => {
     dispatch(setFilter(value));
     console.log(value);
   };
   const onAddClick = () => {
-    form.setFieldsValue({ surname: 'sds' });
-    // navigate('/patients/add', { replace: true });
+    // form.setFieldsValue({ surname: 'sds' });
+    navigate('/patients', { replace: true });
   };
 
   const onChange = (key: string) => {
@@ -256,19 +266,19 @@ const PatientInfo = () => {
               {!isLoading && patient
                 ? `Пациент №${patient?.number}. ` +
                   `${patient?.surname} ${patient?.name.slice(0, 1)}.` +
-                  `${patient?.patronymic.slice(0, 1)}.` //+
-                : // ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-                  //   year: 'numeric',
-                  //   month: 'numeric',
-                  //   day: 'numeric',
-                  // })}`
-                  // ` ${patient?.dateOfBirth?.format('DD.MM.YYYY')}`
+                  `${patient?.patronymic.slice(0, 1)}.` +
+                  ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                    year: 'numeric',
+                    month: 'numeric',
+                    day: 'numeric',
+                  })}`
+                : // ` ${patient?.dateOfBirth?.format('DD.MM.YYYY')}` :
                   'Пациент'}
             </Typography.Title>
           </Col>
           <Col>
             <Button type="link" onClick={onAddClick}>
-              Добавить пациента
+              К списку
             </Button>
           </Col>
         </Row>
@@ -283,15 +293,99 @@ const PatientInfo = () => {
               label: 'Данные',
               key: 'info',
               children: (
-                <AddPatientForm
-                  form={form}
-                  disabled={isDisabled}
-                  onFinish={onFinish}
-                  onReset={onReset}
-                  onActivate={onActivate}
-                  defaultValue={currentData}
-                  temp={temp}
-                />
+                <>
+                  <Modal
+                    destroyOnClose
+                    open={open}
+                    footer={null}
+                    title={
+                      <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+                        Обновление данных пациента
+                      </Typography.Title>
+                    }
+                    // transitionName=""
+                    // "Обновление данных пациента"
+                    // okText="Create"
+                    width="100%"
+                    // cancelText="Cancel"
+                    onCancel={onReset}
+                    // onOk={() => {
+                    //   form
+                    //     .validateFields()
+                    //     .then((values) => {
+                    //       form.resetFields();
+                    //       // onCreate(values);
+                    //     })
+                    //     .catch((info) => {
+                    //       console.log('Validate Failed:', info);
+                    //     });
+                    // }}
+                  >
+                    <AddPatientForm
+                      form={form}
+                      disabled={isDisabled}
+                      onFinish={onFinish}
+                      onReset={onReset}
+                      onActivate={onActivate}
+                      defaultValue={patient}
+                      temp={temp}
+                    />
+                  </Modal>
+                  <Descriptions
+                    bordered
+                    // layout="vertical"
+                    size="middle"
+                    contentStyle={{ backgroundColor: '#ffffff' }}
+                    labelStyle={{
+                      color: '#ffffff',
+                      // borderRadius: '20px',
+                      // marginRight: '10px',
+                      borderRight: '5px solid #e6f4ff',
+                      /* backgroundColor: 'red', */ width: '150px',
+                    }}
+                    title="Личные данные пациента"
+                    column={1}
+                    extra={
+                      <Button type="primary" onClick={onEdit}>
+                        Редактировать
+                      </Button>
+                    }
+                  >
+                    <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
+                      {patient?.surname}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
+                      {patient?.name}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Отчество" className={addClass(classes, 'des-item')}>
+                      {patient?.patronymic}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Пол" className={addClass(classes, 'des-item')}>
+                      {patient?.gender}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Дата рождения" className={addClass(classes, 'des-item')}>
+                      {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                        year: 'numeric',
+                        month: 'numeric',
+                        day: 'numeric',
+                      })}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
+                      {patient?.address}
+                    </Descriptions.Item>
+                    <Descriptions.Item label="Примечание">{patient?.note}</Descriptions.Item>
+                  </Descriptions>
+                </>
+
+                // <AddPatientForm
+                //   form={form}
+                //   disabled={isDisabled}
+                //   onFinish={onFinish}
+                //   onReset={onReset}
+                //   onActivate={onActivate}
+                //   defaultValue={currentData}
+                //   temp={temp}
+                // />
               ),
             },
             { label: 'Курсы', key: 'shedules' },
