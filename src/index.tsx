@@ -17,7 +17,7 @@ import SSS from './routes/SSS';
 import Patients from './routes/Patients';
 import Template from './routes/Template';
 import AddPatient from './routes/AddPatients';
-import PatientInfo from './routes/PatientInfo';
+import PatientPage from './routes/PatientPage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -80,7 +80,7 @@ const router = createBrowserRouter([
             path: '/patients/:id/info',
             element: (
               <Template activeKey="patients">
-                <PatientInfo />
+                <PatientPage />
               </Template>
             ),
           },
@@ -93,7 +93,7 @@ const router = createBrowserRouter([
             path: '/patients/:id/shedules',
             element: (
               <Template activeKey="patients">
-                <PatientInfo />
+                <PatientPage />
               </Template>
             ),
           },

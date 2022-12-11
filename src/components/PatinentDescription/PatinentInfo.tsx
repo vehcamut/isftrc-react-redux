@@ -1,45 +1,21 @@
-/* eslint-disable react/no-unused-prop-types */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  AutoComplete,
-  Button,
-  Form,
-  Input,
-  Radio,
-  Row,
-  Spin,
-  Col,
-  DatePicker,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-} from 'antd';
+import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import debounce from 'lodash.debounce';
-import dayjs from 'dayjs';
 import { addClass } from '../../app/common';
-import { dadataAPI, patientsAPI } from '../../app/services';
+import { patientsAPI } from '../../app/services';
 import classes from './PatinentInfo.module.scss';
 import { IPatient } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 
-const { TextArea } = Input;
-interface FormDialogProps extends PropsWithChildren {
+interface PatinentInfoProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   patient?: IPatient;
 }
 
-const PatinentDescription: FunctionComponent<FormDialogProps> = ({ patient }) => {
+const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  // const [query, setQuery] = useState('');
   const [updatePatient] = patientsAPI.useUpdateMutation();
   const [open, setOpen] = useState(false);
-  // const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
-  // const onSearchAC: any = debounce((searchText) => {
-  //   setQuery(searchText);
-  // }, 800);
   const onFinish = async (values: any) => {
     try {
       await updatePatient({ ...patient, ...values }).unwrap();
@@ -122,4 +98,4 @@ const PatinentDescription: FunctionComponent<FormDialogProps> = ({ patient }) =>
   );
 };
 
-export default PatinentDescription;
+export default PatinentInfo;

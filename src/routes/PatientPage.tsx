@@ -9,7 +9,7 @@ import { addClass } from '../app/common';
 import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
 import PatinentDescription from '../components/PatinentDescription/PatinentInfo';
 
-const PatientInfo = () => {
+const PatientPage = () => {
   // const [open, setOpen] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -92,4 +92,4 @@ const PatientInfo = () => {
   );
 };
 
-export default PatientInfo;
+export default PatientPage;
