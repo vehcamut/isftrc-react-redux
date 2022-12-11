@@ -12,7 +12,7 @@ import { patientTableSlice } from '../app/reducers';
 
 const { Search } = Input;
 
-const Patients = () => {
+const Representatives = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter } = useAppSelector((state) => state.patientTableReducer);
@@ -82,12 +82,12 @@ const Patients = () => {
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
         <Col>
           <Typography.Title level={1} style={{ margin: 0 }}>
-            Пациенты
+            Представители
           </Typography.Title>
         </Col>
         <Col>
           <Button type="link" onClick={onAddClick}>
-            Добавить пациента
+            Добавить представителя
           </Button>
         </Col>
       </Row>
@@ -126,4 +126,4 @@ const Patients = () => {
   );
 };
 
-export default Patients;
+export default Representatives;

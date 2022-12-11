@@ -1,44 +1,18 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
-import { Typography, Row, Col, Button, Tabs, message, Spin, Descriptions, Modal } from 'antd';
+import React from 'react';
+import { Typography, Row, Col, Button, Tabs, message, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import classes from './style.module.scss';
 import './antd.rewrite.scss';
 import { patientsAPI } from '../app/services';
-import { addClass } from '../app/common';
-import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
-import PatinentDescription from '../components/PatinentDescription/PatinentInfo';
+import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 
 const PatientPage = () => {
-  // const [open, setOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
   const { data: patient, isLoading } = patientsAPI.useGetByIdQuery({ id: params?.id || '' });
-  // const [updatePatient] = patientsAPI.useUpdateMutation();
 
-  // const onFinish = async (values: any) => {
-  //   try {
-  //     await updatePatient({ ...patient, ...values }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Данные пациента успешно обновлены',
-  //     });
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
-  // const onReset = () => {
-  //   setOpen(false);
-  // };
-  // const onEdit = () => {
-  //   setOpen(true);
-  // };
-
-  const onAddClick = () => {
+  const onBackClick = () => {
     navigate('/patients', { replace: true });
   };
 
@@ -66,7 +40,7 @@ const PatientPage = () => {
             </Typography.Title>
           </Col>
           <Col>
-            <Button type="link" onClick={onAddClick}>
+            <Button type="link" onClick={onBackClick}>
               К списку
             </Button>
           </Col>
