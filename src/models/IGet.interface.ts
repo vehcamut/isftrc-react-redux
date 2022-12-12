@@ -9,3 +9,7 @@ export interface IGet {
 export interface IGetByID {
   id: string;
 }
+
+export interface IGetPerson extends IGet {
+  isActive?: boolean;
+}

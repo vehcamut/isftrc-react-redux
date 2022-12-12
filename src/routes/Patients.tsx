@@ -3,6 +3,7 @@ import { Typography, Table, Row, Col, Button, Input } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
+import { FilterFilled } from '@ant-design/icons';
 import classes from './style.module.scss';
 import { patientsAPI } from '../app/services';
 import { IPatient } from '../models';
@@ -15,21 +16,21 @@ const { Search } = Input;
 const Patients = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { limit, page, filter } = useAppSelector((state) => state.patientTableReducer);
-  const { data, isLoading } = patientsAPI.useGetQuery({ limit, page, filter });
+  const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
+  const { data, isLoading } = patientsAPI.useGetQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IPatient> = [
     {
-      title: 'Номер карты',
+      title: '№',
       dataIndex: 'number',
       key: 'number',
-      width: '10%',
+      width: '5%',
     },
     {
       title: 'ФИО',
       dataIndex: 'name',
       key: 'name',
-      width: '30%',
+      width: '25%',
       render: (x, record) => {
         return `${record.surname} ${record.name} ${record.patronymic}`;
       },
@@ -38,7 +39,7 @@ const Patients = () => {
       title: 'Дата рождения',
       dataIndex: 'dateOfBirth',
       key: 'dateOfBirth',
-      width: '15%',
+      width: '11%',
       render: (date: Date) => {
         return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
@@ -53,10 +54,35 @@ const Patients = () => {
       title: 'Адрес',
       dataIndex: 'address',
       key: 'address',
-      width: '35%',
+      width: '40%',
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      width: '10%',
+      render: (flag: boolean) => {
+        return flag ? (
+          <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+        ) : (
+          <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+        );
+      },
+      // eslint-disable-next-line react/no-unstable-nested-components
+      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+      filters: [
+        {
+          text: 'активен',
+          value: 1,
+        },
+        {
+          text: 'неактивен',
+          value: 0,
+        },
+      ],
     },
   ];
-  const { setPage, setLimit, setFilter } = patientTableSlice.actions;
+  const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -65,6 +91,11 @@ const Patients = () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     sorter: SorterResult<IPatient> | SorterResult<IPatient>[],
   ) => {
+    if (filters?.isActive) {
+      if (filters?.isActive.length > 1) dispatch(setIsActive(undefined));
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      else filters.isActive[0] ? dispatch(setIsActive(true)) : dispatch(setIsActive(false));
+    } else dispatch(setIsActive(undefined));
     // console.log(pagination, filters, sorter);
     dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
     dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
@@ -99,12 +130,15 @@ const Patients = () => {
         style={{ marginBottom: '15px' }}
       />
       <Table
+        style={{ width: '100%' }}
+        tableLayout="fixed"
         bordered
         size="small"
         columns={columns}
         rowKey={(record) => record.number}
         dataSource={data?.data}
         pagination={{
+          position: ['bottomCenter'],
           current: page + 1,
           pageSize: limit,
           total: data?.count,
@@ -119,6 +153,9 @@ const Patients = () => {
             },
           };
         }}
+        rowClassName={(record) =>
+          record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
+        }
         className={addClass(classes, 'patients-table')}
         onChange={handleTableChange}
       />

@@ -14,6 +14,7 @@ interface PatinentInfoProps extends PropsWithChildren {
 const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [updatePatient] = patientsAPI.useUpdateMutation();
+  const [changeStatus] = patientsAPI.useChangeStatusMutation();
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -35,6 +36,34 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
   };
   const onEdit = () => {
     setOpen(true);
+  };
+  const onActivate = async () => {
+    try {
+      await changeStatus({ _id: patient?._id ? patient?._id : '', isActive: true }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Пациент успешно активирован',
+      });
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+  const onDeactivate = async () => {
+    try {
+      await changeStatus({ _id: patient?._id ? patient?._id : '', isActive: false }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Пациент успешно деактивирован',
+      });
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
   };
   return (
     <>
@@ -65,9 +94,21 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         title="Личные данные пациента"
         column={1}
         extra={
-          <Button type="primary" onClick={onEdit}>
-            Редактировать
-          </Button>
+          <>
+            {patient?.isActive ? (
+              <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
+                Деактивировать
+              </Button>
+            ) : (
+              <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
+                Активировать
+              </Button>
+            )}
+
+            <Button type="primary" onClick={onEdit}>
+              Редактировать
+            </Button>
+          </>
         }
       >
         <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
@@ -92,7 +133,10 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
           {patient?.address}
         </Descriptions.Item>
-        <Descriptions.Item label="Примечание">{patient?.note}</Descriptions.Item>
+        <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
+          {patient?.note}
+        </Descriptions.Item>
+        <Descriptions.Item label="Статус">{patient?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
       </Descriptions>
     </>
   );

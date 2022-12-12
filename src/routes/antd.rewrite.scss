@@ -39,3 +39,40 @@
 .ant-descriptions.ant-descriptions-bordered .ant-descriptions-view {
   border: none;
 }
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  &.my-table-row__active {
+    background: green !important;
+  }
+  &.my-table-row__deactive {
+    background: red !important;
+  }
+  background: blue !important;
+}
+
+.ant-table-tbody > tr.ant-table-row {
+  &.my-table-row{
+    
+    &:hover > td {
+     
+    background:  #e6f4ff !important;
+    //rgb(238, 242, 255)
+  }
+  > td {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+}
+  &.my-table-row__active {
+    
+    & > td {
+
+      background: #ffffff !important;
+    }
+  }
+  &.my-table-row__deactive > td {
+    background: #ffffff !important;
+  }
+}

@@ -35,7 +35,8 @@ const PatientPage = () => {
                     year: 'numeric',
                     month: 'numeric',
                     day: 'numeric',
-                  })}`
+                  })} ` +
+                  `(${patient?.isActive ? 'активен' : 'неактивен'})`
                 : 'Пациент'}
             </Typography.Title>
           </Col>

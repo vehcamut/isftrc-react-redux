@@ -2,7 +2,7 @@
 import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
-import { IGet, IGetByID, IPatient, IPatientData } from '../../models';
+import { IGet, IGetByID, IGetPerson, IPatient, IPatientChangeStatus, IPatientData } from '../../models';
 import baseQuery from './baseQuery';
 
 export const patientsAPI = createApi({
@@ -10,7 +10,7 @@ export const patientsAPI = createApi({
   baseQuery,
   tagTypes: ['patients'],
   endpoints: (build) => ({
-    get: build.query<IPatientData, IGet>({
+    get: build.query<IPatientData, IGetPerson>({
       query: (params) => ({
         url: 'patients/get',
         params,
@@ -53,6 +53,15 @@ export const patientsAPI = createApi({
       query: (body) => ({
         url: 'patients/update',
         method: 'PUT',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+    changeStatus: build.mutation<any, IPatientChangeStatus>({
+      query: (body) => ({
+        url: 'patients/changeStatus',
+        method: 'PATCH',
         credentials: 'include',
         body,
       }),

@@ -22,6 +22,11 @@ export interface IPatient {
   note?: string;
 }
 
+export interface IPatientChangeStatus {
+  _id: string;
+  isActive: boolean;
+}
+
 export interface IPatientData {
   data: IPatient[];
   count: number;

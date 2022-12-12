@@ -20,6 +20,7 @@ interface IPatientsTableState {
   sort?: string;
   name?: string;
   filter?: string;
+  isActive?: boolean;
   // columns: ColumnsType<IPatient>;
   /* rowsCount: number;
   filter: ISpecialistTypeQuery;
@@ -98,6 +99,10 @@ export const patientTableSlice = createSlice({
     },
     setFilter(state: IPatientsTableState, action: PayloadAction<string>) {
       state.filter = action.payload;
+      // Object.assign(state.filter, action.payload);
+    },
+    setIsActive(state: IPatientsTableState, action: PayloadAction<boolean | undefined>) {
+      state.isActive = action.payload;
       // Object.assign(state.filter, action.payload);
     },
     // setCurrentData(state: IPatientsTableState, action: PayloadAction<ISpecialistType>) {

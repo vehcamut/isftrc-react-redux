@@ -48,14 +48,27 @@
         //background-color: rgb(229, 229, 229);
       }
     }
-    & tbody tr:hover {
-      color: #ffffff;
-      // td {
-      //   background: none;
-      // }
-      //background-color: red;//rgb(220, 231, 231);
+    // & tbody tr:hover {
+    //   /// background-color: red;
+    //   // color: #ffffff;
+    //   // .active-table-item {
+    //   //   &__not-active {   
+    //   //     color: #ffffff;
+    //   //     -webkit-text-stroke-width: 0.5px;      
+    //   //     -webkit-text-stroke-color: #ff0000;
+    //   //   }
+    //   //   &__active {   
+    //   //     color: #ffffff;
+    //   //     -webkit-text-stroke-width: 0.5px;      
+    //   //     -webkit-text-stroke-color: #00ff00;
+    //   //   }
+    //   // }
+    //   // td {
+    //   //   background: none;
+    //   // }
+    //   //background-color: red;//rgb(220, 231, 231);
       
-    }
+    // }
     
   }
 }
@@ -80,4 +93,12 @@ select:-webkit-autofill:focus {
   border-radius: 0px 10px 0px 10px;
 }
 
+.active-table-item {
+  &__not-active {
+    color: #e60000;
+  }
+  &__active {
+    color: #0c9500;
+  }
+}
 
