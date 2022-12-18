@@ -19,6 +19,8 @@ import Template from './routes/Template';
 import AddPatient from './routes/AddPatients';
 import PatientPage from './routes/PatientPage';
 import Representatives from './routes/Representatives';
+import HandbooksPage from './routes/HandbooksPage';
+import AdvertisingSourcePage from './routes/AdvertisingSourcePage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -108,6 +110,32 @@ const router = createBrowserRouter([
             element: (
               <Template activeKey="patients">
                 <PatientPage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/handbooks',
+            element: (
+              <Template activeKey="handbooks">
+                <HandbooksPage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/handbooks/advertisingSource',
+            element: (
+              <Template activeKey="handbooks">
+                <AdvertisingSourcePage />
               </Template>
             ),
           },

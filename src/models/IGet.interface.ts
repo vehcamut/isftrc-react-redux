@@ -13,3 +13,7 @@ export interface IGetByID {
 export interface IGetPerson extends IGet {
   isActive?: boolean;
 }
+
+export interface IGetAdvertisingSource extends IGet {
+  isActive?: boolean;
+}

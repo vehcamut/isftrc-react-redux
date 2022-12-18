@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { addPatientReducer } from './reducers/patientForm.slise';
-import { specialistsAPI, authAPI, patientsAPI, dadataAPI } from './services';
+import { specialistsAPI, authAPI, patientsAPI, dadataAPI, advertisingSourceAPI } from './services';
 import { authReducer } from './reducers/auth.slise';
 import {
   specTypesDialogReducer,
@@ -21,6 +21,7 @@ export const store = configureStore({
     patientTableReducer,
     authReducer,
     addPatientReducer,
+    [advertisingSourceAPI.reducerPath]: advertisingSourceAPI.reducer,
     [authAPI.reducerPath]: authAPI.reducer,
     [patientsAPI.reducerPath]: patientsAPI.reducer,
     [specialistsAPI.reducerPath]: specialistsAPI.reducer,
@@ -28,6 +29,7 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
+      advertisingSourceAPI.middleware,
       authAPI.middleware,
       specialistsAPI.middleware,
       patientsAPI.middleware,
