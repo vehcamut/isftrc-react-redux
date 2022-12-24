@@ -1,21 +1,25 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { AutoComplete, Button, Form, Input, Radio, Row, Spin, Col, DatePicker } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import debounce from 'lodash.debounce';
 import dayjs from 'dayjs';
 import { addClass } from '../../app/common';
 import { dadataAPI } from '../../app/services';
-import classes from './AddPatientForm.module.scss';
+import classes from './AddRepresentativeForm.module.scss';
 import { IPatient } from '../../models';
 
 const { TextArea } = Input;
-interface FormDialogProps extends PropsWithChildren {
+interface AddRepresentativeFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
   // eslint-disable-next-line react/require-default-props
   initValue?: IPatient;
 }
+const onPNChange = (e: any) => {
+  console.log(e);
+};
 
-const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset, initValue }) => {
+const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ onFinish, onReset, initValue }) => {
   const [query, setQuery] = useState('');
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
@@ -24,7 +28,14 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
   }, 800);
 
   return (
-    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
+    <Form
+      labelWrap
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 18 }}
+      colon={false}
+      onFinish={onFinish}
+      onFieldsChange={onPNChange}
+    >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
@@ -36,7 +47,8 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       <Form.Item
         initialValue={initValue?.name ? initValue.name : ''}
         rules={[{ required: true, message: 'Поле "Имя" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Имя</div>}
+        label="Имя"
+        // label={<div className={addClass(classes, 'form-item')}>Имя</div>}
         name="name"
       >
         <Input id="name" />
@@ -89,12 +101,29 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
         />
       </Form.Item>
       <Form.Item
-        label={<div className={addClass(classes, 'form-item')}>Примечание</div>}
+        // initialValue={initValue?.patronymic ? initValue.patronymic : ''}
+        rules={[
+          {
+            required: true,
+            message: 'Должен быть хотя бы один телефон',
+            transform: (value) => {
+              console.log(value);
+              return 'd';
+            },
+          },
+        ]}
+        label="Номера телефонов"
+        name="phoneNumbers"
+      >
+        <Input id="phoneNumbers" onChange={onPNChange} />
+      </Form.Item>
+      {/* <Form.Item
+        label={<div className={addClass(classes, 'form-item')}>Прdddимечание</div>}
         name="note"
         initialValue={initValue?.note ? initValue.note : ''}
       >
         <TextArea rows={4} id="note" />
-      </Form.Item>
+      </Form.Item> */}
       <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
@@ -116,7 +145,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
   );
 };
 
-export default AddPatientForm;
+export default AddRepresentativeForm;
 
 // const debounce = (callback: any, delay: number) => {
 //   let timer: ReturnType<typeof setTimeout>;

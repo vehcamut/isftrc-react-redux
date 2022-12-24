@@ -3,3 +3,4 @@ export * from './specialists.service';
 export * from './patients.service';
 export * from './dadata.service';
 export * from './advertisingSource.service';
+export * from './representatives.service';

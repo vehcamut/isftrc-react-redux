@@ -21,6 +21,7 @@ import PatientPage from './routes/PatientPage';
 import Representatives from './routes/Representatives';
 import HandbooksPage from './routes/HandbooksPage';
 import AdvertisingSourcePage from './routes/AdvertisingSourcePage';
+import AddRepresentative from './routes/AddRepresentative';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -58,6 +59,19 @@ const router = createBrowserRouter([
             element: (
               <Template activeKey="representatives">
                 <Representatives />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/representatives/add',
+            element: (
+              <Template activeKey="representatives">
+                <AddRepresentative />
               </Template>
             ),
           },
