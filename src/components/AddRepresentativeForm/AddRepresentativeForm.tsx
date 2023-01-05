@@ -21,43 +21,121 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { dadataAPI, advertisingSourceAPI } from '../../app/services';
 import classes from './AddRepresentativeForm.module.scss';
-import { IPatient, IRepresentative } from '../../models';
+import { IRepresentative } from '../../models';
 
 const { TextArea } = Input;
 const { Title, Paragraph, Text, Link } = Typography;
 interface AddRepresentativeFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
+  type: 'add' | 'update' | 'reg';
   // eslint-disable-next-line react/require-default-props
   initValue?: IRepresentative;
 }
 
 function* infinite() {
   let index = 0;
-
   while (true) {
     yield (index += 1);
   }
 }
 const generator = infinite();
-const onRemovePN = (e: any) => {
-  console.log(e);
-};
-// const onPNChange = (e: any) => {
-//   // console.log(e);
-//   // e.preventDefault();
-// };
 
-// const onPNKeyDown = (e: any) => {
-//   console.log(e);
-//   // if (!Number(e.key)) e.preventDefault();
-// };
-
-const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ onFinish, onReset, initValue }) => {
+const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
+  onFinish,
+  onReset,
+  initValue,
+  type,
+}) => {
   const [query, setQuery] = useState('');
-  const [amountPN, setaAountPN] = useState([{ phoneNumber: '+7 (___) ___-__-__', uid: 0 }]);
+  const [isAutoGenAuthData, setIsAutoGenAuthData] = useState(false);
+  const [phoneNumbers, setPhoneNumbers] = useState([{ phoneNumber: '+7 (___) ___-__-__', uid: 0 }]);
   const [emails, setEmails] = useState([{ email: '', uid: 0 }]);
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
+
+  // const [form] = Form.useForm();
+  // const onGenLogin = () => {
+  //   const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  //   const converter = {
+  //     а: 'a',
+  //     б: 'b',
+  //     в: 'v',
+  //     г: 'g',
+  //     д: 'd',
+  //     е: 'e',
+  //     ё: 'e',
+  //     ж: 'zh',
+  //     з: 'z',
+  //     и: 'i',
+  //     й: 'y',
+  //     к: 'k',
+  //     л: 'l',
+  //     м: 'm',
+  //     н: 'n',
+  //     о: 'o',
+  //     п: 'p',
+  //     р: 'r',
+  //     с: 's',
+  //     т: 't',
+  //     у: 'u',
+  //     ф: 'f',
+  //     х: 'h',
+  //     ц: 'c',
+  //     ч: 'ch',
+  //     ш: 'sh',
+  //     щ: 'sch',
+  //     ь: '',
+  //     ы: 'y',
+  //     ъ: '',
+  //     э: 'e',
+  //     ю: 'yu',
+  //     я: 'ya',
+
+  //     А: 'A',
+  //     Б: 'B',
+  //     В: 'V',
+  //     Г: 'G',
+  //     Д: 'D',
+  //     Е: 'E',
+  //     Ё: 'E',
+  //     Ж: 'Zh',
+  //     З: 'Z',
+  //     И: 'I',
+  //     Й: 'Y',
+  //     К: 'K',
+  //     Л: 'L',
+  //     М: 'M',
+  //     Н: 'N',
+  //     О: 'O',
+  //     П: 'P',
+  //     Р: 'R',
+  //     С: 'S',
+  //     Т: 'T',
+  //     У: 'U',
+  //     Ф: 'F',
+  //     Х: 'H',
+  //     Ц: 'C',
+  //     Ч: 'Ch',
+  //     Ш: 'Sh',
+  //     Щ: 'Sch',
+  //     Ь: '',
+  //     Ы: 'Y',
+  //     Ъ: '',
+  //     Э: 'E',
+  //     Ю: 'Yu',
+  //     Я: 'Ya',
+  //   };
+  //   let login = '';
+
+  //   const surname = form.getFieldValue('surname');
+  //   if (surname.length > 1) {
+  //     login = login + converter[surname[0]] + converter[surname[1]];
+  //   } else {
+  //     const randomNumber = Math.floor(Math.random() * chars.length);
+  //     login += chars.substring(randomNumber, randomNumber + 1);
+  //   }
+  //   console.log(form.getFieldValue('surname'));
+  // };
 
   const onFinish1 = (v: any) => {
     v.phoneNumbers = [];
@@ -82,10 +160,9 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
     console.log(v);
   };
   const onAddPN = () => {
-    const newArray = amountPN.slice(0);
+    const newArray = phoneNumbers.slice(0);
     newArray.push({ phoneNumber: '+7 (___) ___-__-__', uid: generator.next().value || 0 });
-    // console.log(amountPN);
-    setaAountPN(newArray);
+    setPhoneNumbers(newArray);
   };
   const onAddEmail = () => {
     const newArray = emails.slice(0);
@@ -96,17 +173,9 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
     setQuery(searchText);
   }, 800);
   const { data, isLoading } = advertisingSourceAPI.useGetToSelectQuery({ isActive: true });
-  // console.log(data);
+
   return (
-    <Form
-      labelWrap
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 21 }}
-      colon={false}
-      onFinish={onFinish1}
-      // onInvalidCapture={onInvalid}
-      // onFieldsChange={onPNChange}
-    >
+    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 21 }} colon={false} onFinish={onFinish1}>
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
@@ -171,31 +240,13 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
           onSearch={onSearchAC}
         />
       </Form.Item>
-      {/* <Form.Item
-        initialValue={initValue?.login ? initValue.login : ''}
-        rules={[{ required: true, message: 'Поле "Логин" не должно быть пустым' }]}
-        label="Логин"
-        name="login"
-      >
-        <Input id="login" />
-      </Form.Item> */}
       <Form.Item
         rules={[{ required: true, message: 'Поле "Источники рекламы" не должно быть пустым' }]}
         label="Источники рекламы"
         name="advertisingSources"
         initialValue={initValue?.advertisingSources ? initValue.advertisingSources : undefined}
       >
-        <Select
-          id="advertisingSources"
-          mode="multiple"
-          allowClear
-          style={{ width: '100%' }}
-          // placeholder="Please select"
-          // ini={null}
-          options={data}
-          // onChange={handleChange}
-          // options={options}
-        />
+        <Select id="advertisingSources" mode="multiple" allowClear style={{ width: '100%' }} options={data} />
       </Form.Item>
 
       <Divider />
@@ -211,8 +262,7 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
           </Button>
         </Col>
       </Row>
-      {amountPN.map((PNitem, index) => {
-        // console.log(PNitem.uid);
+      {phoneNumbers.map((PNitem, index) => {
         return (
           <Form.Item key={PNitem.uid} label="Номер" required>
             <Input.Group compact>
@@ -226,7 +276,6 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
                   },
                   ({ getFieldValue }) => ({
                     validator(_, value: string) {
-                      // console.log(value);
                       const phoneNumber = value
                         .slice(2)
                         .replaceAll(' ', '')
@@ -234,19 +283,14 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
                         .replaceAll(')', '')
                         .replaceAll('_', '')
                         .replaceAll('-', '');
-                      // console.log(phoneNumber);
                       if (phoneNumber.length !== 10) return Promise.reject(new Error('Введите номер'));
                       return Promise.resolve();
                     },
                   }),
                 ]}
-                // name="phoneNumbers"
                 name={`phoneNumber${PNitem.uid}`}
               >
                 <MaskedInput
-                  // onChange={(e: any) => {
-                  //   console.log(e);
-                  // }}
                   style={{ width: 'calc(100% - 100px)', borderColor: '#9f9f9f' }}
                   id={`phoneNumber${PNitem.uid}`}
                   mask={
@@ -260,14 +304,11 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
                   style={{ color: 'red' }}
                   icon={<DeleteOutlined />}
                   onClick={(e: any) => {
-                    const newArray = amountPN.slice(0);
+                    const newArray = phoneNumbers.slice(0);
                     newArray.splice(index, 1);
-                    // delete newArray[PNitem.index];
-                    //  ({ phoneNumber: '', index: amountPN.length });
-                    // console.log(amountPN);
-                    setaAountPN(newArray);
+                    setPhoneNumbers(newArray);
                   }}
-                  disabled={amountPN.length === 1}
+                  disabled={phoneNumbers.length === 1}
                 />
               </Form.Item>
             </Input.Group>
@@ -289,7 +330,6 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
         </Col>
       </Row>
       {emails.map((item, index) => {
-        // console.log(item.uid);
         return (
           <Form.Item key={item.uid} label="Email" required>
             <Input.Group compact>
@@ -308,17 +348,7 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
                 ]}
                 name={`email${item.uid}`}
               >
-                <Input
-                  // onChange={(e: any) => {
-                  //   console.log(e);
-                  // }}
-                  style={{ width: 'calc(100% - 100px)' }}
-                  id={`email${item.uid}`}
-                  // mask={
-                  //   //  https://imask.js.org/guide.html#masked-pattern
-                  //   '+7 (000) 000-00-00'
-                  // }
-                />
+                <Input style={{ width: 'calc(100% - 100px)' }} id={`email${item.uid}`} />
               </Form.Item>
               <Form.Item noStyle>
                 <Button
@@ -327,9 +357,6 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
                   onClick={(e: any) => {
                     const newArray = emails.slice(0);
                     newArray.splice(index, 1);
-                    // delete newArray[PNitem.index];
-                    //  ({ phoneNumber: '', index: amountPN.length });
-                    // console.log(amountPN);
                     setEmails(newArray);
                   }}
                   disabled={emails.length === 1}
@@ -337,7 +364,6 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
               </Form.Item>
             </Input.Group>
           </Form.Item>
-          // </Form.Item>
         );
       })}
       <Divider />
@@ -347,6 +373,9 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
             Данные для входа
           </Title>
         </Col>
+        {/* <Col>
+          <Button type="link" /* onClick={onGenLogin}/>Включить автоматическую генерацию</Button>
+        </Col> */}
       </Row>
       <Form.Item
         initialValue={initValue?.login ? initValue.login : ''}
@@ -356,31 +385,38 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
       >
         <Input id="login" />
       </Form.Item>
-
       <Form.Item
         name="password"
         label="Пароль"
         rules={[
-          {
-            required: true,
-            message: 'Введите пароль!',
-          },
+          // {
+          //   required: true,
+          //   message: 'Введите пароль!',
+          // },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('confirm') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('Пароли не совпадают!'));
+            },
+          }),
         ]}
         hasFeedback
+        dependencies={['confirm']}
       >
         <Input.Password />
       </Form.Item>
-
       <Form.Item
         name="confirm"
         label="Подтверждение пароля"
         dependencies={['password']}
         hasFeedback
         rules={[
-          {
-            required: true,
-            message: 'Подтвердите пароль!',
-          },
+          // {
+          //   required: true,
+          //   message: 'Подтвердите пароль!',
+          // },
           ({ getFieldValue }) => ({
             validator(_, value) {
               if (!value || getFieldValue('password') === value) {
@@ -394,13 +430,6 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
         <Input.Password />
       </Form.Item>
 
-      {/* <Form.Item
-        label={<div className={addClass(classes, 'form-item')}>Прdddимечание</div>}
-        name="note"
-        initialValue={initValue?.note ? initValue.note : ''}
-      >
-        <TextArea rows={4} id="note" />
-      </Form.Item> */}
       <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>

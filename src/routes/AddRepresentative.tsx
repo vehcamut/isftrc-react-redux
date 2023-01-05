@@ -109,11 +109,6 @@ const AddRepresentative = () => {
             Добавление нового представителя
           </Typography.Title>
         </Col>
-        {/* <Col>
-          <Button type="link" onClick={onAddClick}>
-            Добавить пациента
-          </Button>
-        </Col> */}
       </Row>
       {isAdded ? (
         <Result
@@ -130,7 +125,7 @@ const AddRepresentative = () => {
           ]}
         />
       ) : (
-        <AddRepresentativeForm onFinish={onFinish} onReset={onReset} />
+        <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" />
       )}
     </>
   );
