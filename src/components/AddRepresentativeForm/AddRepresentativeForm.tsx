@@ -1,28 +1,109 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { AutoComplete, Button, Form, Input, Radio, Row, Spin, Col, DatePicker } from 'antd';
+import { AutoComplete, Button, Form, Input, Radio, Row, Spin, Col, DatePicker, Typography } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import debounce from 'lodash.debounce';
 import dayjs from 'dayjs';
+import MaskedInput from 'antd-mask-input';
+import { DeleteOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { dadataAPI } from '../../app/services';
 import classes from './AddRepresentativeForm.module.scss';
 import { IPatient } from '../../models';
 
 const { TextArea } = Input;
+const { Title, Paragraph, Text, Link } = Typography;
 interface AddRepresentativeFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
   // eslint-disable-next-line react/require-default-props
   initValue?: IPatient;
 }
-const onPNChange = (e: any) => {
-  console.log(e);
-};
+// const onPNChange = (e: any) => {
+//   // console.log(e);
+//   // e.preventDefault();
+// };
+
+// const onPNKeyDown = (e: any) => {
+//   console.log(e);
+//   // if (!Number(e.key)) e.preventDefault();
+// };
 
 const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ onFinish, onReset, initValue }) => {
   const [query, setQuery] = useState('');
+  const [amountPN, setaAountPN] = useState([
+    <Form.Item
+      rules={[
+        {
+          required: true,
+          message: 'Поле "Номер телефона" не должно быть пустым',
+        },
+      ]}
+      label="Номер телефона"
+      name="phoneNumbers"
+      key={0}
+    >
+      <MaskedInput
+        id="phoneNumbers"
+        mask={
+          //  https://imask.js.org/guide.html#masked-pattern
+          '+7 (000) 00-00-00'
+        }
+      />
+    </Form.Item>,
+  ]);
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
+  const onAddPN = () => {
+    const newArray = amountPN.slice(0);
+    newArray.push(
+      // <Row justify="space-between">
+      //   <Col span={20}>
+      <Form.Item
+        // labelCol={{ span: 5 }}
+        // wrapperCol={{ span: 19 }}
+        rules={[
+          {
+            required: true,
+            message: 'Поле "Номер телефона" не должно быть пустым',
+          },
+        ]}
+        label="Номер телефона"
+        name={`phoneNumber${newArray.length}`}
+        key={newArray.length}
+      >
+        <Input.Group compact>
+          <MaskedInput
+            style={{ width: 'calc(100% - 100px)' }}
+            id="phoneNumbers"
+            mask={
+              //  https://imask.js.org/guide.html#masked-pattern
+              '+7 (000) 00-00-00'
+            }
+          />
+          <Button
+            // type="link"
+            style={{ color: 'red' }}
+            // shape="circle"
+            icon={<DeleteOutlined />}
+            disabled={newArray.length < 1}
+          />
+        </Input.Group>
+      </Form.Item>,
+      // </Col>
+      //   {/* <Col>
+      //     <Button
+      //       type="link"
+      //       style={{ color: 'red' }}
+      //       shape="circle"
+      //       icon={<DeleteOutlined />}
+      //       disabled={newArray.length < 1}
+      //     />
+      //   </Col> */}
+      // {/* </Row>, */}
+    );
+    console.log(amountPN);
+    setaAountPN(newArray);
+  };
   const onSearchAC: any = debounce((searchText) => {
     setQuery(searchText);
   }, 800);
@@ -30,11 +111,11 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
   return (
     <Form
       labelWrap
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 18 }}
+      labelCol={{ span: 5 }}
+      wrapperCol={{ span: 19 }}
       colon={false}
       onFinish={onFinish}
-      onFieldsChange={onPNChange}
+      // onFieldsChange={onPNChange}
     >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
@@ -100,23 +181,19 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({ 
           onSearch={onSearchAC}
         />
       </Form.Item>
-      <Form.Item
-        // initialValue={initValue?.patronymic ? initValue.patronymic : ''}
-        rules={[
-          {
-            required: true,
-            message: 'Должен быть хотя бы один телефон',
-            transform: (value) => {
-              console.log(value);
-              return 'd';
-            },
-          },
-        ]}
-        label="Номера телефонов"
-        name="phoneNumbers"
-      >
-        <Input id="phoneNumbers" onChange={onPNChange} />
-      </Form.Item>
+      <Row style={{ marginBottom: 12 }} justify="space-between">
+        <Col>
+          <Title style={{ margin: 0 }} level={4}>
+            Номера телефонов
+          </Title>
+        </Col>
+        <Col>
+          <Button type="link" onClick={onAddPN}>
+            Добавить номер
+          </Button>
+        </Col>
+      </Row>
+      {amountPN.map((item) => item)}
       {/* <Form.Item
         label={<div className={addClass(classes, 'form-item')}>Прdddимечание</div>}
         name="note"
