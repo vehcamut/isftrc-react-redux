@@ -106,7 +106,7 @@ const AddRepresentative = () => {
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '20px' }}>
         <Col>
           <Typography.Title level={1} style={{ margin: 0 }}>
-            Добавление нового пациента
+            Добавление нового представителя
           </Typography.Title>
         </Col>
         {/* <Col>

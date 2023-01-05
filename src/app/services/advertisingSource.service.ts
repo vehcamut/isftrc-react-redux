@@ -32,6 +32,24 @@ export const advertisingSourceAPI = createApi({
       },
     }),
 
+    getToSelect: build.query<any, IGetAdvertisingSource>({
+      query: (params) => ({
+        url: 'advertisingSource/get',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['advertisingSource'],
+      transformResponse(apiResponse: IAdvertisingSource[], meta): any {
+        console.log(apiResponse);
+        const resp = [];
+        for (let i = 0; i < apiResponse.length; i += 1) {
+          resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
+        }
+        console.log(resp);
+        return resp;
+      },
+    }),
+
     add: build.mutation<any, IAdvertisingSource>({
       query: (body) => ({
         url: 'advertisingSource/add',
