@@ -140,6 +140,8 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
   const onFinish1 = (v: any) => {
     v.phoneNumbers = [];
     v.emails = [];
+    if (v.password !== '') v.hash = v.password;
+    delete v.password;
     Object.keys(v).forEach((val) => {
       if (val !== 'phoneNumbers' && val.indexOf('phoneNumber') !== -1) {
         const number = v[val]
@@ -158,6 +160,7 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
       }
     });
     console.log(v);
+    onFinish(v);
   };
   const onAddPN = () => {
     const newArray = phoneNumbers.slice(0);

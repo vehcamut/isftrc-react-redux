@@ -41,7 +41,7 @@ import { useNavigate } from 'react-router-dom';
 // import locale from 'antd/es/date-picker/locale/ru_RU';
 // import { DefaultOptionType } from 'antd/es/select';
 import classes from './style.module.scss';
-import { dadataAPI, patientsAPI } from '../app/services';
+import { dadataAPI, patientsAPI, representativesAPI } from '../app/services';
 import { IPatient } from '../models';
 import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
@@ -52,7 +52,7 @@ import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepres
 const AddRepresentative = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [addPatient] = patientsAPI.useAddMutation();
+  const [addRepresentative] = representativesAPI.useAddMutation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -66,12 +66,12 @@ const AddRepresentative = () => {
   };
 
   const onBack = () => {
-    navigate('/patients');
+    navigate('/representatives');
   };
 
   const onFinish = async (values: any) => {
     try {
-      await addPatient(values).unwrap();
+      await addRepresentative(values).unwrap();
       setIsAdded(true);
       // navigate('/patients', { replace: true });
       // messageApi.open({
@@ -81,12 +81,23 @@ const AddRepresentative = () => {
       //   // 'Ошибка связи с сервером',
       // });
       // navigate('/patients', { replace: true });
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-        // 'Ошибка связи с сервером',
-      });
+    } catch (e: any) {
+      // if (e.)
+      console.log(e?.data?.message);
+      if (e?.data?.message) {
+        messageApi.open({
+          type: 'error',
+          content: e?.data?.message,
+          // 'Ошибка связи с сервером',
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: 'Ошибка связи с сервером',
+          // 'Ошибка связи с сервером',
+        });
+      }
+
       // console.log('ERROR!');
     }
     // const resp = await addPatient(values);
@@ -97,7 +108,7 @@ const AddRepresentative = () => {
   };
 
   const onReset = () => {
-    navigate('/patients', { replace: true });
+    navigate('/representatives', { replace: true });
   };
 
   return (
@@ -113,13 +124,13 @@ const AddRepresentative = () => {
       {isAdded ? (
         <Result
           status="success"
-          title="Пациент был успешно добавлен"
+          title="Представаитель был успешно добавлен"
           // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
           extra={[
-            <Button type="primary" key="back" onClick={onBack} style={{ width: '160px' }}>
-              К списку пациентов
+            <Button type="primary" key="back" onClick={onBack} style={{ width: '200px' }}>
+              К списку представителей
             </Button>,
-            <Button key="addagain" onClick={onAddAgain} style={{ width: '160px' }}>
+            <Button key="addagain" onClick={onAddAgain} style={{ width: '200px' }}>
               Добавить еще
             </Button>,
           ]}

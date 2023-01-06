@@ -200,7 +200,7 @@ const Representatives = () => {
         onRow={(record) => {
           return {
             onClick: () => {
-              navigate(`/patients/${record._id}/info`);
+              navigate(`/representatives/${record._id}/info`);
             },
           };
         }}

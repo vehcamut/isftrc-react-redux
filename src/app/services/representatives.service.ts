@@ -30,13 +30,25 @@ export const representativesAPI = createApi({
         return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       },
     }),
-    // getById: build.query<IPatient, IGetByID>({
-    //   query: (params) => ({
-    //     url: 'patients/getById',
-    //     params,
-    //     credentials: 'include',
-    //   }),
-    //   providesTags: ['patients'],
+
+    add: build.mutation<any, IRepresentative>({
+      query: (body) => ({
+        url: 'representatives/add',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['representative'],
+    }),
+
+    getById: build.query<IRepresentative, IGetByID>({
+      query: (params) => ({
+        url: 'representatives/getById',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['representative'],
+    }),
     //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
     //   // transformResponse(apiResponse: any, meta): IPatient {
     //   //   const x = dayjs(apiResponse.dateOfBirth);
@@ -49,15 +61,7 @@ export const representativesAPI = createApi({
     //   //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
     //   // },
     // }),
-    // add: build.mutation<any, IPatient>({
-    //   query: (body) => ({
-    //     url: 'patients/add',
-    //     method: 'POST',
-    //     credentials: 'include',
-    //     body,
-    //   }),
-    //   invalidatesTags: ['patients'],
-    // }),
+
     // update: build.mutation<any, IPatient>({
     //   query: (body) => ({
     //     url: 'patients/update',

@@ -1,3 +1,5 @@
+import { IAdvertisingSourceBase } from './IAdvertisingSource.interface';
+
 export interface IRepresentative {
   _id: string;
   name: string;
@@ -9,7 +11,7 @@ export interface IRepresentative {
   login: string;
   gender: string;
   address: string;
-  advertisingSources: string[];
+  advertisingSources: IAdvertisingSourceBase[];
   isActive?: boolean;
   hash?: string;
 }
