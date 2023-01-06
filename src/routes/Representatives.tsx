@@ -38,7 +38,7 @@ const Representatives = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
-  const { data, isLoading } = representativesAPI.useGetQuery({ limit, page, filter, isActive });
+  const { data, isLoading } = representativesAPI.useGetRepresentativesQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IRepresentative> = [
     {

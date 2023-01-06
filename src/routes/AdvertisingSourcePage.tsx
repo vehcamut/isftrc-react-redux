@@ -16,8 +16,8 @@ const { Search } = Input;
 const AdvertisingSourcePage = () => {
   const navigate = useNavigate();
 
-  const [addAdvertisingSource] = advertisingSourceAPI.useAddMutation();
-  const [updateAdvertisingSource] = advertisingSourceAPI.useUpdateMutation();
+  const [addAdvertisingSource] = advertisingSourceAPI.useAddAdvSourcesMutation();
+  const [updateAdvertisingSource] = advertisingSourceAPI.useUpdateAdvSourcesMutation();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
@@ -27,7 +27,7 @@ const AdvertisingSourcePage = () => {
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading } = advertisingSourceAPI.useGetQuery({ limit, page, filter, isActive });
+  const { data, isLoading } = advertisingSourceAPI.useGetAdvSourcesQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IAdvertisingSource> = [
     {

@@ -1,6 +1,15 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { configureStore } from '@reduxjs/toolkit';
 import { addPatientReducer } from './reducers/patientForm.slise';
-import { specialistsAPI, authAPI, patientsAPI, dadataAPI, advertisingSourceAPI, representativesAPI } from './services';
+import {
+  specialistsAPI,
+  authAPI,
+  patientsAPI,
+  dadataAPI,
+  advertisingSourceAPI,
+  representativesAPI,
+  api,
+} from './services';
 import { authReducer } from './reducers/auth.slise';
 import {
   specTypesDialogReducer,
@@ -21,8 +30,9 @@ export const store = configureStore({
     patientTableReducer,
     authReducer,
     addPatientReducer,
+    [api.reducerPath]: api.reducer,
     [representativesAPI.reducerPath]: representativesAPI.reducer,
-    [advertisingSourceAPI.reducerPath]: advertisingSourceAPI.reducer,
+    // [advertisingSourceAPI.reducerPath]: advertisingSourceAPI.reducer,
     [authAPI.reducerPath]: authAPI.reducer,
     [patientsAPI.reducerPath]: patientsAPI.reducer,
     [specialistsAPI.reducerPath]: specialistsAPI.reducer,
@@ -30,7 +40,8 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
-      advertisingSourceAPI.middleware,
+      // advertisingSourceAPI.middleware,
+      api.middleware,
       authAPI.middleware,
       specialistsAPI.middleware,
       patientsAPI.middleware,

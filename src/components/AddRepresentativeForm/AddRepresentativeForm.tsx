@@ -175,7 +175,7 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
   const onSearchAC: any = debounce((searchText) => {
     setQuery(searchText);
   }, 800);
-  const { data, isLoading } = advertisingSourceAPI.useGetToSelectQuery({ isActive: true });
+  const { data, isLoading } = advertisingSourceAPI.useGetAdvSourcesToSelectQuery({ isActive: true });
 
   return (
     <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 21 }} colon={false} onFinish={onFinish1}>

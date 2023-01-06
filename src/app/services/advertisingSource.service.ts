@@ -14,13 +14,14 @@ import {
   IPatientData,
 } from '../../models';
 import baseQuery from './baseQuery';
+import { api } from './api.service';
 
-export const advertisingSourceAPI = createApi({
-  reducerPath: 'advertisingSourceAPI',
-  baseQuery,
-  tagTypes: ['advertisingSource'],
+export const advertisingSourceAPI = api.injectEndpoints({
+  // reducerPath: 'advertisingSourceAPI',
+  // baseQuery,
+  // tagTypes: ['advertisingSource'],
   endpoints: (build) => ({
-    get: build.query<IAdvertisingSourceData, IGetAdvertisingSource>({
+    getAdvSources: build.query<IAdvertisingSourceData, IGetAdvertisingSource>({
       query: (params) => ({
         url: 'advertisingSource/get',
         params,
@@ -32,7 +33,7 @@ export const advertisingSourceAPI = createApi({
       },
     }),
 
-    getToSelect: build.query<any, IGetAdvertisingSource>({
+    getAdvSourcesToSelect: build.query<any, IGetAdvertisingSource>({
       query: (params) => ({
         url: 'advertisingSource/get',
         params,
@@ -50,7 +51,7 @@ export const advertisingSourceAPI = createApi({
       },
     }),
 
-    add: build.mutation<any, IAdvertisingSource>({
+    addAdvSources: build.mutation<any, IAdvertisingSource>({
       query: (body) => ({
         url: 'advertisingSource/add',
         method: 'POST',
@@ -59,7 +60,7 @@ export const advertisingSourceAPI = createApi({
       }),
       invalidatesTags: ['advertisingSource'],
     }),
-    update: build.mutation<any, IAdvertisingSource>({
+    updateAdvSources: build.mutation<any, IAdvertisingSource>({
       query: (body) => ({
         url: 'advertisingSource/update',
         method: 'PUT',

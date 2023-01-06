@@ -13,13 +13,14 @@ import {
   IRepresentativeData,
 } from '../../models';
 import baseQuery from './baseQuery';
+import { api } from './api.service';
 
-export const representativesAPI = createApi({
-  reducerPath: 'representativesAPI',
-  baseQuery,
-  tagTypes: ['representative'],
+export const representativesAPI = api.injectEndpoints({
+  // reducerPath: 'representativesAPI',
+  // baseQuery,
+  // tagTypes: ['representative'],
   endpoints: (build) => ({
-    get: build.query<IRepresentativeData, IGetPerson>({
+    getRepresentatives: build.query<IRepresentativeData, IGetPerson>({
       query: (params) => ({
         url: 'representatives/get',
         params,
@@ -31,7 +32,7 @@ export const representativesAPI = createApi({
       },
     }),
 
-    add: build.mutation<any, IRepresentative>({
+    addRepresentative: build.mutation<any, IRepresentative>({
       query: (body) => ({
         url: 'representatives/add',
         method: 'POST',
@@ -41,13 +42,13 @@ export const representativesAPI = createApi({
       invalidatesTags: ['representative'],
     }),
 
-    getById: build.query<IRepresentative, IGetByID>({
+    getRepresentativeById: build.query<IRepresentative, IGetByID>({
       query: (params) => ({
         url: 'representatives/getById',
         params,
         credentials: 'include',
       }),
-      providesTags: ['representative'],
+      providesTags: ['representative', 'advertisingSource'],
     }),
     //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
     //   // transformResponse(apiResponse: any, meta): IPatient {

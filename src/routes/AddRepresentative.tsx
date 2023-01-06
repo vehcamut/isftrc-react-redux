@@ -52,7 +52,7 @@ import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepres
 const AddRepresentative = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [addRepresentative] = representativesAPI.useAddMutation();
+  const [addRepresentative] = representativesAPI.useAddRepresentativeMutation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

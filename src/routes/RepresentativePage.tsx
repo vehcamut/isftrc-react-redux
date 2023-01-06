@@ -10,7 +10,9 @@ const RepresentativePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: representative, isLoading } = representativesAPI.useGetByIdQuery({ id: params?.id || '' });
+  const { data: representative, isLoading } = representativesAPI.useGetRepresentativeByIdQuery({
+    id: params?.id || '',
+  });
 
   const onBackClick = () => {
     navigate('/representatives', { replace: true });
