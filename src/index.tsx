@@ -85,7 +85,7 @@ const router = createBrowserRouter([
             path: '/representatives/:id/info',
             element: (
               <Template activeKey="representatives">
-                <RepresentativePage />
+                <RepresentativePage activeKey="info" />
               </Template>
             ),
           },
@@ -98,7 +98,7 @@ const router = createBrowserRouter([
             path: '/representatives/:id/patients',
             element: (
               <Template activeKey="representatives">
-                <RepresentativePage />
+                <RepresentativePage activeKey="patients" />
               </Template>
             ),
           },

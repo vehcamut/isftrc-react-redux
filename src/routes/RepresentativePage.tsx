@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PropsWithChildren, FunctionComponent } from 'react';
 import { Typography, Row, Col, Button, Tabs, message, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
@@ -6,7 +6,11 @@ import { representativesAPI } from '../app/services';
 import RepresentativeInfo from '../components/RepresentativeInfo/RepresentativeInfo';
 import RepresentativePatients from '../components/RepresentativePatients/RepresentativePatients';
 
-const RepresentativePage = () => {
+interface FormDialogProps extends PropsWithChildren {
+  activeKey: 'info' | 'patients';
+}
+
+const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -50,6 +54,7 @@ const RepresentativePage = () => {
           </Col>
         </Row>
         <Tabs
+          activeKey={activeKey}
           size="small"
           onChange={onChange}
           type="line"
