@@ -1,8 +1,9 @@
+/* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Input, Table } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Input, Table, Tooltip } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { DeleteOutlined, DeleteRowOutlined, FilterFilled } from '@ant-design/icons';
+import { DeleteOutlined, DeleteRowOutlined, ExclamationCircleFilled, FilterFilled } from '@ant-design/icons';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
 import { addClass } from '../../app/common';
@@ -20,11 +21,33 @@ interface RepresentativePatientsProps extends PropsWithChildren {
   representative?: IRepresentative;
 }
 const { Search } = Input;
+const { confirm } = Modal;
+
+function CustomCell(props: any) {
+  console.log(props);
+  // eslint-disable-next-line react/destructuring-assignment
+  if (Array.isArray(props?.children)) {
+    // eslint-disable-next-line react/destructuring-assignment
+    console.log(props?.children[1]);
+    // eslint-disable-next-line react/destructuring-assignment
+    let title = props?.children[1];
+    if (typeof title?.props?.children === 'string') title = title?.props?.children;
+    if (typeof title === 'string')
+      return (
+        <Tooltip title={title} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+          <td {...props} />
+        </Tooltip>
+      );
+  }
+  return <td {...props} />;
+}
 
 const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = ({ representative }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [addPatient] = patientsAPI.useAddPatientMutation();
   const [updateRepresentative] = representativesAPI.useUpdateRepresentativeMutation();
   const [addPatientToRepresentative] = representativesAPI.useAddPatientToRepresentativeMutation();
+  const [removePatientFromRepresentative] = representativesAPI.useRemovePatientFromRepresentativeMutation();
   const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
   const [isModalAddOpened, setIsModalAddOpened] = useState(false);
   const [isModalNewOpened, setIsModalNewOpened] = useState(false);
@@ -34,11 +57,29 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
     id: representative?._id || '',
   });
-  const onRemove = (value: string) => {
-    alert(`${value}, ${representative?._id}`);
-    // dispatch(setPage(0));
-    // dispatch(setFilter(value));
+
+  const onRemove = (patientId: any) => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Вы точно хотите отвязать пациента от представителя?',
+        icon: <ExclamationCircleFilled />,
+        onOk() {
+          removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+        },
+        okText: 'Да',
+        cancelText: 'Нет',
+        // onCancel() {
+        //   console.log('Cancel');
+        // },
+      });
+    };
+    showConfirm();
+    // showConfirmModal();
+    // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+    // setIsModalAddOpened(false);
+    // alert(r._id);
   };
+
   const columns: ColumnsType<IPatient> = [
     {
       title: '№',
@@ -108,9 +149,10 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
       render: (v, r) => {
         return (
           <Button
-            style={{ color: 'red' }}
+            style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
-            type="link"
+            type="primary"
+            // shape="circle"
             icon={<DeleteRowOutlined />}
             onClick={(e) => {
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -175,11 +217,35 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const onModalNewOpen = () => {
     setIsModalNewOpened(true);
   };
+  const onFinishAddNew = async (values: any) => {
+    try {
+      const patientId = await addPatient(values).unwrap();
+      addPatientToRepresentative({ patientId, representativeId: representative?._id || '' });
+      onModalNewClose();
+      // setIsAdded(true);
+      // navigate('/patients', { replace: true });
+      // messageApi.open({
+      //   type: 'success',
+      //   content: 'Пациент успешно добавлен',
+      //   onClose: () => navigate('/patients', { replace: true, state: { add: true } }),
+      //   // 'Ошибка связи с сервером',
+      // });
+      // navigate('/patients', { replace: true });
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+        // 'Ошибка связи с сервером',
+      });
+      // console.log('ERROR!');
+    }
+  };
   const onRowClick = (patient: any) => {
     addPatientToRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
     setIsModalAddOpened(false);
     // alert(r._id);
   };
+
   const onActivate = async () => {
     try {
       await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: true }).unwrap();
@@ -211,6 +277,18 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   return (
     <>
       {contextHolder}
+      {/* <Modal
+        title="Modal"
+        open={isModalConfirmRemoveOpened}
+        onOk={hideConfirmModal}
+        onCancel={hideConfirmModal}
+        // okText="确认"
+        // cancelText="取消"
+      >
+        <p>Вы точно хотите отвязать пациента от представителя?</p>
+        {/* <p>Bla bla ...</p>
+        <p>Bla bla ...</p> }
+      </Modal> */}
       <Modal
         destroyOnClose
         open={isModalAddOpened}
@@ -239,7 +317,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
         width="100%"
         onCancel={onModalNewClose}
       >
-        <AddPatientForm onReset={onModalNewClose} onFinish={onModalNewClose} />
+        <AddPatientForm onReset={onModalNewClose} onFinish={onFinishAddNew} />
         {/* <PatientsTable onRowClick={onRowClick} /> */}
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
@@ -286,6 +364,11 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
             style={{ marginBottom: '15px' }}
           /> */}
           <Table
+            components={{
+              body: {
+                cell: CustomCell,
+              },
+            }}
             style={{ width: '100%' }}
             tableLayout="fixed"
             bordered

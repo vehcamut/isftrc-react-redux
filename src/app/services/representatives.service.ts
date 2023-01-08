@@ -80,8 +80,7 @@ export const representativesAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      // TODO: tag patients
-      providesTags: ['representative', 'advertisingSource'],
+      providesTags: ['representative', 'advertisingSource', 'patients'],
     }),
 
     addPatientToRepresentative: build.mutation<any, IAddPatientToRepresentative>({
@@ -91,8 +90,17 @@ export const representativesAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      // TODO: tag patients
-      invalidatesTags: ['representative'],
+      invalidatesTags: ['representative', 'patients'],
+    }),
+
+    removePatientFromRepresentative: build.mutation<any, IAddPatientToRepresentative>({
+      query: (body) => ({
+        url: 'representatives/removePatient',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['representative', 'patients'],
     }),
     // changeStatus: build.mutation<any, IPatientChangeStatus>({
     //   query: (body) => ({
