@@ -53,9 +53,12 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const [isModalNewOpened, setIsModalNewOpened] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
+
+  const [isActive, setIsActive] = useState<boolean | undefined>(true);
+  // const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
   const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
     id: representative?._id || '',
+    isActive,
   });
 
   const onRemove = (patientId: any) => {
@@ -65,19 +68,16 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
         icon: <ExclamationCircleFilled />,
         onOk() {
           removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+          messageApi.open({
+            type: 'success',
+            content: 'Пациент успешно отвязан.',
+          });
         },
         okText: 'Да',
         cancelText: 'Нет',
-        // onCancel() {
-        //   console.log('Cancel');
-        // },
       });
     };
     showConfirm();
-    // showConfirmModal();
-    // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
-    // setIsModalAddOpened(false);
-    // alert(r._id);
   };
 
   const columns: ColumnsType<IPatient> = [
@@ -129,18 +129,20 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
+      defaultFilteredValue: ['1'],
+
       // eslint-disable-next-line react/no-unstable-nested-components
-      // filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-      // filters: [
-      //   {
-      //     text: 'активен',
-      //     value: 1,
-      //   },
-      //   {
-      //     text: 'неактивен',
-      //     value: 0,
-      //   },
-      // ],
+      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+      filters: [
+        {
+          text: 'активен',
+          value: 1,
+        },
+        {
+          text: 'неактивен',
+          value: 0,
+        },
+      ],
     },
     {
       // title: 'Адрес',
@@ -165,7 +167,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
       width: '5%',
     },
   ];
-  const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
+  // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -175,18 +177,18 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
     sorter: SorterResult<IPatient> | SorterResult<IPatient>[],
   ) => {
     if (filters?.isActive) {
-      if (filters?.isActive.length > 1) dispatch(setIsActive(undefined));
+      if (filters?.isActive.length > 1) setIsActive(undefined);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      else filters.isActive[0] ? dispatch(setIsActive(true)) : dispatch(setIsActive(false));
-    } else dispatch(setIsActive(undefined));
+      else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
+    } else setIsActive(undefined);
     // console.log(pagination, filters, sorter);
-    dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
-    dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
+    // dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
+    // dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
   };
-  const onSearch = (value: string) => {
-    dispatch(setPage(0));
-    dispatch(setFilter(value));
-  };
+  // const onSearch = (value: string) => {
+  //   dispatch(setPage(0));
+  //   dispatch(setFilter(value));
+  // };
 
   const onAddClick = () => {
     navigate('/patients/add', { replace: true });
@@ -222,6 +224,10 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
       const patientId = await addPatient(values).unwrap();
       addPatientToRepresentative({ patientId, representativeId: representative?._id || '' });
       onModalNewClose();
+      messageApi.open({
+        type: 'success',
+        content: 'Пациент успешно добавлен.',
+      });
       // setIsAdded(true);
       // navigate('/patients', { replace: true });
       // messageApi.open({
@@ -243,6 +249,10 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const onRowClick = (patient: any) => {
     addPatientToRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
     setIsModalAddOpened(false);
+    messageApi.open({
+      type: 'success',
+      content: 'Пациент успешно добавлен.',
+    });
     // alert(r._id);
   };
 
@@ -376,6 +386,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
             columns={columns}
             rowKey={(record) => record.number}
             dataSource={data}
+            pagination={false}
             // pagination={{
             //   position: ['bottomCenter'],
             //   current: page + 1,
@@ -396,7 +407,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
               record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
             }
             className={addClass(classes, 'patients-table')}
-            // onChange={handleTableChange}
+            onChange={handleTableChange}
           />
         </Descriptions.Item>
       </Descriptions>

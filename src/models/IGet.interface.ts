@@ -10,6 +10,10 @@ export interface IGetByID {
   id: string;
 }
 
+export interface IGetRepPatients {
+  id: string;
+  isActive?: boolean;
+}
 export interface IGetPerson extends IGet {
   isActive?: boolean;
 }

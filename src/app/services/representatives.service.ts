@@ -12,6 +12,7 @@ import {
   IPatientData,
   IRepresentativeData,
   IAddPatientToRepresentative,
+  IGetRepPatients,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -74,7 +75,7 @@ export const representativesAPI = api.injectEndpoints({
       invalidatesTags: ['representative'],
     }),
 
-    getRepresentativePatientsById: build.query<IPatient[], IGetByID>({
+    getRepresentativePatientsById: build.query<IPatient[], IGetRepPatients>({
       query: (params) => ({
         url: 'representatives/patients',
         params,
