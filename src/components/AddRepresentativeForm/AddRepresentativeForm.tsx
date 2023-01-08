@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AutoComplete,
@@ -49,8 +50,26 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
 }) => {
   const [query, setQuery] = useState('');
   const [isAutoGenAuthData, setIsAutoGenAuthData] = useState(false);
-  const [phoneNumbers, setPhoneNumbers] = useState([{ phoneNumber: '+7 (___) ___-__-__', uid: 0 }]);
-  const [emails, setEmails] = useState([{ email: '', uid: 0 }]);
+  const [phoneNumbers, setPhoneNumbers] = useState(
+    initValue?.phoneNumbers
+      ? () =>
+          initValue?.phoneNumbers.map((c) => {
+            return {
+              phoneNumber: `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`,
+              uid: generator.next().value || 0,
+            };
+          })
+      : [{ phoneNumber: '+7 (___) ___-__-__', uid: 0 }],
+  );
+  // [{ email: '', uid: 0 }]
+  const [emails, setEmails] = useState(
+    initValue?.emails
+      ? () =>
+          initValue?.emails.map((v) => {
+            return { email: v, uid: generator.next().value || 0 };
+          })
+      : [{ email: '', uid: 0 }],
+  );
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
   // const [form] = Form.useForm();
@@ -247,7 +266,14 @@ const AddRepresentativeForm: FunctionComponent<AddRepresentativeFormProps> = ({
         rules={[{ required: true, message: 'Поле "Источники рекламы" не должно быть пустым' }]}
         label="Источники рекламы"
         name="advertisingSources"
-        initialValue={initValue?.advertisingSources ? initValue.advertisingSources : undefined}
+        initialValue={
+          initValue?.advertisingSources
+            ? initValue.advertisingSources.map((v) => {
+                // return { label: v.name, value: v._id };
+                return v._id;
+              })
+            : undefined
+        }
       >
         <Select id="advertisingSources" mode="multiple" allowClear style={{ width: '100%' }} options={data} />
       </Form.Item>

@@ -11,6 +11,7 @@ import {
   IPatientChangeStatus,
   IPatientData,
   IRepresentativeData,
+  IAddPatientToRepresentative,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -63,15 +64,36 @@ export const representativesAPI = api.injectEndpoints({
     //   // },
     // }),
 
-    // update: build.mutation<any, IPatient>({
-    //   query: (body) => ({
-    //     url: 'patients/update',
-    //     method: 'PUT',
-    //     credentials: 'include',
-    //     body,
-    //   }),
-    //   invalidatesTags: ['patients'],
-    // }),
+    updateRepresentative: build.mutation<any, IRepresentative>({
+      query: (body) => ({
+        url: 'representatives/update',
+        method: 'PUT',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['representative'],
+    }),
+
+    getRepresentativePatientsById: build.query<IPatient[], IGetByID>({
+      query: (params) => ({
+        url: 'representatives/patients',
+        params,
+        credentials: 'include',
+      }),
+      // TODO: tag patients
+      providesTags: ['representative', 'advertisingSource'],
+    }),
+
+    addPatientToRepresentative: build.mutation<any, IAddPatientToRepresentative>({
+      query: (body) => ({
+        url: 'representatives/addPatient',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      // TODO: tag patients
+      invalidatesTags: ['representative'],
+    }),
     // changeStatus: build.mutation<any, IPatientChangeStatus>({
     //   query: (body) => ({
     //     url: 'patients/changeStatus',

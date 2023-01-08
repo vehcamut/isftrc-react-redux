@@ -2,10 +2,11 @@
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { addClass } from '../../app/common';
-import { patientsAPI } from '../../app/services';
+import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './RepresentativeInfo.module.scss';
 import { IPatient, IRepresentative } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
+import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 
 interface RepresentativeInfoProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -14,16 +15,16 @@ interface RepresentativeInfoProps extends PropsWithChildren {
 
 const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ representative }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [updatePatient] = patientsAPI.useUpdateMutation();
+  const [updateRepresentative] = representativesAPI.useUpdateRepresentativeMutation();
   const [changeStatus] = patientsAPI.useChangeStatusMutation();
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
     try {
-      await updatePatient({ ...representative, ...values }).unwrap();
+      await updateRepresentative({ ...representative, ...values }).unwrap();
       messageApi.open({
         type: 'success',
-        content: 'Данные пациента успешно обновлены',
+        content: 'Данные представителя успешно обновлены',
       });
     } catch (e) {
       messageApi.open({
@@ -69,20 +70,21 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
   return (
     <>
       {contextHolder}
-      {/* <Modal
+      <Modal
         destroyOnClose
         open={open}
         footer={null}
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Обновление данных пациента
+            Обновление данных представителя
           </Typography.Title>
         }
         width="100%"
         onCancel={onReset}
       >
-        <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} />
-      </Modal> */}
+        <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} />
+        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
+      </Modal>
       <Descriptions
         bordered
         size="middle"
@@ -139,7 +141,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
             .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
             .join(', ')}
         </Descriptions.Item>
-        <Descriptions.Item label="Адреса электронных почт" className={addClass(classes, 'des-item')}>
+        <Descriptions.Item label="Электронные почты" className={addClass(classes, 'des-item')}>
           {representative?.emails.join(', ')}
         </Descriptions.Item>
         <Descriptions.Item label="Источники рекламы" className={addClass(classes, 'des-item')}>

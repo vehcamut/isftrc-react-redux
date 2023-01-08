@@ -95,6 +95,19 @@ const router = createBrowserRouter([
       {
         children: [
           {
+            path: '/representatives/:id/patients',
+            element: (
+              <Template activeKey="representatives">
+                <RepresentativePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
             path: '/patients',
             element: (
               <Template activeKey="patients">

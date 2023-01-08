@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
 import { representativesAPI } from '../app/services';
 import RepresentativeInfo from '../components/RepresentativeInfo/RepresentativeInfo';
+import RepresentativePatients from '../components/RepresentativePatients/RepresentativePatients';
 
 const RepresentativePage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -59,9 +60,11 @@ const RepresentativePage = () => {
               key: 'info',
               children: <RepresentativeInfo representative={representative} />,
             },
-            { label: 'Курсы', key: 'shedules' },
-            { label: 'Расписание', key: 'patients' },
-            { label: 'Документы', key: 'representatives' },
+            {
+              label: 'Пациенты',
+              key: 'patients',
+              children: <RepresentativePatients representative={representative} />,
+            },
           ]}
         />
       </Spin>

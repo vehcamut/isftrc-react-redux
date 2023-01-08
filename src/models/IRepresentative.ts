@@ -25,3 +25,8 @@ export interface IRepresentativeData {
   data: IRepresentative[];
   count: number;
 }
+
+export interface IAddPatientToRepresentative {
+  patientId: string;
+  representativeId: string;
+}
