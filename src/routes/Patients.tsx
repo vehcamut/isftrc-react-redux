@@ -17,7 +17,7 @@ const Patients = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
-  const { data, isLoading } = patientsAPI.useGetQuery({ limit, page, filter, isActive });
+  const { data, isLoading } = patientsAPI.useGetPatientsQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IPatient> = [
     {

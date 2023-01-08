@@ -13,8 +13,8 @@ interface PatinentInfoProps extends PropsWithChildren {
 
 const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
   const [messageApi, contextHolder] = message.useMessage();
-  const [updatePatient] = patientsAPI.useUpdateMutation();
-  const [changeStatus] = patientsAPI.useChangeStatusMutation();
+  const [updatePatient] = patientsAPI.useUpdatePatientMutation();
+  const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {

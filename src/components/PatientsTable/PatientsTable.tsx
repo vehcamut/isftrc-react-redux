@@ -29,7 +29,7 @@ const PatientsTable: FunctionComponent<PatientsTableProps> = ({ onRowClick, repr
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading } = patientsAPI.useGetQuery({
+  const { data, isLoading } = patientsAPI.useGetPatientsQuery({
     limit,
     page,
     filter,

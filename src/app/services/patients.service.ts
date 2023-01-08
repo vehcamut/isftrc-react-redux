@@ -4,13 +4,14 @@ import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
 import { IGet, IGetByID, IGetPatient, IGetPerson, IPatient, IPatientChangeStatus, IPatientData } from '../../models';
 import baseQuery from './baseQuery';
+import { api } from './api.service';
 
-export const patientsAPI = createApi({
-  reducerPath: 'patientsAPI',
-  baseQuery,
-  tagTypes: ['patients'],
+export const patientsAPI = api.injectEndpoints({
+  // reducerPath: 'patientsAPI',
+  // baseQuery,
+  // tagTypes: ['patients'],
   endpoints: (build) => ({
-    get: build.query<IPatientData, IGetPatient>({
+    getPatients: build.query<IPatientData, IGetPatient>({
       query: (params) => ({
         url: 'patients/get',
         params,
@@ -21,7 +22,7 @@ export const patientsAPI = createApi({
         return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       },
     }),
-    getById: build.query<IPatient, IGetByID>({
+    getPatientById: build.query<IPatient, IGetByID>({
       query: (params) => ({
         url: 'patients/getById',
         params,
@@ -40,7 +41,7 @@ export const patientsAPI = createApi({
       //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       // },
     }),
-    add: build.mutation<any, IPatient>({
+    addPatient: build.mutation<any, IPatient>({
       query: (body) => ({
         url: 'patients/add',
         method: 'POST',
@@ -49,7 +50,7 @@ export const patientsAPI = createApi({
       }),
       invalidatesTags: ['patients'],
     }),
-    update: build.mutation<any, IPatient>({
+    updatePatient: build.mutation<any, IPatient>({
       query: (body) => ({
         url: 'patients/update',
         method: 'PUT',
@@ -58,7 +59,7 @@ export const patientsAPI = createApi({
       }),
       invalidatesTags: ['patients'],
     }),
-    changeStatus: build.mutation<any, IPatientChangeStatus>({
+    changePatientStatus: build.mutation<any, IPatientChangeStatus>({
       query: (body) => ({
         url: 'patients/changeStatus',
         method: 'PATCH',

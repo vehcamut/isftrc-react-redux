@@ -51,7 +51,7 @@ import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
 const AddPatient = () => {
   const [isAdded, setIsAdded] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [addPatient] = patientsAPI.useAddMutation();
+  const [addPatient] = patientsAPI.useAddPatientMutation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

@@ -10,7 +10,7 @@ const PatientPage = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading } = patientsAPI.useGetByIdQuery({ id: params?.id || '' });
+  const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
 
   const onBackClick = () => {
     navigate('/patients', { replace: true });
