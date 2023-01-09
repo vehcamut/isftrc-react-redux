@@ -8,23 +8,24 @@ import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
-import classes from './RepresentativePatients.module.scss';
+import classes from './PatientRepresentatives.module.scss';
 import { IPatient, IRepresentative } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { patientTableSlice } from '../../app/reducers';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import PatientsTable from '../PatientsTable/PatientsTable';
+import RepresentativesTable from '../RepresentativesTable/RepresentativesTable';
 
-interface RepresentativePatientsProps extends PropsWithChildren {
+interface PatientRepresentativesProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
-  representative?: IRepresentative;
+  patient?: IPatient;
 }
 const { Search } = Input;
 const { confirm } = Modal;
 
 function CustomCell(props: any) {
-  // console.log(props);
+  console.log(props);
   // eslint-disable-next-line react/destructuring-assignment
   if (Array.isArray(props?.children)) {
     // eslint-disable-next-line react/destructuring-assignment
@@ -42,7 +43,10 @@ function CustomCell(props: any) {
   return <td {...props} />;
 }
 
-const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = ({ representative }) => {
+const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = ({ patient }) => {
+  const state1 = useAppSelector((state) => state.patientTableReducer);
+  // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
+
   const [messageApi, contextHolder] = message.useMessage();
   const [addPatient] = patientsAPI.useAddPatientMutation();
   const [updateRepresentative] = representativesAPI.useUpdateRepresentativeMutation();
@@ -57,7 +61,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const [isActive, setIsActive] = useState<boolean | undefined>(true);
   // const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
   const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
-    id: representative?._id || '',
+    id: patient?._id || '',
     isActive,
   });
 
@@ -67,7 +71,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
         title: 'Вы точно хотите отвязать пациента от представителя?',
         icon: <ExclamationCircleFilled />,
         onOk() {
-          removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+          // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
           messageApi.open({
             type: 'success',
             content: 'Пациент успешно отвязан.',
@@ -195,7 +199,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   };
   const onFinish = async (values: any) => {
     try {
-      await updateRepresentative({ ...representative, ...values }).unwrap();
+      // await updateRepresentative({ ...representative, ...values }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Данные представителя успешно обновлены',
@@ -222,7 +226,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const onFinishAddNew = async (values: any) => {
     try {
       const patientId = await addPatient(values).unwrap();
-      addPatientToRepresentative({ patientId, representativeId: representative?._id || '' });
+      // addPatientToRepresentative({ patientId, representativeId: representative?._id || '' });
       onModalNewClose();
       messageApi.open({
         type: 'success',
@@ -246,8 +250,8 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
       // console.log('ERROR!');
     }
   };
-  const onRowClick = (patient: any) => {
-    addPatientToRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
+  const onRowClick = (representative: any) => {
+    // addPatientToRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
     setIsModalAddOpened(false);
     messageApi.open({
       type: 'success',
@@ -258,7 +262,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
 
   const onActivate = async () => {
     try {
-      await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: true }).unwrap();
+      // await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: true }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Представитель успешно активирован',
@@ -272,7 +276,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   };
   const onDeactivate = async () => {
     try {
-      await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: false }).unwrap();
+      // await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: false }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Представитель успешно деактивирован',
@@ -311,7 +315,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
         width="100%"
         onCancel={onModalAddClose}
       >
-        <PatientsTable onRowClick={onRowClick} representative={representative} />
+        {/* <PatientsTable onRowClick={onRowClick} representative={representative} /> */}
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
@@ -366,6 +370,14 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
           />
         </Descriptions.Item> */}
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
+          <RepresentativesTable
+            onRowClick={onRowClick}
+            dataSourseQuery={representativesAPI.useGetRepresentativesQuery}
+            hasSearch={false}
+            tableState={state1}
+            slice={patientTableSlice}
+            reduser={useAppSelector((state) => state.patientTableReducer)}
+          />
           {/* <Search
             allowClear
             placeholder="Введите текст поиска"
@@ -415,4 +427,4 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   );
 };
 
-export default RepresentativePatients;
+export default PatientRepresentatives;

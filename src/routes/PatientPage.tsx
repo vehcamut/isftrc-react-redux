@@ -1,11 +1,16 @@
-import React from 'react';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
 import { Typography, Row, Col, Button, Tabs, message, Spin } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
 import { patientsAPI } from '../app/services';
 import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
+import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
 
-const PatientPage = () => {
+interface FormDialogProps extends PropsWithChildren {
+  activeKey: 'info' | 'representatives';
+}
+
+const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
@@ -50,6 +55,7 @@ const PatientPage = () => {
           size="small"
           onChange={onChange}
           type="line"
+          activeKey={activeKey}
           tabPosition="left"
           items={[
             {
@@ -57,9 +63,14 @@ const PatientPage = () => {
               key: 'info',
               children: <PatinentDescription patient={patient} />,
             },
+            {
+              label: 'Представители',
+              key: 'representatives',
+              children: <PatientRepresentatives patient={patient} />,
+            },
             { label: 'Курсы', key: 'shedules' },
             { label: 'Расписание', key: 'patients' },
-            { label: 'Документы', key: 'representatives' },
+            { label: 'Документы', key: 'documents' },
           ]}
         />
       </Spin>

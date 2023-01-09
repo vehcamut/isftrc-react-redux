@@ -1,0 +1,105 @@
+// .site-layout {
+//   &-content {
+//     background: #fff;
+//     padding-left: 16px;
+//     padding-right: 16px;
+//     padding-top: 8px;
+//   }
+//   &-header {
+//     background: #fff;
+//     padding: 0;
+//     height: auto;
+//     padding-bottom: 5px;
+//     border-bottom: 2px solid #F0F2F5;
+//   }
+// }
+.site-layout {
+  &-content {
+    background: #fff;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 8px;
+  }
+}
+.page-layout {
+  padding-bottom: 40px;
+  min-height: 100vh;
+  .header {
+    background-color: #ffffff;
+    height: 100%;
+  }
+  .content {
+    min-height: 100%;
+    background: #e6f4ff;
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+.patients {
+  &-table {
+    & thead th {
+      color: #ffffff;
+    }
+    //background-color: red;
+    & tbody tr {
+      cursor: pointer;
+
+      border-radius: 0px;
+      &:nth-child(2n - 1) {
+        //background-color: rgb(229, 229, 229);
+      }
+    }
+    // & tbody tr:hover {
+    //   /// background-color: red;
+    //   // color: #ffffff;
+    //   // .active-table-item {
+    //   //   &__not-active {   
+    //   //     color: #ffffff;
+    //   //     -webkit-text-stroke-width: 0.5px;      
+    //   //     -webkit-text-stroke-color: #ff0000;
+    //   //   }
+    //   //   &__active {   
+    //   //     color: #ffffff;
+    //   //     -webkit-text-stroke-width: 0.5px;      
+    //   //     -webkit-text-stroke-color: #00ff00;
+    //   //   }
+    //   // }
+    //   // td {
+    //   //   background: none;
+    //   // }
+    //   //background-color: red;//rgb(220, 231, 231);
+      
+    // }
+    
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  //border: 1px solid green;
+  //-webkit-text-fill-color: green;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+  //transition: background-color 5000s ease-in-out 0s;
+}
+
+.site-custom-tab-bar {
+  background-color: #ffffff;
+  border-radius: 0px 10px 0px 10px;
+}
+
+.active-table-item {
+  &__not-active {
+    color: #e60000;
+  }
+  &__active {
+    color: #0c9500;
+  }
+}
+

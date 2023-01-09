@@ -137,7 +137,7 @@ const router = createBrowserRouter([
             path: '/patients/:id/info',
             element: (
               <Template activeKey="patients">
-                <PatientPage />
+                <PatientPage activeKey="info" />
               </Template>
             ),
           },
@@ -147,10 +147,10 @@ const router = createBrowserRouter([
       {
         children: [
           {
-            path: '/patients/:id/shedules',
+            path: '/patients/:id/representatives',
             element: (
               <Template activeKey="patients">
-                <PatientPage />
+                <PatientPage activeKey="representatives" />
               </Template>
             ),
           },
