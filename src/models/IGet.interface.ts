@@ -21,6 +21,9 @@ export interface IGetPerson extends IGet {
 export interface IGetPatient extends IGetPerson {
   representativeId?: string;
 }
+export interface IGetPatientRepresentatives extends IGetPerson {
+  id: string;
+}
 export interface IGetAdvertisingSource extends IGet {
   isActive?: boolean;
 }

@@ -6,7 +6,7 @@ import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
 import { FilterFilled } from '@ant-design/icons';
-import classes from './RepresentativesTable.module.scss';
+import classes from './MyTable.module.scss';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import { IPatient, IRepresentative } from '../../models';
 import { addClass } from '../../app/common';
@@ -16,7 +16,7 @@ import CustomCell from '../CustomCell/CustomCell';
 
 const { Search } = Input;
 
-interface RepresentativesTableProps extends PropsWithChildren {
+interface MyTableProps extends PropsWithChildren {
   onRowClick: (record: any) => void;
   dataSourseQuery: any;
   extraOptions?: any;
@@ -25,10 +25,10 @@ interface RepresentativesTableProps extends PropsWithChildren {
   hasPagination?: boolean;
   slice?: any;
   reduser?: any;
-  // columns: ColumnsType<IRepresentative>;
+  columns: any;
 }
 
-const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
+const MyTable: FunctionComponent<MyTableProps> = ({
   onRowClick,
   extraOptions,
   dataSourseQuery,
@@ -37,10 +37,9 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
   tableState,
   slice,
   reduser,
-  // columns,
+  columns,
 }) => {
   const dispatch = useAppDispatch();
-
   //   const [limit, setLimit] = useState(tableState.limit);
   //   const [page, setPage] = useState(tableState.page);
   //   const [filter, setFilter] = useState(tableState.filter);
@@ -61,109 +60,101 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
       : useState<boolean | undefined>(tableState.isActive);
   const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
 
-  columns[columns.findIndex((v) => v.key === 'isActive')].render = (flag: boolean) => {
-    return flag ? (
-      <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-    ) : (
-      <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-    );
-  };
-  if (isActive !== undefined) columns[columns.findIndex((v) => v.key === 'isActive')].defaultFilteredValue = [isActive];
-  const columns: ColumnsType<IRepresentative> = [
-    {
-      title: 'Логин',
-      dataIndex: 'login',
-      key: 'login',
-      width: '10%',
-    },
-    {
-      title: 'ФИО',
-      dataIndex: 'name',
-      key: 'name',
-      width: '22%',
-      render: (x, record) => {
-        return `${record.surname} ${record.name} ${record.patronymic}`;
-      },
-    },
-    {
-      title: 'Телефоны',
-      dataIndex: 'phoneNumbers',
-      key: 'phoneNumbers',
-      width: '12%',
-      render: (number: string[]) => {
-        return number.reduce((p, c) => {
-          const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
-          return `${p} ${pn}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Emails',
-      dataIndex: 'emails',
-      key: 'emails',
-      width: '16%',
-      render: (emails: string[]) => {
-        return emails.reduce((p, c) => {
-          return `${p} ${c}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Дата рождения',
-      dataIndex: 'dateOfBirth',
-      key: 'dateOfBirth',
-      width: '12%',
-      render: (date: Date) => {
-        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Пол',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: '8%',
-    },
-    {
-      title: 'Адрес',
-      dataIndex: 'address',
-      key: 'address',
-      width: '20%',
-    },
-    {
-      title: 'Статус',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      width: '10%',
-      render: (flag: boolean) => {
-        return flag ? (
-          <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-        ) : (
-          <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-        );
-      },
-      defaultFilteredValue: [isActive],
-      // eslint-disable-next-line react/no-unstable-nested-components
-      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-      filters: [
-        {
-          text: 'активен',
-          value: 1,
-        },
-        {
-          text: 'неактивен',
-          value: 0,
-        },
-      ],
-    },
-  ];
+  // const columns: ColumnsType<IRepresentative> = [
+  //   {
+  //     title: 'Логин',
+  //     dataIndex: 'login',
+  //     key: 'login',
+  //     width: '10%',
+  //   },
+  //   {
+  //     title: 'ФИО',
+  //     dataIndex: 'name',
+  //     key: 'name',
+  //     width: '22%',
+  //     render: (x, record) => {
+  //       return `${record.surname} ${record.name} ${record.patronymic}`;
+  //     },
+  //   },
+  //   {
+  //     title: 'Телефоны',
+  //     dataIndex: 'phoneNumbers',
+  //     key: 'phoneNumbers',
+  //     width: '12%',
+  //     render: (number: string[]) => {
+  //       return number.reduce((p, c) => {
+  //         const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+  //         return `${p} ${pn}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Emails',
+  //     dataIndex: 'emails',
+  //     key: 'emails',
+  //     width: '16%',
+  //     render: (emails: string[]) => {
+  //       return emails.reduce((p, c) => {
+  //         return `${p} ${c}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Дата рождения',
+  //     dataIndex: 'dateOfBirth',
+  //     key: 'dateOfBirth',
+  //     width: '12%',
+  //     render: (date: Date) => {
+  //       return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Пол',
+  //     dataIndex: 'gender',
+  //     key: 'gender',
+  //     width: '8%',
+  //   },
+  //   {
+  //     title: 'Адрес',
+  //     dataIndex: 'address',
+  //     key: 'address',
+  //     width: '20%',
+  //   },
+  //   {
+  //     title: 'Статус',
+  //     dataIndex: 'isActive',
+  //     key: 'isActive',
+  //     width: '10%',
+  //     render: (flag: boolean) => {
+  //       return flag ? (
+  //         <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+  //       ) : (
+  //         <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+  //       );
+  //     },
+  //     defaultFilteredValue: [isActive],
+  //     // eslint-disable-next-line react/no-unstable-nested-components
+  //     filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+  //     filters: [
+  //       {
+  //         text: 'активен',
+  //         value: 1,
+  //       },
+  //       {
+  //         text: 'неактивен',
+  //         value: 0,
+  //       },
+  //     ],
+  //   },
+  // ];
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
     filters: Record<string, FilterValue | null>,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    sorter: SorterResult<IRepresentative> | SorterResult<IRepresentative>[],
+    // sorter: SorterResult<IRepresentative> | SorterResult<IRepresentative>[],
   ) => {
     if (filters?.isActive) {
       if (filters?.isActive.length > 1) setIsActive(undefined);
@@ -228,18 +219,17 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
         rowClassName={(record) =>
           record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
         }
-        className={addClass(classes, 'patients-table')}
+        className={addClass(classes, 'my-table')}
         onChange={handleTableChange}
       />
     </>
   );
 };
 
-RepresentativesTable.defaultProps = {
+MyTable.defaultProps = {
   hasSearch: true,
   extraOptions: {},
   hasPagination: false,
-  // slice: undefined,
   tableState: {
     limit: 10,
     page: 0,
@@ -250,4 +240,4 @@ RepresentativesTable.defaultProps = {
   reduser: undefined,
 };
 
-export default RepresentativesTable;
+export default MyTable;

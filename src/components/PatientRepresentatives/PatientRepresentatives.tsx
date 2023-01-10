@@ -83,117 +83,6 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
     };
     showConfirm();
   };
-
-  const columns: ColumnsType<IPatient> = [
-    {
-      title: '№',
-      dataIndex: 'number',
-      key: 'number',
-      width: '5%',
-    },
-    {
-      title: 'ФИО',
-      dataIndex: 'name',
-      key: 'name',
-      width: '22%',
-      render: (x, record) => {
-        return `${record.surname} ${record.name} ${record.patronymic}`;
-      },
-    },
-    {
-      title: 'Дата рождения',
-      dataIndex: 'dateOfBirth',
-      key: 'dateOfBirth',
-      width: '13%',
-      render: (date: Date) => {
-        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Пол',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: '9%',
-    },
-    {
-      title: 'Адрес',
-      dataIndex: 'address',
-      key: 'address',
-      width: '38%',
-    },
-    {
-      title: 'Статус',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      width: '8%',
-      render: (flag: boolean) => {
-        return flag ? (
-          <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-        ) : (
-          <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-        );
-      },
-      defaultFilteredValue: ['1'],
-
-      // eslint-disable-next-line react/no-unstable-nested-components
-      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-      filters: [
-        {
-          text: 'активен',
-          value: 1,
-        },
-        {
-          text: 'неактивен',
-          value: 0,
-        },
-      ],
-    },
-    {
-      // title: 'Адрес',
-      // dataIndex: 'address',
-      key: 'remove',
-      render: (v, r) => {
-        return (
-          <Button
-            style={{ color: 'red', backgroundColor: 'white' }}
-            size="small"
-            type="primary"
-            // shape="circle"
-            icon={<DeleteRowOutlined />}
-            onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              e.stopPropagation();
-              onRemove(r._id);
-            }}
-          />
-        );
-      },
-      width: '5%',
-    },
-  ];
-  // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
-
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    filters: Record<string, FilterValue | null>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    sorter: SorterResult<IPatient> | SorterResult<IPatient>[],
-  ) => {
-    if (filters?.isActive) {
-      if (filters?.isActive.length > 1) setIsActive(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
-    } else setIsActive(undefined);
-    // console.log(pagination, filters, sorter);
-    // dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
-    // dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
-  };
-  // const onSearch = (value: string) => {
-  //   dispatch(setPage(0));
-  //   dispatch(setFilter(value));
-  // };
-
   const onAddClick = () => {
     navigate('/patients/add', { replace: true });
   };
@@ -260,64 +149,227 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
     // alert(r._id);
   };
 
-  const onActivate = async () => {
-    try {
-      // await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: true }).unwrap();
-      messageApi.open({
-        type: 'success',
-        content: 'Представитель успешно активирован',
-      });
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  };
-  const onDeactivate = async () => {
-    try {
-      // await changeStatus({ _id: representative?._id ? representative?._id : '', isActive: false }).unwrap();
-      messageApi.open({
-        type: 'success',
-        content: 'Представитель успешно деактивирован',
-      });
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  };
+  const columns: ColumnsType<IRepresentative> = [
+    {
+      title: 'Логин',
+      dataIndex: 'login',
+      key: 'login',
+      width: '10%',
+    },
+    {
+      title: 'ФИО',
+      dataIndex: 'name',
+      key: 'name',
+      width: '22%',
+      render: (x, record) => {
+        return `${record.surname} ${record.name} ${record.patronymic}`;
+      },
+    },
+    {
+      title: 'Телефоны',
+      dataIndex: 'phoneNumbers',
+      key: 'phoneNumbers',
+      width: '12%',
+      render: (number: string[]) => {
+        return number.reduce((p, c) => {
+          const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+          return `${p} ${pn}`;
+        }, '');
+        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Emails',
+      dataIndex: 'emails',
+      key: 'emails',
+      width: '16%',
+      render: (emails: string[]) => {
+        return emails.reduce((p, c) => {
+          return `${p} ${c}`;
+        }, '');
+        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Дата рождения',
+      dataIndex: 'dateOfBirth',
+      key: 'dateOfBirth',
+      width: '12%',
+      render: (date: Date) => {
+        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Пол',
+      dataIndex: 'gender',
+      key: 'gender',
+      width: '8%',
+    },
+    {
+      title: 'Адрес',
+      dataIndex: 'address',
+      key: 'address',
+      width: '20%',
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      width: '10%',
+      // render: (flag: boolean) => {
+      //   return flag ? (
+      //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+      //   ) : (
+      //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+      //   );
+      // },
+      // defaultFilteredValue: [undefined],
+      // eslint-disable-next-line react/no-unstable-nested-components
+      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+      filters: [
+        {
+          text: 'активен',
+          value: 1,
+        },
+        {
+          text: 'неактивен',
+          value: 0,
+        },
+      ],
+    },
+  ];
+  const columnsA: ColumnsType<IRepresentative> = [
+    {
+      title: 'Логин',
+      dataIndex: 'login',
+      key: 'login',
+      width: '10%',
+    },
+    {
+      title: 'ФИО',
+      dataIndex: 'name',
+      key: 'name',
+      width: '22%',
+      render: (x, record) => {
+        return `${record.surname} ${record.name} ${record.patronymic}`;
+      },
+    },
+    {
+      title: 'Телефоны',
+      dataIndex: 'phoneNumbers',
+      key: 'phoneNumbers',
+      width: '12%',
+      render: (number: string[]) => {
+        return number.reduce((p, c) => {
+          const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+          return `${p} ${pn}`;
+        }, '');
+        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Emails',
+      dataIndex: 'emails',
+      key: 'emails',
+      width: '16%',
+      render: (emails: string[]) => {
+        return emails.reduce((p, c) => {
+          return `${p} ${c}`;
+        }, '');
+        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Д/Р',
+      dataIndex: 'dateOfBirth',
+      key: 'dateOfBirth',
+      width: '12%',
+      render: (date: Date) => {
+        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
+      title: 'Пол',
+      dataIndex: 'gender',
+      key: 'gender',
+      width: '8%',
+    },
+    {
+      title: 'Адрес',
+      dataIndex: 'address',
+      key: 'address',
+      width: '20%',
+    },
+    {
+      title: 'Статус',
+      dataIndex: 'isActive',
+      key: 'isActive',
+      width: '10%',
+      // render: (flag: boolean) => {
+      //   return flag ? (
+      //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+      //   ) : (
+      //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+      //   );
+      // },
+      // defaultFilteredValue: [undefined],
+      // eslint-disable-next-line react/no-unstable-nested-components
+      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+      filters: [
+        {
+          text: 'активен',
+          value: 1,
+        },
+        {
+          text: 'неактивен',
+          value: 0,
+        },
+      ],
+    },
+    {
+      // title: 'Адрес',
+      // dataIndex: 'address',
+      key: 'remove',
+      render: (v, r) => {
+        return (
+          <Button
+            style={{ color: 'red', backgroundColor: 'white' }}
+            size="small"
+            type="primary"
+            // shape="circle"
+            icon={<DeleteRowOutlined />}
+            onClick={(e) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              e.stopPropagation();
+              onRemove(r._id);
+            }}
+          />
+        );
+      },
+      width: '5%',
+    },
+  ];
+
   return (
     <>
       {contextHolder}
-      {/* <Modal
-        title="Modal"
-        open={isModalConfirmRemoveOpened}
-        onOk={hideConfirmModal}
-        onCancel={hideConfirmModal}
-        // okText="确认"
-        // cancelText="取消"
-      >
-        <p>Вы точно хотите отвязать пациента от представителя?</p>
-        {/* <p>Bla bla ...</p>
-        <p>Bla bla ...</p> }
-      </Modal> */}
       <Modal
         destroyOnClose
         open={isModalAddOpened}
-        // footer={null}
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Добавление существующего пациента
+            Добавление существующего представителя
           </Typography.Title>
         }
         width="100%"
         onCancel={onModalAddClose}
       >
-        {/* <PatientsTable onRowClick={onRowClick} representative={representative} /> */}
-        {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
+        <RepresentativesTable
+          columns={columns}
+          onRowClick={onRowClick}
+          dataSourseQuery={representativesAPI.useGetRepresentativesQuery}
+          extraOptions={{ patientId: patient?._id }}
+        />
       </Modal>
       <Modal
         destroyOnClose
@@ -371,12 +423,14 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         </Descriptions.Item> */}
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
           <RepresentativesTable
+            columns={columnsA}
             onRowClick={onRowClick}
-            dataSourseQuery={representativesAPI.useGetRepresentativesQuery}
+            dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}
-            tableState={state1}
-            slice={patientTableSlice}
-            reduser={useAppSelector((state) => state.patientTableReducer)}
+            extraOptions={{ id: patient?._id }}
+            // tableState={state1}
+            // slice={patientTableSlice}
+            // reduser={useAppSelector((state) => state.patientTableReducer)}
           />
           {/* <Search
             allowClear
@@ -385,42 +439,6 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
             enterButton
             style={{ marginBottom: '15px' }}
           /> */}
-          <Table
-            components={{
-              body: {
-                cell: CustomCell,
-              },
-            }}
-            style={{ width: '100%' }}
-            tableLayout="fixed"
-            bordered
-            size="small"
-            columns={columns}
-            rowKey={(record) => record.number}
-            dataSource={data}
-            pagination={false}
-            // pagination={{
-            //   position: ['bottomCenter'],
-            //   current: page + 1,
-            //   pageSize: limit,
-            //   total: data?.count,
-            //   pageSizeOptions: [10, 20, 50, 100],
-            //   showSizeChanger: true,
-            // }}
-            loading={isLoading}
-            onRow={(record) => {
-              return {
-                onClick: () => {
-                  navigate(`/patients/${record._id}/info`);
-                },
-              };
-            }}
-            rowClassName={(record) =>
-              record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
-            }
-            className={addClass(classes, 'patients-table')}
-            onChange={handleTableChange}
-          />
         </Descriptions.Item>
       </Descriptions>
     </>

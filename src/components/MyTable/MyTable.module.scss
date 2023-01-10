@@ -1,0 +1,22 @@
+.my-table {
+  & thead th {
+    color: #ffffff;
+  }
+  & tbody tr {
+    cursor: pointer;
+
+    border-radius: 0px;
+    &:nth-child(2n - 1) {
+    }
+  } 
+}
+
+.isActive-table-item {
+  &__not-active {
+    color: #e60000;
+  }
+  &__active {
+    color: #0c9500;
+  }
+}
+

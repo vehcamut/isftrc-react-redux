@@ -2,7 +2,18 @@
 import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
-import { IGet, IGetByID, IGetPatient, IGetPerson, IPatient, IPatientChangeStatus, IPatientData } from '../../models';
+import {
+  IRepresentativeData,
+  IRepresentative,
+  IGet,
+  IGetByID,
+  IGetPatient,
+  IGetPatientRepresentatives,
+  IGetPerson,
+  IPatient,
+  IPatientChangeStatus,
+  IPatientData,
+} from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
 
@@ -40,6 +51,17 @@ export const patientsAPI = api.injectEndpoints({
       // transformResponse(apiRespons: IPatient[], meta): IPatientData {
       //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       // },
+    }),
+    getPatientRepresentatives: build.query<IRepresentativeData, IGetPatientRepresentatives>({
+      query: (params) => ({
+        url: 'patients/getPatientRepresentatives',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['patients', 'representative'],
+      transformResponse(apiRespons: IRepresentative[], meta): IRepresentativeData {
+        return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
+      },
     }),
     addPatient: build.mutation<any, IPatient>({
       query: (body) => ({
