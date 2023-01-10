@@ -5,7 +5,7 @@ import { Typography, Table, Row, Col, Button, Input } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
-import { FilterFilled } from '@ant-design/icons';
+import { DeleteRowOutlined, FilterFilled } from '@ant-design/icons';
 import classes from './RepresentativesTable.module.scss';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import { IPatient, IRepresentative } from '../../models';
@@ -25,6 +25,7 @@ interface RepresentativesTableProps extends PropsWithChildren {
   hasPagination?: boolean;
   slice?: any;
   reduser?: any;
+  onRemove?: any;
   // columns: ColumnsType<IRepresentative>;
 }
 
@@ -37,6 +38,7 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
   tableState,
   slice,
   reduser,
+  onRemove,
   // columns,
 }) => {
   const dispatch = useAppDispatch();
@@ -61,14 +63,14 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
       : useState<boolean | undefined>(tableState.isActive);
   const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
 
-  columns[columns.findIndex((v) => v.key === 'isActive')].render = (flag: boolean) => {
-    return flag ? (
-      <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-    ) : (
-      <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-    );
-  };
-  if (isActive !== undefined) columns[columns.findIndex((v) => v.key === 'isActive')].defaultFilteredValue = [isActive];
+  // columns[columns.findIndex((v) => v.key === 'isActive')].render = (flag: boolean) => {
+  //   return flag ? (
+  //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+  //   ) : (
+  //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+  //   );
+  // };
+  // if (isActive !== undefined) columns[columns.findIndex((v) => v.key === 'isActive')].defaultFilteredValue = [isActive];
   const columns: ColumnsType<IRepresentative> = [
     {
       title: 'Логин',
@@ -158,6 +160,28 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
       ],
     },
   ];
+  if (onRemove) {
+    columns.push({
+      key: 'remove',
+      render: (v, record) => {
+        return (
+          <Button
+            style={{ color: 'red', backgroundColor: 'white' }}
+            size="small"
+            type="primary"
+            // shape="circle"
+            icon={<DeleteRowOutlined />}
+            onClick={(e) => {
+              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+              e.stopPropagation();
+              onRemove(record);
+            }}
+          />
+        );
+      },
+      width: '5%',
+    });
+  }
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
@@ -248,6 +272,7 @@ RepresentativesTable.defaultProps = {
   },
   slice: undefined,
   reduser: undefined,
+  onRemove: undefined,
 };
 
 export default RepresentativesTable;

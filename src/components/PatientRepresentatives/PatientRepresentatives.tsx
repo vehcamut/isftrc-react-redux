@@ -49,6 +49,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
 
   const [messageApi, contextHolder] = message.useMessage();
   const [addPatient] = patientsAPI.useAddPatientMutation();
+  const [addRepresentative] = representativesAPI.useAddRepresentativeMutation();
   const [updateRepresentative] = representativesAPI.useUpdateRepresentativeMutation();
   const [addPatientToRepresentative] = representativesAPI.useAddPatientToRepresentativeMutation();
   const [removePatientFromRepresentative] = representativesAPI.useRemovePatientFromRepresentativeMutation();
@@ -60,18 +61,21 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
 
   const [isActive, setIsActive] = useState<boolean | undefined>(true);
   // const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
-  const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
-    id: patient?._id || '',
-    isActive,
-  });
+  // const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
+  //   id: patient?._id || '',
+  //   isActive,
+  // });
 
-  const onRemove = (patientId: any) => {
+  const onRemove = (representativeRecord: any) => {
     const showConfirm = () => {
       confirm({
         title: 'Вы точно хотите отвязать пациента от представителя?',
         icon: <ExclamationCircleFilled />,
         onOk() {
-          // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+          removePatientFromRepresentative({
+            patientId: patient?._id || '',
+            representativeId: representativeRecord?._id || '',
+          });
           messageApi.open({
             type: 'success',
             content: 'Пациент успешно отвязан.',
@@ -114,12 +118,12 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
   };
   const onFinishAddNew = async (values: any) => {
     try {
-      const patientId = await addPatient(values).unwrap();
-      // addPatientToRepresentative({ patientId, representativeId: representative?._id || '' });
+      const representativeId = await addRepresentative(values).unwrap();
+      await addPatientToRepresentative({ patientId: patient?._id || '', representativeId });
       onModalNewClose();
       messageApi.open({
         type: 'success',
-        content: 'Пациент успешно добавлен.',
+        content: 'Представитель успешно добавлен и связан с пациентом.',
       });
       // setIsAdded(true);
       // navigate('/patients', { replace: true });
@@ -130,225 +134,233 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
       //   // 'Ошибка связи с сервером',
       // });
       // navigate('/patients', { replace: true });
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-        // 'Ошибка связи с сервером',
-      });
+    } catch (e: any) {
+      if (e?.data?.message) {
+        messageApi.open({
+          type: 'error',
+          content: e?.data?.message,
+          // 'Ошибка связи с сервером',
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: 'Ошибка связи с сервером',
+          // 'Ошибка связи с сервером',
+        });
+      }
       // console.log('ERROR!');
     }
   };
   const onRowClick = (representative: any) => {
-    // addPatientToRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
+    addPatientToRepresentative({ patientId: patient?._id || '', representativeId: representative._id });
     setIsModalAddOpened(false);
     messageApi.open({
       type: 'success',
-      content: 'Пациент успешно добавлен.',
+      content: 'Пациент успешно связан с представителем.',
     });
     // alert(r._id);
   };
 
-  const columns: ColumnsType<IRepresentative> = [
-    {
-      title: 'Логин',
-      dataIndex: 'login',
-      key: 'login',
-      width: '10%',
-    },
-    {
-      title: 'ФИО',
-      dataIndex: 'name',
-      key: 'name',
-      width: '22%',
-      render: (x, record) => {
-        return `${record.surname} ${record.name} ${record.patronymic}`;
-      },
-    },
-    {
-      title: 'Телефоны',
-      dataIndex: 'phoneNumbers',
-      key: 'phoneNumbers',
-      width: '12%',
-      render: (number: string[]) => {
-        return number.reduce((p, c) => {
-          const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
-          return `${p} ${pn}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Emails',
-      dataIndex: 'emails',
-      key: 'emails',
-      width: '16%',
-      render: (emails: string[]) => {
-        return emails.reduce((p, c) => {
-          return `${p} ${c}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Дата рождения',
-      dataIndex: 'dateOfBirth',
-      key: 'dateOfBirth',
-      width: '12%',
-      render: (date: Date) => {
-        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Пол',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: '8%',
-    },
-    {
-      title: 'Адрес',
-      dataIndex: 'address',
-      key: 'address',
-      width: '20%',
-    },
-    {
-      title: 'Статус',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      width: '10%',
-      // render: (flag: boolean) => {
-      //   return flag ? (
-      //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-      //   ) : (
-      //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-      //   );
-      // },
-      // defaultFilteredValue: [undefined],
-      // eslint-disable-next-line react/no-unstable-nested-components
-      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-      filters: [
-        {
-          text: 'активен',
-          value: 1,
-        },
-        {
-          text: 'неактивен',
-          value: 0,
-        },
-      ],
-    },
-  ];
-  const columnsA: ColumnsType<IRepresentative> = [
-    {
-      title: 'Логин',
-      dataIndex: 'login',
-      key: 'login',
-      width: '10%',
-    },
-    {
-      title: 'ФИО',
-      dataIndex: 'name',
-      key: 'name',
-      width: '22%',
-      render: (x, record) => {
-        return `${record.surname} ${record.name} ${record.patronymic}`;
-      },
-    },
-    {
-      title: 'Телефоны',
-      dataIndex: 'phoneNumbers',
-      key: 'phoneNumbers',
-      width: '12%',
-      render: (number: string[]) => {
-        return number.reduce((p, c) => {
-          const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
-          return `${p} ${pn}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Emails',
-      dataIndex: 'emails',
-      key: 'emails',
-      width: '16%',
-      render: (emails: string[]) => {
-        return emails.reduce((p, c) => {
-          return `${p} ${c}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Д/Р',
-      dataIndex: 'dateOfBirth',
-      key: 'dateOfBirth',
-      width: '12%',
-      render: (date: Date) => {
-        return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
-      title: 'Пол',
-      dataIndex: 'gender',
-      key: 'gender',
-      width: '8%',
-    },
-    {
-      title: 'Адрес',
-      dataIndex: 'address',
-      key: 'address',
-      width: '20%',
-    },
-    {
-      title: 'Статус',
-      dataIndex: 'isActive',
-      key: 'isActive',
-      width: '10%',
-      // render: (flag: boolean) => {
-      //   return flag ? (
-      //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-      //   ) : (
-      //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-      //   );
-      // },
-      // defaultFilteredValue: [undefined],
-      // eslint-disable-next-line react/no-unstable-nested-components
-      filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-      filters: [
-        {
-          text: 'активен',
-          value: 1,
-        },
-        {
-          text: 'неактивен',
-          value: 0,
-        },
-      ],
-    },
-    {
-      // title: 'Адрес',
-      // dataIndex: 'address',
-      key: 'remove',
-      render: (v, r) => {
-        return (
-          <Button
-            style={{ color: 'red', backgroundColor: 'white' }}
-            size="small"
-            type="primary"
-            // shape="circle"
-            icon={<DeleteRowOutlined />}
-            onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              e.stopPropagation();
-              onRemove(r._id);
-            }}
-          />
-        );
-      },
-      width: '5%',
-    },
-  ];
+  // const columns: ColumnsType<IRepresentative> = [
+  //   {
+  //     title: 'Логин',
+  //     dataIndex: 'login',
+  //     key: 'login',
+  //     width: '10%',
+  //   },
+  //   {
+  //     title: 'ФИО',
+  //     dataIndex: 'name',
+  //     key: 'name',
+  //     width: '22%',
+  //     render: (x, record) => {
+  //       return `${record.surname} ${record.name} ${record.patronymic}`;
+  //     },
+  //   },
+  //   {
+  //     title: 'Телефоны',
+  //     dataIndex: 'phoneNumbers',
+  //     key: 'phoneNumbers',
+  //     width: '12%',
+  //     render: (number: string[]) => {
+  //       return number.reduce((p, c) => {
+  //         const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+  //         return `${p} ${pn}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Emails',
+  //     dataIndex: 'emails',
+  //     key: 'emails',
+  //     width: '16%',
+  //     render: (emails: string[]) => {
+  //       return emails.reduce((p, c) => {
+  //         return `${p} ${c}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Дата рождения',
+  //     dataIndex: 'dateOfBirth',
+  //     key: 'dateOfBirth',
+  //     width: '12%',
+  //     render: (date: Date) => {
+  //       return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Пол',
+  //     dataIndex: 'gender',
+  //     key: 'gender',
+  //     width: '8%',
+  //   },
+  //   {
+  //     title: 'Адрес',
+  //     dataIndex: 'address',
+  //     key: 'address',
+  //     width: '20%',
+  //   },
+  //   {
+  //     title: 'Статус',
+  //     dataIndex: 'isActive',
+  //     key: 'isActive',
+  //     width: '10%',
+  //     // render: (flag: boolean) => {
+  //     //   return flag ? (
+  //     //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+  //     //   ) : (
+  //     //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+  //     //   );
+  //     // },
+  //     // defaultFilteredValue: [undefined],
+  //     // eslint-disable-next-line react/no-unstable-nested-components
+  //     filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+  //     filters: [
+  //       {
+  //         text: 'активен',
+  //         value: 1,
+  //       },
+  //       {
+  //         text: 'неактивен',
+  //         value: 0,
+  //       },
+  //     ],
+  //   },
+  // ];
+  // const columnsA: ColumnsType<IRepresentative> = [
+  //   {
+  //     title: 'Логин',
+  //     dataIndex: 'login',
+  //     key: 'login',
+  //     width: '10%',
+  //   },
+  //   {
+  //     title: 'ФИО',
+  //     dataIndex: 'name',
+  //     key: 'name',
+  //     width: '22%',
+  //     render: (x, record) => {
+  //       return `${record.surname} ${record.name} ${record.patronymic}`;
+  //     },
+  //   },
+  //   {
+  //     title: 'Телефоны',
+  //     dataIndex: 'phoneNumbers',
+  //     key: 'phoneNumbers',
+  //     width: '12%',
+  //     render: (number: string[]) => {
+  //       return number.reduce((p, c) => {
+  //         const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+  //         return `${p} ${pn}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Emails',
+  //     dataIndex: 'emails',
+  //     key: 'emails',
+  //     width: '16%',
+  //     render: (emails: string[]) => {
+  //       return emails.reduce((p, c) => {
+  //         return `${p} ${c}`;
+  //       }, '');
+  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Д/Р',
+  //     dataIndex: 'dateOfBirth',
+  //     key: 'dateOfBirth',
+  //     width: '12%',
+  //     render: (date: Date) => {
+  //       return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+  //     },
+  //   },
+  //   {
+  //     title: 'Пол',
+  //     dataIndex: 'gender',
+  //     key: 'gender',
+  //     width: '8%',
+  //   },
+  //   {
+  //     title: 'Адрес',
+  //     dataIndex: 'address',
+  //     key: 'address',
+  //     width: '20%',
+  //   },
+  //   {
+  //     title: 'Статус',
+  //     dataIndex: 'isActive',
+  //     key: 'isActive',
+  //     width: '10%',
+  //     // render: (flag: boolean) => {
+  //     //   return flag ? (
+  //     //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+  //     //   ) : (
+  //     //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+  //     //   );
+  //     // },
+  //     // defaultFilteredValue: [undefined],
+  //     // eslint-disable-next-line react/no-unstable-nested-components
+  //     filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
+  //     filters: [
+  //       {
+  //         text: 'активен',
+  //         value: 1,
+  //       },
+  //       {
+  //         text: 'неактивен',
+  //         value: 0,
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     // title: 'Адрес',
+  //     // dataIndex: 'address',
+  //     key: 'remove',
+  //     render: (v, r) => {
+  //       return (
+  //         <Button
+  //           style={{ color: 'red', backgroundColor: 'white' }}
+  //           size="small"
+  //           type="primary"
+  //           // shape="circle"
+  //           icon={<DeleteRowOutlined />}
+  //           onClick={(e) => {
+  //             // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  //             e.stopPropagation();
+  //             onRemove(r._id);
+  //           }}
+  //         />
+  //       );
+  //     },
+  //     width: '5%',
+  //   },
+  // ];
 
   return (
     <>
@@ -365,7 +377,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         onCancel={onModalAddClose}
       >
         <RepresentativesTable
-          columns={columns}
+          // columns={columns}
           onRowClick={onRowClick}
           dataSourseQuery={representativesAPI.useGetRepresentativesQuery}
           extraOptions={{ patientId: patient?._id }}
@@ -383,7 +395,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         width="100%"
         onCancel={onModalNewClose}
       >
-        <AddPatientForm onReset={onModalNewClose} onFinish={onFinishAddNew} />
+        <AddRepresentativeForm type="add" onReset={onModalNewClose} onFinish={onFinishAddNew} />
         {/* <PatientsTable onRowClick={onRowClick} /> */}
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
@@ -423,7 +435,8 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         </Descriptions.Item> */}
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
           <RepresentativesTable
-            columns={columnsA}
+            // columns={columnsA}
+            onRemove={onRemove}
             onRowClick={onRowClick}
             dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}

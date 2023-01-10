@@ -33,9 +33,9 @@ const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) =
       <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>
         <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
           <Col>
-            <Typography.Title level={2} style={{ margin: 0 }}>
+            <Typography.Title level={3} style={{ margin: 0 }}>
               {!isLoading && representative
-                ? `Логин представителя: ${representative?.login}. ` +
+                ? `Логин: ${representative?.login}. ` +
                   `${representative?.surname} ${representative?.name.slice(0, 1)}.` +
                   `${representative?.patronymic.slice(0, 1)}.` +
                   ` ${new Date(representative?.dateOfBirth || '').toLocaleString('ru', {
