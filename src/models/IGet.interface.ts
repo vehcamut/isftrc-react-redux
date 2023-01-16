@@ -27,3 +27,6 @@ export interface IGetPatientRepresentatives extends IGetPerson {
 export interface IGetAdvertisingSource extends IGet {
   isActive?: boolean;
 }
+export interface IGetSpecialistType extends IGet {
+  isActive?: boolean;
+}

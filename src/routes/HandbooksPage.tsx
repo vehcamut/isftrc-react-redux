@@ -17,6 +17,7 @@ const HandbooksPage = () => {
     {
       title: 'Специальности',
       name: 'advertisingSource',
+      onClick: () => navigate('./specialistType'),
     },
     {
       title: 'Типы услуги',

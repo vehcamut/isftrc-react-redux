@@ -2,7 +2,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { addPatientReducer } from './reducers/patientForm.slise';
 import {
-  specialistsAPI,
+  // specialistsAPI,
   authAPI,
   patientsAPI,
   dadataAPI,
@@ -12,8 +12,8 @@ import {
 } from './services';
 import { authReducer } from './reducers/auth.slise';
 import {
-  specTypesDialogReducer,
-  specTypesTableReducer,
+  // specTypesDialogReducer,
+  // specTypesTableReducer,
   confirmDialogReducer,
   alertReducer,
   loginFormReducer,
@@ -22,8 +22,8 @@ import {
 
 export const store = configureStore({
   reducer: {
-    specTypesDialogReducer,
-    specTypesTableReducer,
+    // specTypesDialogReducer,
+    // specTypesTableReducer,
     alertReducer,
     loginFormReducer,
     confirmDialogReducer,
@@ -35,7 +35,7 @@ export const store = configureStore({
     // [advertisingSourceAPI.reducerPath]: advertisingSourceAPI.reducer,
     [authAPI.reducerPath]: authAPI.reducer,
     // [patientsAPI.reducerPath]: patientsAPI.reducer,
-    [specialistsAPI.reducerPath]: specialistsAPI.reducer,
+    // [specialistsAPI.reducerPath]: specialistsAPI.reducer,
     [dadataAPI.reducerPath]: dadataAPI.reducer,
   },
   middleware: (getDefaultMiddleware) =>
@@ -43,7 +43,7 @@ export const store = configureStore({
       // advertisingSourceAPI.middleware,
       api.middleware,
       authAPI.middleware,
-      specialistsAPI.middleware,
+      // specialistsAPI.middleware,
       // patientsAPI.middleware,
       dadataAPI.middleware,
       // representativesAPI.middleware,

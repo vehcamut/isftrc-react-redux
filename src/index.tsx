@@ -13,7 +13,6 @@ import Auth from './routes/Auth';
 import Main from './routes/Main';
 import AuthGuard from './components/guards/authGuard';
 import RolesGuard from './components/guards/rolesGuard';
-import SSS from './routes/SSS';
 import Patients from './routes/Patients';
 import Template from './routes/Template';
 import AddPatient from './routes/AddPatients';
@@ -23,6 +22,7 @@ import HandbooksPage from './routes/HandbooksPage';
 import AdvertisingSourcePage from './routes/AdvertisingSourcePage';
 import AddRepresentative from './routes/AddRepresentative';
 import RepresentativePage from './routes/RepresentativePage';
+import SpecialistTypePage from './routes/SpecialistTypePage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -40,15 +40,6 @@ const router = createBrowserRouter([
           {
             path: '/auth',
             element: <Auth />,
-          },
-        ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
-      },
-      {
-        children: [
-          {
-            path: '/sss',
-            element: <SSS />,
           },
         ],
         element: <RolesGuard requiredRoles={['registrator']} />,
@@ -177,6 +168,19 @@ const router = createBrowserRouter([
             element: (
               <Template activeKey="handbooks">
                 <AdvertisingSourcePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/handbooks/specialistType',
+            element: (
+              <Template activeKey="handbooks">
+                <SpecialistTypePage />
               </Template>
             ),
           },

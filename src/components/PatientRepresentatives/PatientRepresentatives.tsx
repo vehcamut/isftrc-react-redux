@@ -437,7 +437,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
           <RepresentativesTable
             // columns={columnsA}
             onRemove={onRemove}
-            onRowClick={onRowClick}
+            onRowClick={(record: any) => navigate(`/representatives/${record._id}/info`)}
             dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}
             extraOptions={{ id: patient?._id }}

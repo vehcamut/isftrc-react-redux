@@ -1,19 +1,15 @@
 export interface ISpecialistType {
-  _id?: string;
+  _id: string;
   name: string;
-  note: string;
+  isActive: boolean;
 }
 
-export interface ISpecialistTypeQuery {
-  page: number;
-  limit: number;
-  order?: 'desc' | 'asc' | undefined;
-  sort?: string;
-  name?: string;
-  note?: string;
-}
-
-export interface ISpecialistTypeResponse {
+export interface ISpecialistTypeData {
   data: ISpecialistType[];
   count: number;
+}
+
+export interface ISpecialistTypeBase {
+  _id: string;
+  name: string;
 }
