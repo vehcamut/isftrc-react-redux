@@ -23,6 +23,7 @@ import AdvertisingSourcePage from './routes/AdvertisingSourcePage';
 import AddRepresentative from './routes/AddRepresentative';
 import RepresentativePage from './routes/RepresentativePage';
 import SpecialistTypePage from './routes/SpecialistTypePage';
+import Specialists from './routes/Specialists';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -40,6 +41,19 @@ const router = createBrowserRouter([
           {
             path: '/auth',
             element: <Auth />,
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/specialists',
+            element: (
+              <Template activeKey="specialists">
+                <Specialists />
+              </Template>
+            ),
           },
         ],
         element: <RolesGuard requiredRoles={['registrator']} />,

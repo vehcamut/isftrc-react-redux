@@ -1,0 +1,25 @@
+.patients {
+  &-table {
+    & thead th {
+      color: #ffffff;
+    }
+    //background-color: red;
+    & tbody tr {
+      cursor: pointer;
+
+      border-radius: 0px;
+      &:nth-child(2n - 1) {
+      }
+    }
+  }
+}
+
+.active-table-item {
+  &__not-active {
+    color: #e60000;
+  }
+  &__active {
+    color: #0c9500;
+  }
+}
+

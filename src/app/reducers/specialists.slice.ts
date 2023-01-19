@@ -13,7 +13,7 @@ import { createSlice /* , PayloadAction */, PayloadAction } from '@reduxjs/toolk
   filters?: Record<string, FilterValue>;
 } */
 
-interface IPatientsTableState {
+interface ISpecialistsState {
   page: number;
   limit?: number;
   order?: 'descend' | 'ascend' | 'desc' | 'asc' | undefined;
@@ -28,7 +28,7 @@ interface IPatientsTableState {
   tableParams: TableParams; */
 }
 
-const initialState: IPatientsTableState = {
+const initialState: ISpecialistsState = {
   page: 0,
   limit: 10,
   filter: '',
@@ -77,31 +77,31 @@ const initialState: IPatientsTableState = {
   // searchField: '',
 };
 
-export const patientTableSlice = createSlice({
-  name: 'patientTableSlice',
+export const specialistsSlice = createSlice({
+  name: 'specialistsSlice',
   initialState,
   reducers: {
-    setPage(state: IPatientsTableState, action: PayloadAction<number>) {
+    setPage(state: ISpecialistsState, action: PayloadAction<number>) {
       state.page = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setLimit(state: IPatientsTableState, action: PayloadAction<number>) {
+    setLimit(state: ISpecialistsState, action: PayloadAction<number>) {
       state.limit = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setSort(state: IPatientsTableState, action: PayloadAction<string>) {
+    setSort(state: ISpecialistsState, action: PayloadAction<string>) {
       state.sort = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setOrder(state: IPatientsTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
+    setOrder(state: ISpecialistsState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
       state.order = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setFilter(state: IPatientsTableState, action: PayloadAction<string>) {
+    setFilter(state: ISpecialistsState, action: PayloadAction<string>) {
       state.filter = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setIsActive(state: IPatientsTableState, action: PayloadAction<boolean | undefined>) {
+    setIsActive(state: ISpecialistsState, action: PayloadAction<boolean | undefined>) {
       state.isActive = action.payload;
       // Object.assign(state.filter, action.payload);
     },
@@ -120,4 +120,4 @@ export const patientTableSlice = createSlice({
   },
 });
 
-export const patientTableReducer = patientTableSlice.reducer;
+export const specialistsReducer = specialistsSlice.reducer;

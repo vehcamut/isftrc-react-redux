@@ -1,5 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { configureStore } from '@reduxjs/toolkit';
+import { specialistsReducer } from './reducers/specialists.slice';
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { addPatientReducer } from './reducers/patientForm.slise';
 import {
   // specialistsAPI,
@@ -28,6 +29,7 @@ export const store = configureStore({
     loginFormReducer,
     confirmDialogReducer,
     patientTableReducer,
+    specialistsReducer,
     authReducer,
     addPatientReducer,
     [api.reducerPath]: api.reducer,
