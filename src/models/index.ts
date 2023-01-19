@@ -6,3 +6,4 @@ export * from './IGet.interface';
 export * from './IAdvertisingSource.interface';
 export * from './IRepresentative';
 export * from './ISpecialist';
+export * from './IAppointment';

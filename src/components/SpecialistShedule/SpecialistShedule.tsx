@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Calendar } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Calendar, Badge, BadgeProps, Tooltip } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
-import { IPatient, IRepresentative, ISpecialist } from '../../models';
+import { IAppointment, IPatient, IRepresentative, ISpecialist } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { specialistAPI } from '../../app/services/specialists.service';
 import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
+import { appointmentsAPI } from '../../app/services/appointments.service';
 
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -21,6 +22,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const [messageApi, contextHolder] = message.useMessage();
   const [update] = specialistAPI.useUpdateSpecialistMutation();
   const [changeStatus] = specialistAPI.useChangeSpecialistStatusMutation();
+  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
+  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({ specialistId: specialist?._id || '', date });
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -72,13 +75,128 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     }
   };
   const onPanelChange = (value: Dayjs, mode: CalendarMode) => {
+    if (mode === 'month') setDate(value.format('YYYY-MM-DD'));
     console.log(value.format('YYYY-MM-DD'), mode);
+  };
+
+  // const data = [
+  //   {
+  //     _id: '63c90cbf53062b54543e8249',
+  //     begDate: '2023-01-19T09:24:37.765Z',
+  //     endDate: '2023-01-19T09:24:37.770Z',
+  //     specialist: '63c8f0f2f2f198c0951d33bd',
+  //   },
+  //   {
+  //     _id: '63c90d03a30f315cdba91d45',
+  //     begDate: '2023-01-19T09:24:37.780Z',
+  //     endDate: '2023-01-19T09:24:37.790Z',
+  //     specialist: '63c8f0f2f2f198c0951d33bd',
+  //   },
+  //   {
+  //     _id: '63c90d03a30f315cdba91d47',
+  //     begDate: '2023-01-19T09:24:37.780Z',
+  //     endDate: '2023-01-19T09:24:37.790Z',
+  //     specialist: '63c8f0f2f2f198c0951d33bd',
+  //   },
+  //   {
+  //     _id: '63c90d03a30f315cdb791d45',
+  //     begDate: '2023-01-19T09:24:37.780Z',
+  //     endDate: '2023-01-19T09:24:37.790Z',
+  //     specialist: '63c8f0f2f2f198c0951d33bd',
+  //   },
+  //   {
+  //     _id: '63c90d03a30f375cdba91d45',
+  //     begDate: '2023-01-19T09:24:37.780Z',
+  //     endDate: '2023-01-19T09:24:37.790Z',
+  //     specialist: '63c8f0f2f2f198c0951d33bd',
+  //   },
+  // ];
+  const getListData = (value: Dayjs) => {
+    let listData;
+    switch (value.date()) {
+      case 8:
+        listData = [
+          { type: 'warning', content: 'This is warning event.' },
+          { type: 'success', content: 'This is usual event.' },
+        ];
+        break;
+      case 10:
+        listData = [
+          { type: 'warning', content: 'This is warning event.' },
+          { type: 'success', content: 'This is usual event.' },
+          { type: 'error', content: 'This is error event.' },
+        ];
+        break;
+      case 15:
+        listData = [
+          { type: 'warning', content: '12:15-12:30 Игнатовааааааааав Б.Б 124' },
+          { type: 'success', content: '12:30-12:45' },
+          { type: 'error', content: '12:45-13:00' },
+          { type: 'error', content: '14:00-14:15' },
+          { type: 'error', content: '14:15-14:30' },
+          { type: 'error', content: '14:30-14:45' },
+        ];
+        break;
+      default:
+    }
+    return listData || [];
+  };
+
+  const dateCellRender = (value: Dayjs) => {
+    const listData = getListData(value);
+    return (
+      <ul
+        className={addClass(classes, 'events')}
+        // onClick={(e: any) => {
+        //   e.stopProppagation();
+        // }}
+      >
+        {data?.map((item: IAppointment) => {
+          if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+            // console.log(value.toDate().toDateString());
+            // console.log(new Date(item.begDate).toDateString());
+            const beg = new Date(item.begDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            const end = new Date(item.endDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+            const time = `${beg}-${end}`;
+            return (
+              <Tooltip key={item._id} title={time} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                <li>
+                  {time}
+                  {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                </li>
+              </Tooltip>
+            );
+          }
+          return null;
+        })}
+      </ul>
+    );
+    // listData.map((item) => <React.Fragment key={item.content}>{item.content}</React.Fragment>);
+  };
+
+  const onChange = (value: any) => {
+    console.log(value);
+  };
+
+  const onSelect = (value: Dayjs) => {
+    setOpen(true);
   };
 
   return (
     <>
       {contextHolder}
-      <Calendar onPanelChange={onPanelChange} />;
+      <Calendar onPanelChange={onPanelChange} onChange={onChange} dateCellRender={dateCellRender} onSelect={onSelect} />
+      ;
       <Modal
         destroyOnClose
         open={open}
