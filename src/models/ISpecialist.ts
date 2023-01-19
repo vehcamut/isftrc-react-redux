@@ -11,7 +11,7 @@ export interface ISpecialist {
   login: string;
   gender: string;
   address: string;
-  tyoes: ISpecialistType[];
+  types: ISpecialistType[];
   isActive?: boolean;
   hash?: string;
 }

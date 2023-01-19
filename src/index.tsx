@@ -24,6 +24,8 @@ import AddRepresentative from './routes/AddRepresentative';
 import RepresentativePage from './routes/RepresentativePage';
 import SpecialistTypePage from './routes/SpecialistTypePage';
 import Specialists from './routes/Specialists';
+import AddSpecialist from './routes/AddSpecialist';
+import SpecialistPage from './routes/SpecialistPage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -52,6 +54,45 @@ const router = createBrowserRouter([
             element: (
               <Template activeKey="specialists">
                 <Specialists />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/specialists/add',
+            element: (
+              <Template activeKey="specialists">
+                <AddSpecialist />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/specialists/:id/info',
+            element: (
+              <Template activeKey="specialists">
+                <SpecialistPage activeKey="info" />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/specialists/:id/shedule',
+            element: (
+              <Template activeKey="specialists">
+                <SpecialistPage activeKey="shedule" />
               </Template>
             ),
           },

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
+import { ISpecialistChangeStatus } from '../../models/ISpecialist';
 /* eslint-disable import/prefer-default-export */
 import {
   IRepresentative,
@@ -77,15 +78,15 @@ export const specialistAPI = api.injectEndpoints({
       invalidatesTags: ['specialists'],
     }),
 
-    // changeStatus: build.mutation<any, IPatientChangeStatus>({
-    //   query: (body) => ({
-    //     url: 'patients/changeStatus',
-    //     method: 'PATCH',
-    //     credentials: 'include',
-    //     body,
-    //   }),
-    //   invalidatesTags: ['patients'],
-    // }),
+    changeSpecialistStatus: build.mutation<any, ISpecialistChangeStatus>({
+      query: (body) => ({
+        url: 'specialists/changeStatus',
+        method: 'PATCH',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['specialists'],
+    }),
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({
     //     url: 'specialists/types/update',
