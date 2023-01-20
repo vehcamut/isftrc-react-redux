@@ -25,48 +25,46 @@ export const appointmentsAPI = api.injectEndpoints({
   // baseQuery,
   // tagTypes: ['representative'],
   endpoints: (build) => ({
-    getAppointments: build.query<IAppointmentWeek[], IGetAppointment>({
+    getAppointments: build.query<IAppointmentWeek, IGetAppointment>({
       query: (params) => ({
         url: 'appointments/get',
         params,
         credentials: 'include',
       }),
       providesTags: ['appointments'],
-      transformResponse(apiResponse: IAppointment[], meta): IAppointmentWeek[] {
-        const week: IAppointmentWeek[] = [
-          {
-            monday: [],
-            tuesday: [],
-            wensday: [],
-            thursday: [],
-            friday: [],
-            saturday: [],
-            sunday: [],
-          },
-        ];
+      transformResponse(apiResponse: IAppointment[], meta): IAppointmentWeek {
+        const week: IAppointmentWeek = {
+          monday: [],
+          tuesday: [],
+          wensday: [],
+          thursday: [],
+          friday: [],
+          saturday: [],
+          sunday: [],
+        };
         apiResponse.forEach((appointment) => {
           const date = new Date(appointment.begDate);
           switch (date.getDay()) {
             case 1:
-              week[0].monday.push(appointment);
+              week.monday.push(appointment);
               break;
             case 2:
-              week[0].tuesday.push(appointment);
+              week.tuesday.push(appointment);
               break;
             case 3:
-              week[0].wensday.push(appointment);
+              week.wensday.push(appointment);
               break;
             case 4:
-              week[0].thursday.push(appointment);
+              week.thursday.push(appointment);
               break;
             case 5:
-              week[0].friday.push(appointment);
+              week.friday.push(appointment);
               break;
             case 6:
-              week[0].saturday.push(appointment);
+              week.saturday.push(appointment);
               break;
             case 0:
-              week[0].sunday.push(appointment);
+              week.sunday.push(appointment);
               break;
             default:
               break;

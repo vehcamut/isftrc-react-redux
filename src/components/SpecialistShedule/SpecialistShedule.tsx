@@ -1,5 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Calendar, Badge, BadgeProps, Tooltip, Table } from 'antd';
+import {
+  Button,
+  Modal,
+  Typography,
+  Descriptions,
+  message,
+  Calendar,
+  Badge,
+  BadgeProps,
+  Tooltip,
+  Table,
+  Row,
+  Col,
+} from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
@@ -337,7 +350,379 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
   return (
     <>
-      <Table
+      <Descriptions
+        size="middle"
+        // column={1}
+        title="Расписание специалиста"
+        extra={
+          <>
+            {/* {representative?.isActive ? (
+              <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
+                Добавить нового
+              </Button>
+            ) : (
+              <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
+                Активировать
+              </Button>
+            )} */}
+            <Button type="primary" style={{ marginRight: '10px' }}>
+              Добавить нового
+            </Button>
+            <Button type="primary">Добавить существующего</Button>
+          </>
+        }
+      >
+        <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
+          <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
+            {Object.k}
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }} onClick={(e) => console.log(e)}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
+              <div
+                className={addClass(classes, 'shedule-cell')}
+                // onClick={(e) => {
+                //   console.log(value.format('YYYY-MM-DD'));
+                // }}
+              >
+                <div className={addClass(classes, 'shedule-cell-title')}>
+                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+                </div>
+                <ul className={addClass(classes, 'shedule-cell-list')}>
+                  {data &&
+                    data[0].friday.map((item: IAppointment) => {
+                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                      // console.log(value.toDate().toDateString());
+                      // console.log(new Date(item.begDate).toDateString());
+                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      });
+                      const time = `${beg}-${end}`;
+                      return (
+                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                          <li>
+                            {time}
+                            {/* <Badge
+                  status={item.type as BadgeProps['status']}
+                  text={item.content}
+                  style={{
+                    width: '100%',
+                    overflow: 'hidden',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                  }}
+                /> */}
+                          </li>
+                        </Tooltip>
+                      );
+                      // }
+                      // return null;
+                    })}
+                </ul>
+              </div>
+            </Col>
+          </Row>
+        </Descriptions.Item>
+      </Descriptions>
+
+      {/* <Table
         components={{
           body: {
             // eslint-disable-next-line react/no-unstable-nested-components
@@ -350,7 +735,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         columns={columns}
         dataSource={data}
         rowClassName="shedule-table-row"
-      />
+      /> */}
       {contextHolder}
       {/* <Calendar
         onPanelChange={onPanelChange}
@@ -358,7 +743,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         dateFullCellRender={dateCellRender}
         // onSelect={onSelect}
       /> */}
-      ;
       <Modal
         destroyOnClose
         open={open}
@@ -374,76 +758,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} />
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
-      <Descriptions
-        bordered
-        size="middle"
-        contentStyle={{ backgroundColor: '#ffffff' }}
-        labelStyle={{
-          color: '#ffffff',
-          borderRight: '5px solid #e6f4ff',
-          width: '150px',
-        }}
-        title="Личные данные представителя"
-        column={1}
-        extra={
-          <>
-            {specialist?.isActive ? (
-              <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
-                Деактивировать
-              </Button>
-            ) : (
-              <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
-                Активировать
-              </Button>
-            )}
-
-            <Button type="primary" onClick={onEdit}>
-              Редактировать
-            </Button>
-          </>
-        }
-      >
-        <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
-          {specialist?.surname}
-        </Descriptions.Item>
-        <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
-          {specialist?.name}
-        </Descriptions.Item>
-        <Descriptions.Item label="Отчество" className={addClass(classes, 'des-item')}>
-          {specialist?.patronymic}
-        </Descriptions.Item>
-        <Descriptions.Item label="Пол" className={addClass(classes, 'des-item')}>
-          {specialist?.gender}
-        </Descriptions.Item>
-        <Descriptions.Item label="Дата рождения" className={addClass(classes, 'des-item')}>
-          {new Date(specialist?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
-        </Descriptions.Item>
-        <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
-          {specialist?.address}
-        </Descriptions.Item>
-        <Descriptions.Item label="Номера телефонов" className={addClass(classes, 'des-item')}>
-          {specialist?.phoneNumbers
-            .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
-            .join(', ')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Электронные почты" className={addClass(classes, 'des-item')}>
-          {specialist?.emails.join(', ')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Специальности" className={addClass(classes, 'des-item')}>
-          {specialist?.types.map((v) => v.name).join(', ')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Логин" className={addClass(classes, 'des-item')}>
-          {specialist?.login}
-        </Descriptions.Item>
-        {/* <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
-          {patient?.note}
-        </Descriptions.Item> */}
-        <Descriptions.Item label="Статус">{specialist?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
-      </Descriptions>
     </>
   );
 };

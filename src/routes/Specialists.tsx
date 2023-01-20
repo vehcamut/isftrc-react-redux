@@ -42,6 +42,7 @@ const Specialists = () => {
         dataSourseQuery={specialistAPI.useGetSpecialistsQuery}
         slice={specialistsSlice}
         reduser={useAppSelector((state) => state.specialistsReducer)}
+        hasPagination
       />
     </>
   );
