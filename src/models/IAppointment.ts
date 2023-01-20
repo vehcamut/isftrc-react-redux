@@ -7,6 +7,17 @@ export interface IAppointment {
 }
 
 export interface IGetAppointment {
-  date: string;
+  begDate: string;
+  endDate: string;
   specialistId: string;
+}
+
+export interface IAppointmentWeek {
+  monday: IAppointment[];
+  tuesday: IAppointment[];
+  wensday: IAppointment[];
+  thursday: IAppointment[];
+  friday: IAppointment[];
+  saturday: IAppointment[];
+  sunday: IAppointment[];
 }

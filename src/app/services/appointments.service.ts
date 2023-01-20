@@ -15,6 +15,7 @@ import {
   IGetRepPatients,
   IAppointment,
   IGetAppointment,
+  IAppointmentWeek,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -24,16 +25,56 @@ export const appointmentsAPI = api.injectEndpoints({
   // baseQuery,
   // tagTypes: ['representative'],
   endpoints: (build) => ({
-    getAppointments: build.query<IAppointment[], IGetAppointment>({
+    getAppointments: build.query<IAppointmentWeek[], IGetAppointment>({
       query: (params) => ({
         url: 'appointments/get',
         params,
         credentials: 'include',
       }),
       providesTags: ['appointments'],
-      // transformResponse(apiRespons: IRepresentative[], meta): IRepresentativeData {
-      //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
-      // },
+      transformResponse(apiResponse: IAppointment[], meta): IAppointmentWeek[] {
+        const week: IAppointmentWeek[] = [
+          {
+            monday: [],
+            tuesday: [],
+            wensday: [],
+            thursday: [],
+            friday: [],
+            saturday: [],
+            sunday: [],
+          },
+        ];
+        apiResponse.forEach((appointment) => {
+          const date = new Date(appointment.begDate);
+          switch (date.getDay()) {
+            case 1:
+              week[0].monday.push(appointment);
+              break;
+            case 2:
+              week[0].tuesday.push(appointment);
+              break;
+            case 3:
+              week[0].wensday.push(appointment);
+              break;
+            case 4:
+              week[0].thursday.push(appointment);
+              break;
+            case 5:
+              week[0].friday.push(appointment);
+              break;
+            case 6:
+              week[0].saturday.push(appointment);
+              break;
+            case 0:
+              week[0].sunday.push(appointment);
+              break;
+            default:
+              break;
+          }
+        });
+
+        return week;
+      },
     }),
 
     // addRepresentative: build.mutation<any, IRepresentative>({

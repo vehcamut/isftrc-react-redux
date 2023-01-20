@@ -1,17 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Calendar, Badge, BadgeProps, Tooltip } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Calendar, Badge, BadgeProps, Tooltip, Table } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
+import { ColumnsType } from 'antd/es/table';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
-import { IAppointment, IPatient, IRepresentative, ISpecialist } from '../../models';
+import { IAppointment, IAppointmentWeek, IPatient, IRepresentative, ISpecialist } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { specialistAPI } from '../../app/services/specialists.service';
 import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
 import { appointmentsAPI } from '../../app/services/appointments.service';
+import './antd.rewrite.scss';
 
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -22,8 +24,25 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const [messageApi, contextHolder] = message.useMessage();
   const [update] = specialistAPI.useUpdateSpecialistMutation();
   const [changeStatus] = specialistAPI.useChangeSpecialistStatusMutation();
-  const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
-  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({ specialistId: specialist?._id || '', date });
+  // const today = new Date();
+  // today.setHours(0, 0, 0, 0);
+  // if (today.getDay() === 0) today.setDate(today.getDate() - 6);
+  // else today.setDate(today.getDate() - today.getDay() + 1);
+  let today = dayjs();
+  // .set('hour', 0).set('minute', 0).set('second', 0).set('millisecond', 0);
+  console.log(today.day);
+  if (today.day() === 0) today = today.subtract(6, 'day');
+  else today = today.subtract(today.day() - 1, 'day');
+  const [begDate, setBegDate] = useState(today.format('YYYY-MM-DD'));
+  const [endDate, setEndDate] = useState(today.add(7, 'day').format('YYYY-MM-DD'));
+  // const [begDate, setBegDate] = useState(today);
+  // today.setDate(begDate.getDate() + 7);
+  // const [endDate, setEndDate] = useState(today);
+  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
+    specialistId: specialist?._id || '',
+    begDate,
+    endDate,
+  });
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -75,7 +94,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     }
   };
   const onPanelChange = (value: Dayjs, mode: CalendarMode) => {
-    if (mode === 'month') setDate(value.format('YYYY-MM-DD'));
+    // if (mode === 'month') setDate(value.format('YYYY-MM-DD'));
     console.log(value.format('YYYY-MM-DD'), mode);
   };
 
@@ -142,27 +161,135 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     return listData || [];
   };
 
-  const dateCellRender = (value: Dayjs) => {
-    const listData = getListData(value);
-    return (
-      <ul
-        className={addClass(classes, 'events')}
-        // onClick={(e: any) => {
-        //   e.stopProppagation();
-        // }}
-      >
-        {data?.map((item: IAppointment) => {
-          if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-            // console.log(value.toDate().toDateString());
-            // console.log(new Date(item.begDate).toDateString());
-            const beg = new Date(item.begDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            const end = new Date(item.endDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-            const time = `${beg}-${end}`;
-            return (
-              <Tooltip key={item._id} title={time} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                <li>
-                  {time}
-                  {/* <Badge
+  // const dateCellRender = (value: Dayjs) => {
+  //   const listData = getListData(value);
+  //   return (
+  //     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+  //     <div
+  //       // type="button"
+  //       // role="button"
+  //       className={addClass(classes, 'shedule-cell')}
+  //       onClick={(e) => {
+  //         console.log(value.format('YYYY-MM-DD'));
+  //       }}
+  //     >
+  //       <div className={addClass(classes, 'shedule-cell-title')}>{value.format('DD MMM')}</div>
+  //       <ul
+  //         className={addClass(classes, 'shedule-cell-list')}
+  //         // onClick={(e: any) => {
+  //         //   e.stopProppagation();
+  //         // }}
+  //       >
+  //         {data?.map((item: IAppointment) => {
+  //           if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+  //             // console.log(value.toDate().toDateString());
+  //             // console.log(new Date(item.begDate).toDateString());
+  //             const beg = new Date(item.begDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  //             const end = new Date(item.endDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+  //             const time = `${beg}-${end}`;
+  //             return (
+  //               <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+  //                 <li>
+  //                   {time}
+  //                   {/* <Badge
+  //                 status={item.type as BadgeProps['status']}
+  //                 text={item.content}
+  //                 style={{
+  //                   width: '100%',
+  //                   overflow: 'hidden',
+  //                   fontSize: '12px',
+  //                   whiteSpace: 'nowrap',
+  //                   textOverflow: 'ellipsis',
+  //                 }}
+  //               /> */}
+  //                 </li>
+  //               </Tooltip>
+  //             );
+  //           }
+  //           return null;
+  //         })}
+  //       </ul>
+  //     </div>
+  //   );
+  //   // listData.map((item) => <React.Fragment key={item.content}>{item.content}</React.Fragment>);
+  // };
+
+  const onChange = (value: any) => {
+    console.log(value);
+  };
+
+  // const onSelect = (value: Dayjs) => {
+  //   setOpen(true);
+  // };
+  const columns: ColumnsType<IAppointmentWeek> = [
+    {
+      title: 'Понедельник',
+      dataIndex: 'monday',
+      key: 'monday',
+      width: '12.5%',
+      render: (x, record) => {
+        return record.monday.map((appointment) => {
+          return `${appointment.begDate}-${appointment.endDate}`;
+        });
+        // `${record.monday.length}`;
+      },
+    },
+    {
+      title: 'Вторник',
+      dataIndex: 'tuesday',
+      key: 'tuesday',
+      width: '12.5%',
+      render: (x, record) => {
+        return `${record.tuesday.length}`;
+      },
+    },
+    {
+      title: 'Среда',
+      dataIndex: 'wensday',
+      key: 'wensday',
+      width: '12.5%',
+      render: (x, record) => {
+        return `${record.wensday.length}`;
+      },
+    },
+    {
+      title: 'Четверг',
+      dataIndex: 'thursday',
+      key: 'thursday',
+      width: '12.5%',
+      render: (x, record) => {
+        return `${record.thursday.length}`;
+      },
+    },
+    {
+      title: 'Пятница',
+      dataIndex: 'friday',
+      key: 'friday',
+      width: '12.5%',
+      render: (x, record) => {
+        return (
+          <div
+            className={addClass(classes, 'shedule-cell')}
+            // onClick={(e) => {
+            //   console.log(value.format('YYYY-MM-DD'));
+            // }}
+          >
+            <div className={addClass(classes, 'shedule-cell-title')}>
+              {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
+            </div>
+            <ul className={addClass(classes, 'shedule-cell-list')}>
+              {record.friday.map((item: IAppointment) => {
+                // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                // console.log(value.toDate().toDateString());
+                // console.log(new Date(item.begDate).toDateString());
+                const beg = new Date(item.begDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const end = new Date(item.endDate).toLocaleString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+                const time = `${beg}-${end}`;
+                return (
+                  <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                    <li>
+                      {time}
+                      {/* <Badge
                   status={item.type as BadgeProps['status']}
                   text={item.content}
                   style={{
@@ -173,29 +300,64 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                     textOverflow: 'ellipsis',
                   }}
                 /> */}
-                </li>
-              </Tooltip>
-            );
-          }
-          return null;
-        })}
-      </ul>
-    );
-    // listData.map((item) => <React.Fragment key={item.content}>{item.content}</React.Fragment>);
-  };
-
-  const onChange = (value: any) => {
-    console.log(value);
-  };
-
-  const onSelect = (value: Dayjs) => {
-    setOpen(true);
-  };
+                    </li>
+                  </Tooltip>
+                );
+                // }
+                // return null;
+              })}
+            </ul>
+          </div>
+        );
+        // return record.friday.map((appointment) => {
+        //   return `${dayjs(appointment.begDate).format('HH:mm')}-${dayjs(appointment.endDate).format('HH:mm')}`;
+        // });
+        // `${record.monday.length}`;
+      },
+    },
+    {
+      title: 'Суббота',
+      dataIndex: 'saturday',
+      key: 'saturday',
+      width: '12.5%',
+      render: (x, record) => {
+        return `${record.saturday.length}`;
+      },
+    },
+    {
+      title: 'Воскресение',
+      dataIndex: 'sunday',
+      key: 'sunday',
+      width: '12.5%',
+      render: (x, record) => {
+        return `${record.sunday.length}`;
+      },
+    },
+  ];
 
   return (
     <>
+      <Table
+        components={{
+          body: {
+            // eslint-disable-next-line react/no-unstable-nested-components
+            cell: (props: any) => {
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              return <td {...props} style={{ padding: '0px', cursor: 'pointer' }} />;
+            },
+          },
+        }}
+        columns={columns}
+        dataSource={data}
+        rowClassName="shedule-table-row"
+      />
       {contextHolder}
-      <Calendar onPanelChange={onPanelChange} onChange={onChange} dateCellRender={dateCellRender} onSelect={onSelect} />
+      {/* <Calendar
+        onPanelChange={onPanelChange}
+        onChange={onChange}
+        dateFullCellRender={dateCellRender}
+        // onSelect={onSelect}
+      /> */}
       ;
       <Modal
         destroyOnClose
