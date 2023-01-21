@@ -29,15 +29,21 @@
 //   }
 // }
 // }
+.shedule-col {
+  background-color: white;
+  &:hover {
+    background-color: #f6f4ff;
+  }
+}
 .shedule-cell {
   // height: 150px;
   padding: 4px;
   // border: 1px solid #e6f4ff;
  
 
-  &:hover { 
-    background-color: #f6f4ff;
-  }
+  // &:hover { 
+  //   background-color: #f6f4ff;
+  // }
   // display: flex;
   // flex-direction: column;
   &-title {

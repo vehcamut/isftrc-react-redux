@@ -12,11 +12,15 @@ import {
   Table,
   Row,
   Col,
+  DatePicker,
+  Empty,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { ColumnsType } from 'antd/es/table';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import type { DatePickerProps } from 'antd';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
@@ -347,7 +351,26 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       },
     },
   ];
+  const onChange1: DatePickerProps['onChange'] = (date, dateString) => {
+    let newDate: Dayjs;
+    if (date) {
+      if (date.day() === 0) newDate = date.subtract(6, 'day');
+      else newDate = date.subtract(date.day() - 1, 'day');
+      // console.log(newDate.format('YYYY-MM-DD'));
+      setBegDate(newDate.format('YYYY-MM-DD'));
+      setEndDate(newDate.add(7, 'day').format('YYYY-MM-DD'));
+    }
 
+    console.log(date, dateString);
+  };
+  const onNextWeek = () => {
+    setBegDate(dayjs(begDate).add(7, 'day').format('YYYY-MM-DD'));
+    setEndDate(dayjs(endDate).add(7, 'day').format('YYYY-MM-DD'));
+  };
+  const onPrevWeek = () => {
+    setEndDate(dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD'));
+    setBegDate(dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD'));
+  };
   return (
     <>
       <Descriptions
@@ -365,359 +388,78 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                 Активировать
               </Button>
             )} */}
-            <Button type="primary" style={{ marginRight: '10px' }}>
+
+            {/* <Button type="primary" style={{ marginRight: '10px' }}>
               Добавить нового
-            </Button>
-            <Button type="primary">Добавить существующего</Button>
+            </Button> */}
+            <DatePicker style={{ marginRight: '10px' }} format="DD.MM.YYYY" onChange={onChange1} />
+            <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
+            <Button type="default" style={{ marginRight: '10px' }} icon={<RightOutlined />} onClick={onNextWeek} />
           </>
         }
       >
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-          <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
-            {Object.k}
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }} onClick={(e) => console.log(e)}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
-            <Col style={{ flexGrow: 1, backgroundColor: 'white' }}>
-              <div
-                className={addClass(classes, 'shedule-cell')}
-                // onClick={(e) => {
-                //   console.log(value.format('YYYY-MM-DD'));
-                // }}
-              >
-                <div className={addClass(classes, 'shedule-cell-title')}>
-                  {`Пт. ${dayjs(begDate).add(4, 'day').format('DD MMM')}`}
-                </div>
-                <ul className={addClass(classes, 'shedule-cell-list')}>
-                  {data &&
-                    data[0].friday.map((item: IAppointment) => {
-                      // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                      // console.log(value.toDate().toDateString());
-                      // console.log(new Date(item.begDate).toDateString());
-                      const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      });
-                      const time = `${beg}-${end}`;
-                      return (
-                        <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                          <li>
-                            {time}
-                            {/* <Badge
-                  status={item.type as BadgeProps['status']}
-                  text={item.content}
-                  style={{
-                    width: '100%',
-                    overflow: 'hidden',
-                    fontSize: '12px',
-                    whiteSpace: 'nowrap',
-                    textOverflow: 'ellipsis',
-                  }}
-                /> */}
-                          </li>
-                        </Tooltip>
-                      );
-                      // }
-                      // return null;
-                    })}
-                </ul>
-              </div>
-            </Col>
+          <Row style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', width: '100%', gap: '5px' }}>
+            {data?.map((appointemnts, index) => {
+              return (
+                <Col
+                  key={dayjs(begDate).add(index, 'day').day()}
+                  style={{ cursor: 'pointer', minHeight: '250px' }}
+                  onClick={(e) => console.log(e)}
+                  className={addClass(classes, 'shedule-col')}
+                >
+                  <div className={addClass(classes, 'shedule-cell')}>
+                    <div className={addClass(classes, 'shedule-cell-title')}>
+                      {`${new Date(new Date(begDate).setDate(new Date(begDate).getDate() + index)).toLocaleDateString(
+                        'ru-RU',
+                        { weekday: 'short' },
+                      )}. ${dayjs(begDate).add(index, 'day').format('DD MMM')}`}
+                    </div>
+                    <ul className={addClass(classes, 'shedule-cell-list')}>
+                      {appointemnts.length ? (
+                        appointemnts.map((item: IAppointment) => {
+                          // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
+                          // console.log(value.toDate().toDateString());
+                          // console.log(new Date(item.begDate).toDateString());
+                          const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                          const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                          const time = `${beg}-${end}`;
+                          return (
+                            <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+                              <li>
+                                <div>{time}</div>
+                                {item.service ? <div>{item.service}</div> : <div>cвободно</div>}
+                                {/* <Badge
+                              status={item.type as BadgeProps['status']}
+                              text={item.content}
+                              style={{
+                                width: '100%',
+                                overflow: 'hidden',
+                                fontSize: '12px',
+                                whiteSpace: 'nowrap',
+                                textOverflow: 'ellipsis',
+                              }}
+                            /> */}
+                              </li>
+                            </Tooltip>
+                          );
+                          // }
+                          // return null;
+                        })
+                      ) : (
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
+                      )}
+                    </ul>
+                  </div>
+                </Col>
+              );
+            })}
           </Row>
         </Descriptions.Item>
       </Descriptions>

@@ -25,46 +25,28 @@ export const appointmentsAPI = api.injectEndpoints({
   // baseQuery,
   // tagTypes: ['representative'],
   endpoints: (build) => ({
-    getAppointments: build.query<IAppointmentWeek, IGetAppointment>({
+    getAppointments: build.query<IAppointment[][], IGetAppointment>({
       query: (params) => ({
         url: 'appointments/get',
         params,
         credentials: 'include',
       }),
       providesTags: ['appointments'],
-      transformResponse(apiResponse: IAppointment[], meta): IAppointmentWeek {
-        const week: IAppointmentWeek = {
-          monday: [],
-          tuesday: [],
-          wensday: [],
-          thursday: [],
-          friday: [],
-          saturday: [],
-          sunday: [],
-        };
+      transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
+        const week: IAppointment[][] = [[], [], [], [], [], [], []];
         apiResponse.forEach((appointment) => {
           const date = new Date(appointment.begDate);
           switch (date.getDay()) {
-            case 1:
-              week.monday.push(appointment);
-              break;
-            case 2:
-              week.tuesday.push(appointment);
-              break;
-            case 3:
-              week.wensday.push(appointment);
-              break;
-            case 4:
-              week.thursday.push(appointment);
-              break;
-            case 5:
-              week.friday.push(appointment);
-              break;
-            case 6:
-              week.saturday.push(appointment);
-              break;
             case 0:
-              week.sunday.push(appointment);
+              week[6].push(appointment);
+              break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+              week[date.getDay() - 1].push(appointment);
               break;
             default:
               break;
