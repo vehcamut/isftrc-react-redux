@@ -22,6 +22,7 @@ const HandbooksPage = () => {
     {
       title: 'Типы услуги',
       name: 'advertisingSource',
+      onClick: () => navigate('./services'),
     },
   ];
 

@@ -1,9 +1,11 @@
+import { IService } from './IService';
+
 export interface IAppointment {
   _id: string;
   begDate: Date;
   endDate: Date;
   specialist: string;
-  service?: string;
+  service?: IService;
 }
 
 export interface IGetAppointment {

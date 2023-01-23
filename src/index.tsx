@@ -26,6 +26,7 @@ import SpecialistTypePage from './routes/SpecialistTypePage';
 import Specialists from './routes/Specialists';
 import AddSpecialist from './routes/AddSpecialist';
 import SpecialistPage from './routes/SpecialistPage';
+import ServicesPage from './routes/ServicesPage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -236,6 +237,19 @@ const router = createBrowserRouter([
             element: (
               <Template activeKey="handbooks">
                 <SpecialistTypePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/handbooks/services',
+            element: (
+              <Template activeKey="handbooks">
+                <ServicesPage />
               </Template>
             ),
           },

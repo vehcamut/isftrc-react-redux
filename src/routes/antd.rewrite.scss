@@ -60,10 +60,18 @@
 //   }
 // }
 // }
-
+.ant-table-wrapper tr.ant-table-expanded-row-level-1 > td {
+  background:  #ffffff !important;
+}
+.ant-table-wrapper.internal-table {
+  thead.ant-table-thead > tr > th.ant-table-cell {
+    background:  #f0f0f0 !important;
+    color: black;
+    border-radius: 0 !important;
+  }
+}
 .ant-table-tbody > tr.ant-table-row {
   &.my-table-row{
-    
     &:hover > td {
      
     background:  #e6f4ff !important;
@@ -76,14 +84,15 @@
   }
 
 }
-  &.my-table-row__active {
-    
+  &.my-table-expanded-row {    
     & > td {
+      background: #dadada !important;
 
-      background: #ffffff !important;
     }
-  }
-  &.my-table-row__deactive > td {
-    background: #ffffff !important;
+    &:hover > td {
+     
+      background:  #e6f4ff !important;
+      //rgb(238, 242, 255)
+    }
   }
 }

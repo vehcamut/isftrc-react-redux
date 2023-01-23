@@ -56,7 +56,14 @@ export const appointmentsAPI = api.injectEndpoints({
         return week;
       },
     }),
-
+    getAppointmentsOnCurrentDate: build.query<IAppointment[], IGetAppointment>({
+      query: (params) => ({
+        url: 'appointments/get',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['appointments'],
+    }),
     // addRepresentative: build.mutation<any, IRepresentative>({
     //   query: (body) => ({
     //     url: 'representatives/add',
