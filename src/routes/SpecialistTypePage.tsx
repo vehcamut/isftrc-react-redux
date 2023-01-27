@@ -157,11 +157,11 @@ const SpecialistTypePage = () => {
           </Typography.Title>
         </Col>
         <Col>
-          <Button type="link" key="back" onClick={onBack}>
-            К списку справочников
-          </Button>
           <Button type="link" onClick={onAddClick}>
             Добавить специальность
+          </Button>
+          <Button type="link" key="back" onClick={onBack}>
+            К списку справочников
           </Button>
         </Col>
       </Row>

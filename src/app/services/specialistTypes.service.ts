@@ -58,7 +58,7 @@ export const specialistTypesAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['specialistTypes'],
+      invalidatesTags: ['specialistTypes', 'serviceType'],
     }),
     updateSpecialistTypes: build.mutation<any, IAdvertisingSource>({
       query: (body) => ({
@@ -67,7 +67,7 @@ export const specialistTypesAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['specialistTypes'],
+      invalidatesTags: ['specialistTypes', 'serviceType'],
     }),
   }),
 });

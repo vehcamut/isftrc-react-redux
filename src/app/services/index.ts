@@ -6,3 +6,4 @@ export * from './advertisingSource.service';
 export * from './representatives.service';
 export * from './api.service';
 export * from './services.service';
+export * from './specialistTypes.service';

@@ -1,3 +1,5 @@
+import { ISpecialistType } from './ISpecialistType';
+
 export interface IService {
   _id: string;
   status: boolean;
@@ -22,9 +24,12 @@ export interface IServiceGroupWithId extends IServiceGroup {
 
 export interface IServiceType {
   name: string;
-  specialistTypes: string[];
+  specialistTypes: ISpecialistType[];
   group: string;
   isActive: boolean;
+  price: number;
+  time: Date;
+  defaultAmountPatient?: number;
 }
 
 export interface IServiceTypeWithId extends IServiceType {

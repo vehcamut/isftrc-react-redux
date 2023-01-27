@@ -1,17 +1,16 @@
 import { Button, Form, Input, Row, Col, Switch } from 'antd';
 import React, { FunctionComponent, PropsWithChildren } from 'react';
 import { addClass } from '../../app/common';
-import classes from './AdvertisingSourceForm.module.scss';
-import { IAdvertisingSource } from '../../models';
+import classes from './ServiceGroupForm.module.scss';
+import { IServiceGroupWithId } from '../../models';
 
-interface FormDialogProps extends PropsWithChildren {
+interface ServiceGroupFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
-  // eslint-disable-next-line react/require-default-props
-  initValue?: IAdvertisingSource;
+  initValue?: IServiceGroupWithId;
 }
 
-const AdvertisingSourceForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset, initValue }) => {
+const ServiceGroupForm: FunctionComponent<ServiceGroupFormProps> = ({ onFinish, onReset, initValue }) => {
   return (
     <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
       <Form.Item
@@ -51,4 +50,8 @@ const AdvertisingSourceForm: FunctionComponent<FormDialogProps> = ({ onFinish, o
   );
 };
 
-export default AdvertisingSourceForm;
+ServiceGroupForm.defaultProps = {
+  initValue: undefined,
+};
+
+export default ServiceGroupForm;
