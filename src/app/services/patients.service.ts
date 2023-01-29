@@ -13,6 +13,8 @@ import {
   IPatient,
   IPatientChangeStatus,
   IPatientData,
+  IGetCourses,
+  ICourseWithServices,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -89,6 +91,17 @@ export const patientsAPI = api.injectEndpoints({
         body,
       }),
       invalidatesTags: ['patients'],
+    }),
+    getPatientCourses: build.query<ICourseWithServices[], IGetCourses>({
+      query: (params) => ({
+        url: 'patients/getCourses',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['patients', 'representative', 'serviceGroup', 'serviceType'],
+      // transformResponse(apiRespons: IRepresentative[], meta): IRepresentativeData {
+      //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
+      // },
     }),
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({

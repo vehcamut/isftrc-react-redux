@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { IServiceType } from '../../models/IService';
 /* eslint-disable import/prefer-default-export */
 import {
   IServiceGroup,
@@ -18,6 +17,10 @@ import {
   IPatientChangeStatus,
   IPatientData,
   IServiceTypeWithId,
+  IServiceType,
+  IService,
+  IGetServiceById,
+  IServiceInfo,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -87,6 +90,15 @@ export const servicesAPI = api.injectEndpoints({
         body,
       }),
       invalidatesTags: ['serviceGroup', 'serviceType'],
+    }),
+
+    getServiseById: build.query<IServiceInfo, IGetServiceById>({
+      query: (params) => ({
+        url: 'services/getService',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['serviceGroup', 'serviceType', 'appointments'],
     }),
   }),
 });

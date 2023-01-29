@@ -1,16 +1,30 @@
+// eslint-disable-next-line import/no-cycle
+import { IAppointment } from './IAppointment';
 import { ISpecialistType } from './ISpecialistType';
 
 export interface IService {
   _id: string;
   status: boolean;
-
-  type: string;
+  type: IServiceTypeWithId;
   course: string;
-
-  result: string;
+  result?: string;
   time: Date;
-  number: number;
-  note: string;
+  number?: number;
+  note?: string;
+  appointment?: IAppointment | undefined;
+  patient?: string;
+}
+
+export interface IServiceInfo {
+  type: string;
+  status: boolean;
+  course: string;
+  result?: string;
+  note?: string;
+  number?: number;
+  date?: Date;
+  specialist?: string;
+  patient: string;
 }
 
 export interface IServiceGroup {
@@ -42,4 +56,8 @@ export interface IServiceGroupWithIdAndTypes extends IServiceGroupWithId {
 
 export interface IGetServiceType {
   filter: string;
+}
+
+export interface IGetServiceById {
+  id: string;
 }

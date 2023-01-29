@@ -1,0 +1,63 @@
+.ant-collapse {
+  & > .inner-panel {
+    & > .ant-collapse-content {
+      & > .ant-collapse-content-box {
+        padding: 0;
+        background-color: red;
+        .ant-table-wrapper {
+          &::before {
+            display: none;
+          }
+          &::after {
+            display: none;
+          }
+          .ant-table-container table {
+            & .ant-table-thead {
+              tr {
+                th.ant-table-cell {
+                  background-color: white;
+                  color: black;
+                  // border: 1px solid black;
+                }
+                &:first-child {
+                    th{
+                      &:first-child {
+                        border-radius: 0;
+                      }
+                      &:last-child {
+                        border-radius: 0;
+                      }
+                    }
+                }
+              } 
+            }
+            .ant-table-tbody > tr.ant-table-row {
+              &.course-group-table-row {
+                &_yellow {
+                  > td {
+                    background:  #fdf291 !important;
+                  }
+                }
+                
+              }
+              &.my-table-row{
+                //#fdf291
+                &:hover > td {
+                background:  #e6f4ff !important;
+                cursor: pointer;
+                //rgb(238, 242, 255)
+                }
+              > td {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                }
+              
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

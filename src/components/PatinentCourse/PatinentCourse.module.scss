@@ -1,0 +1,12 @@
+.des-item {
+  border-bottom: 5px #e6f4ff solid;
+}
+
+.inner-panel.ant-collapse {
+  & > .ant-collapse-content {
+    & > .ant-collapse-content-box {
+      padding: 0;
+      background-color: red;
+    }
+  }
+}

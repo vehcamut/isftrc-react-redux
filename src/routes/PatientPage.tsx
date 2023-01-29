@@ -5,9 +5,10 @@ import './antd.rewrite.scss';
 import { patientsAPI } from '../app/services';
 import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
+import PatinentCourse from '../components/PatinentCourse/PatinentCourse';
 
 interface FormDialogProps extends PropsWithChildren {
-  activeKey: 'info' | 'representatives';
+  activeKey: 'info' | 'representatives' | 'course';
 }
 
 const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
@@ -68,7 +69,7 @@ const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
               key: 'representatives',
               children: <PatientRepresentatives patient={patient} />,
             },
-            { label: 'Курсы', key: 'shedules' },
+            { label: 'Курсы', key: 'course', children: <PatinentCourse patient={patient} /> },
             { label: 'Расписание', key: 'patients' },
             { label: 'Документы', key: 'documents' },
           ]}

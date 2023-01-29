@@ -1,4 +1,4 @@
-import { IAppointment } from './IAppointment';
+// import { IAppointment } from './IAppointment';
 import { IServiceGroupWithId } from './IService';
 
 export interface ICourse {
@@ -19,20 +19,24 @@ export interface ICourseWithServices extends ICourseWithId {
 }
 
 export interface IServiceGroupWithServises extends IServiceGroupWithId {
-  services: ServiceInCourseDto[];
+  services: IServiceInCourse[];
 }
 
-export interface ServiceInCourseDto {
+export interface IServiceInCourse {
   kind: string;
   _id: string;
-  type: ServiceTypeWithoutGroupDto;
+  name: string;
+  price: number;
+  specialist: string;
+  // type: IServiceTypeWithoutGroup;
   status: boolean;
   result?: string;
   note?: string;
-  appointment?: IAppointment;
+  date?: string;
+  // appointment?: IAppointment;
   patient?: string;
 }
-export interface ServiceTypeWithoutGroupDto {
+export interface IServiceTypeWithoutGroup {
   _id: string;
   name: string;
   price: number;
