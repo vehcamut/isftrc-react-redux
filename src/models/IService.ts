@@ -1,3 +1,4 @@
+import { IPatient } from './IPatient';
 // eslint-disable-next-line import/no-cycle
 import { IAppointment } from './IAppointment';
 import { ISpecialistType } from './ISpecialistType';
@@ -12,7 +13,7 @@ export interface IService {
   number?: number;
   note?: string;
   appointment?: IAppointment | undefined;
-  patient?: string;
+  patient?: IPatient;
 }
 
 export interface IServiceInfo {

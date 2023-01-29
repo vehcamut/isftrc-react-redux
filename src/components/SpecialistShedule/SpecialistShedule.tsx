@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   Button,
@@ -14,12 +16,14 @@ import {
   Col,
   DatePicker,
   Empty,
+  Form,
+  Input,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { ColumnsType } from 'antd/es/table';
-import { DeleteRowOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { DeleteRowOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
@@ -32,6 +36,7 @@ import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 
+const { confirm } = Modal;
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   specialist?: ISpecialist;
@@ -59,6 +64,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     endDate: selectedDate ? dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD') : '',
   });
   const [open, setOpen] = useState(false);
+  const [isAddUpdateModalOpen, setIsAddUpdateModalOpen] = useState(false);
+  const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
 
   const onFinish = async (values: any) => {
     try {
@@ -79,6 +86,11 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   };
   const onEdit = () => {
     setOpen(true);
+  };
+
+  const onAddUpdateReset = () => {
+    setCurrentAppointment(undefined);
+    setIsAddUpdateModalOpen(false);
   };
 
   const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -107,9 +119,29 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       title: 'Время',
       dataIndex: 'time',
       key: 'time',
-      width: '95%',
+      width: '15%',
       render: (x, record) => {
         return `${dayjs(record.begDate).format('HH:mm')}-${dayjs(record.endDate).format('HH:mm')}`;
+      },
+    },
+    {
+      title: 'Пациент',
+      dataIndex: 'patient',
+      key: 'patient',
+      width: '35%',
+      render: (patient, record) => {
+        return record?.service
+          ? `${record.service?.patient?.number} ${record?.service.patient?.surname} ${record?.service.patient?.name[0]}.${record?.service.patient?.patronymic[0]}.`
+          : '';
+      },
+    },
+    {
+      title: 'Название услуги',
+      dataIndex: 'type',
+      key: 'type',
+      width: '35%',
+      render: (x, record) => {
+        return record?.service ? `${record?.service.type.name}` : '';
       },
     },
     {
@@ -133,11 +165,82 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       width: '5%',
     },
   ];
+  const onAppointmentRowClick = (appointment: IAppointment) => {
+    console.log(appointment);
+    const showConfirm = () => {
+      confirm({
+        title: 'На данное время уже записан пациент. Вы точно хотите изменить запись?',
+        icon: <ExclamationCircleFilled />,
+        onOk() {
+          setCurrentAppointment(appointment);
+          setIsAddUpdateModalOpen(true);
+          // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+          // messageApi.open({
+          //   type: 'success',
+          //   content: 'Пациент успешно отвязан.',
+          // });
+        },
+        okText: 'Да',
+        cancelText: 'Нет',
+      });
+    };
+    if (appointment?.service) {
+      showConfirm();
+    } else {
+      setCurrentAppointment(appointment);
+      setIsAddUpdateModalOpen(true);
+    }
+  };
+
+  //
   // const onDateClick = (e: any) => {
 
   // }
   return (
     <>
+      <Modal
+        destroyOnClose
+        open={isAddUpdateModalOpen}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            {currentAppointment ? 'Обновление записи' : 'Добавление записи'}
+          </Typography.Title>
+        }
+        width="100%"
+        onCancel={onAddUpdateReset}
+      >
+        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Название" не должно быть пустым' }]}
+            label={<div className={addClass(classes, 'form-item')}>Название</div>}
+            name="name"
+          >
+            <Input id="name" />
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
+        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
+        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
+      </Modal>
+
       <Modal
         destroyOnClose
         open={open}
@@ -163,7 +266,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
           onRow={(record) => {
             return {
               onClick: () => {
-                console.log(record._id);
+                onAppointmentRowClick(record);
               },
             };
           }}
@@ -190,7 +293,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         }
       >
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-          <Row style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', width: '100%', gap: '5px' }}>
+          {/* <Row style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', width: '100%', gap: '5px' }}> */}
+          <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
             {data?.map((appointemnts, index) => {
               const day = dayjs(begDate).add(index, 'day').format('DD MMM');
               const thisDate = dayjs(begDate).add(index, 'day').format('YYYY-MM-DD');
@@ -201,10 +305,10 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                 <Col
                   key={day}
                   style={{ cursor: 'pointer', minHeight: '250px' }}
-                  onClick={(e) => {
-                    setSelectedDate(thisDate);
-                    setOpen(true);
-                  }}
+                  // onClick={(e) => {
+                  //   setSelectedDate(thisDate);
+                  //   setOpen(true);
+                  // }}
                   className={addClass(classes, 'shedule-col')}
                 >
                   <div className={addClass(classes, 'shedule-cell')}>
@@ -224,11 +328,39 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                             minute: '2-digit',
                           });
                           const time = `${beg}-${end}`;
+                          const patient = `${item.service?.patient?.number} ${item.service?.patient?.surname} ${item.service?.patient?.name[0]}.${item.service?.patient?.patronymic[0]}.`;
+                          const serviceName = item.service?.type.name;
                           return (
-                            <Tooltip title={time} key={item._id} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
-                              <li>
+                            <Tooltip
+                              title={item.service ? `${time} ${patient} ${serviceName}` : time}
+                              key={item._id}
+                              mouseLeaveDelay={0}
+                              mouseEnterDelay={0.5}
+                            >
+                              <li
+                                className={addClass(classes, item.service ? 'appointment-has-service' : 'appointment')}
+                                onClick={(e) => console.log(item)}
+                              >
                                 <div>{time}</div>
-                                {item.service ? <div>{item.service._id}</div> : <div>cвободно</div>}
+                                {item.service ? (
+                                  <div>
+                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{patient}</div>
+                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{serviceName}</div>
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <div
+                                      style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        marginTop: '10px',
+                                        marginBottom: '10px',
+                                      }}
+                                    >
+                                      нет записи
+                                    </div>
+                                  </div>
+                                )}
                                 {/* <Badge
                               status={item.type as BadgeProps['status']}
                               text={item.content}
