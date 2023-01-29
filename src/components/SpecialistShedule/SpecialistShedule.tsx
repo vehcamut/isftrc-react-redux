@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -25,6 +26,7 @@ import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { ColumnsType } from 'antd/es/table';
 import { DeleteRowOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
@@ -43,6 +45,7 @@ interface SpecialistSheduleProps extends PropsWithChildren {
 }
 
 const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ specialist }) => {
+  const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [update] = specialistAPI.useUpdateSpecialistMutation();
 
@@ -65,6 +68,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   });
   const [open, setOpen] = useState(false);
   const [isAddUpdateModalOpen, setIsAddUpdateModalOpen] = useState(false);
+  const [isAppInfoOpen, setIsAppInfoOpen] = useState(false);
+  const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
   const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
 
   const onFinish = async (values: any) => {
@@ -91,6 +96,10 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const onAddUpdateReset = () => {
     setCurrentAppointment(undefined);
     setIsAddUpdateModalOpen(false);
+  };
+  const onAppInfoReset = () => {
+    setCurrentAppointment(undefined);
+    setIsAppInfoOpen(false);
   };
 
   const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
@@ -191,6 +200,35 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       setIsAddUpdateModalOpen(true);
     }
   };
+  const onAppointmentClick = (appointment: IAppointment) => {
+    setCurrentAppointment(appointment);
+    setIsAppInfoOpen(true);
+  };
+  // const onAppointmentRemove = () => {
+  //   const showConfirm = () => {
+  //     confirm({
+  //       title:
+  //         'На данное время уже записан пациент. Вы точно хотите удалить запись? Вы можете также презаписать пациента на другое время',
+  //       icon: <ExclamationCircleFilled />,
+  //       onOk() {
+  //         console.log();
+  //         // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+  //         // messageApi.open({
+  //         //   type: 'success',
+  //         //   content: 'Пациент успешно отвязан.',
+  //         // });
+  //       },
+  //       okText: 'Да',
+  //       cancelText: 'Нет',
+  //     });
+  //   };
+  //   if (appointment?.service) {
+  //     showConfirm();
+  //   } else {
+  //     setCurrentAppointment(appointment);
+  //     setIsAddUpdateModalOpen(true);
+  //   }
+  // };
 
   //
   // const onDateClick = (e: any) => {
@@ -198,6 +236,38 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   // }
   return (
     <>
+      <Modal
+        destroyOnClose
+        open={isRemoveConfirmOpen}
+        footer={
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={() => setIsRemoveConfirmOpen(true)}
+            >
+              Удалить
+            </Button>
+            <Button type="primary" style={{ marginRight: '10px', backgroundColor: '#e60000' }} onClick={onPrevWeek}>
+              Перезаписать
+            </Button>
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
+              Отмена
+            </Button>
+          </>
+        }
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Удаление записи
+          </Typography.Title>
+        }
+        width="450px"
+        onCancel={() => setIsRemoveConfirmOpen(false)}
+      >
+        <div>На данное время уже записан пациент.</div>
+        <div>Вы точно хотите удалить запись?</div>
+        <div>Вы можете также презаписать пациента на другое время.</div>
+      </Modal>
       <Modal
         destroyOnClose
         open={isAddUpdateModalOpen}
@@ -237,6 +307,113 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             </Row>
           </Form.Item>
         </Form>
+        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
+        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
+      </Modal>
+      <Modal
+        destroyOnClose
+        open={isAppInfoOpen}
+        footer={
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={() => setIsRemoveConfirmOpen(true)}
+            >
+              Удалить запись
+            </Button>
+            <Button type="primary" style={{ marginRight: '10px' }} onClick={onPrevWeek}>
+              Закрыть услугу
+            </Button>
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
+              Отмена
+            </Button>
+          </>
+        }
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Информация о записи
+          </Typography.Title>
+        }
+        width="600px"
+        onCancel={onAppInfoReset}
+      >
+        <Descriptions
+        // extra={
+        //   <>
+        //
+        //     <DatePicker
+        //       style={{ marginRight: '10px' }}
+        //       format="DD.MM.YYYY"
+        //       onChange={onDPChange}
+        //       value={datePickerValue}
+        //     />
+
+        //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
+        //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+        //   </>
+        // }
+        >
+          <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+            {currentAppointment?.begDate
+              ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : 'не указаны'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+            {currentAppointment?.endDate
+              ? `${new Date(currentAppointment.begDate).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })} - ${new Date(currentAppointment.endDate).toLocaleTimeString('ru-RU', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}`
+              : 'не указаны'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Пациент" span={3}>
+            {currentAppointment?.service ? (
+              <Button
+                type="link"
+                size="small"
+                onClick={(e) => navigate(`/patients/${currentAppointment.service?.patient?._id}/course`)}
+              >{`${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`}</Button>
+            ) : (
+              ' - '
+            )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Услуга" span={3}>
+            {currentAppointment?.service ? `${currentAppointment?.service.type.name}` : ' - '}
+          </Descriptions.Item>
+          <Descriptions.Item label="Комментарий" span={3}>
+            {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
+          </Descriptions.Item>
+          <Descriptions.Item label="Результат" span={3}>
+            {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
+          </Descriptions.Item>
+          {/* <Descriptions.Item label="Сеанс" span={3}>
+            {servData?.number ? servData?.number : 'не указан'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Статус" span={3}>
+            {
+              // eslint-disable-next-line no-nested-ternary
+              servData?.status ? 'оказана' : servData?.date ? 'неоказана' : 'отсутствует запись'
+            }
+          </Descriptions.Item>
+          
+          <Descriptions.Item label="Услуга" span={3}>
+            {servData?.type}
+          </Descriptions.Item>
+          <Descriptions.Item label="Специалист" span={3}>
+            {servData?.specialist ? servData?.specialist : 'не назначен'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Комментарий" span={3}>
+            {servData?.note ? servData?.note : 'отсутствует'}
+          </Descriptions.Item> */}
+        </Descriptions>
         {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
@@ -281,18 +458,34 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         title="Расписание специалиста"
         extra={
           <>
+            <Button type="primary" style={{ marginRight: '10px' }} onClick={onPrevWeek}>
+              Добавить запись
+            </Button>
             <DatePicker
               style={{ marginRight: '10px' }}
               format="DD.MM.YYYY"
               onChange={onDPChange}
               value={datePickerValue}
             />
+
             <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-            <Button type="default" style={{ marginRight: '10px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+            <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
           </>
         }
       >
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
+          {/* <div style={{ display: 'flex', paddingBottom: '10px', justifyContent: 'flex-end', width: '100%' }}>
+            <DatePicker
+              style={{ marginRight: '10px' }}
+              format="DD.MM.YYYY"
+              onChange={onDPChange}
+              value={datePickerValue}
+            />
+
+            <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
+            <Button type="default" style={{ marginRight: '10px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+          </div> */}
+
           {/* <Row style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', width: '100%', gap: '5px' }}> */}
           <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
             {data?.map((appointemnts, index) => {
@@ -304,7 +497,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
               return (
                 <Col
                   key={day}
-                  style={{ cursor: 'pointer', minHeight: '250px' }}
+                  style={{ minHeight: '250px' }}
                   // onClick={(e) => {
                   //   setSelectedDate(thisDate);
                   //   setOpen(true);
@@ -338,8 +531,12 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                               mouseEnterDelay={0.5}
                             >
                               <li
-                                className={addClass(classes, item.service ? 'appointment-has-service' : 'appointment')}
-                                onClick={(e) => console.log(item)}
+                                className={addClass(
+                                  classes,
+                                  'appointment',
+                                  item.service ? 'appointment-has-service' : '',
+                                )}
+                                onClick={(e) => onAppointmentClick(item)}
                               >
                                 <div>{time}</div>
                                 {item.service ? (
