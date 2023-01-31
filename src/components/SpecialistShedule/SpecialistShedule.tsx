@@ -19,6 +19,8 @@ import {
   Empty,
   Form,
   Input,
+  TimePicker,
+  InputNumber,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -39,6 +41,8 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 
 const { confirm } = Modal;
+const { RangePicker } = DatePicker;
+
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   specialist?: ISpecialist;
@@ -48,7 +52,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [update] = specialistAPI.useUpdateSpecialistMutation();
-
+  const nowDate = new Date();
   let today = dayjs();
   if (today.day() === 0) today = today.subtract(6, 'day');
   else today = today.subtract(today.day() - 1, 'day');
@@ -97,6 +101,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     setCurrentAppointment(undefined);
     setIsAddUpdateModalOpen(false);
   };
+
   const onAppInfoReset = () => {
     setCurrentAppointment(undefined);
     setIsAppInfoOpen(false);
@@ -123,86 +128,28 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     setBegDate(dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD'));
     setDatePickerValue(null);
   };
-  const columns: ColumnsType<IAppointment> = [
-    {
-      title: 'Время',
-      dataIndex: 'time',
-      key: 'time',
-      width: '15%',
-      render: (x, record) => {
-        return `${dayjs(record.begDate).format('HH:mm')}-${dayjs(record.endDate).format('HH:mm')}`;
-      },
-    },
-    {
-      title: 'Пациент',
-      dataIndex: 'patient',
-      key: 'patient',
-      width: '35%',
-      render: (patient, record) => {
-        return record?.service
-          ? `${record.service?.patient?.number} ${record?.service.patient?.surname} ${record?.service.patient?.name[0]}.${record?.service.patient?.patronymic[0]}.`
-          : '';
-      },
-    },
-    {
-      title: 'Название услуги',
-      dataIndex: 'type',
-      key: 'type',
-      width: '35%',
-      render: (x, record) => {
-        return record?.service ? `${record?.service.type.name}` : '';
-      },
-    },
-    {
-      key: 'remove',
-      render: (v, record) => {
-        return (
-          <Button
-            style={{ color: 'red', backgroundColor: 'white' }}
-            size="small"
-            type="primary"
-            // shape="circle"
-            icon={<DeleteRowOutlined />}
-            onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              e.stopPropagation();
-              // onRemove(record);
-            }}
-          />
-        );
-      },
-      width: '5%',
-    },
-  ];
-  const onAppointmentRowClick = (appointment: IAppointment) => {
-    console.log(appointment);
-    const showConfirm = () => {
-      confirm({
-        title: 'На данное время уже записан пациент. Вы точно хотите изменить запись?',
-        icon: <ExclamationCircleFilled />,
-        onOk() {
-          setCurrentAppointment(appointment);
-          setIsAddUpdateModalOpen(true);
-          // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
-          // messageApi.open({
-          //   type: 'success',
-          //   content: 'Пациент успешно отвязан.',
-          // });
-        },
-        okText: 'Да',
-        cancelText: 'Нет',
-      });
-    };
-    if (appointment?.service) {
-      showConfirm();
-    } else {
-      setCurrentAppointment(appointment);
-      setIsAddUpdateModalOpen(true);
-    }
-  };
+
   const onAppointmentClick = (appointment: IAppointment) => {
     setCurrentAppointment(appointment);
     setIsAppInfoOpen(true);
+  };
+  const onAppointmentRemove = () => {
+    console.log(currentAppointment?._id);
+    setIsRemoveConfirmOpen(false);
+    onAppInfoReset();
+  };
+  const onAppointmentRewrite = () => {
+    console.log(currentAppointment?._id);
+    console.log(currentAppointment?.service?._id);
+    setIsRemoveConfirmOpen(false);
+    onAppInfoReset();
+  };
+  const onBeforeAppRemove = () => {
+    if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
+    else onAppointmentRemove();
+  };
+  const onAppClose = () => {
+    console.log('CLOSE');
   };
   // const onAppointmentRemove = () => {
   //   const showConfirm = () => {
@@ -244,14 +191,18 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             <Button
               type="primary"
               style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={() => setIsRemoveConfirmOpen(true)}
+              onClick={onAppointmentRemove}
             >
               Удалить
             </Button>
-            <Button type="primary" style={{ marginRight: '10px', backgroundColor: '#e60000' }} onClick={onPrevWeek}>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={onAppointmentRewrite}
+            >
               Перезаписать
             </Button>
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsRemoveConfirmOpen(false)}>
               Отмена
             </Button>
           </>
@@ -268,48 +219,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         <div>Вы точно хотите удалить запись?</div>
         <div>Вы можете также презаписать пациента на другое время.</div>
       </Modal>
-      <Modal
-        destroyOnClose
-        open={isAddUpdateModalOpen}
-        footer={null}
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            {currentAppointment ? 'Обновление записи' : 'Добавление записи'}
-          </Typography.Title>
-        }
-        width="100%"
-        onCancel={onAddUpdateReset}
-      >
-        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Название" не должно быть пустым' }]}
-            label={<div className={addClass(classes, 'form-item')}>Название</div>}
-            name="name"
-          >
-            <Input id="name" />
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
-            <Row>
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: '10px' }}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Сохранить
-                </Button>
-                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
-                  Отменить
-                </Button>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form>
-        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
-      </Modal>
+
       <Modal
         destroyOnClose
         open={isAppInfoOpen}
@@ -318,13 +228,18 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             <Button
               type="primary"
               style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={() => setIsRemoveConfirmOpen(true)}
+              onClick={onBeforeAppRemove}
             >
               Удалить запись
             </Button>
-            <Button type="primary" style={{ marginRight: '10px' }} onClick={onPrevWeek}>
-              Закрыть услугу
-            </Button>
+            {currentAppointment?.service && !currentAppointment.service.status ? (
+              <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppClose}>
+                Закрыть услугу
+              </Button>
+            ) : (
+              ''
+            )}
+
             <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
               Отмена
             </Button>
@@ -420,45 +335,78 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
       <Modal
         destroyOnClose
-        open={open}
+        open={isAddUpdateModalOpen}
         footer={null}
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            {`Расписание на ${dayjs(selectedDate).format('DD.MM.YYYY')}`}
+            {currentAppointment ? 'Обновление записи' : 'Добавление записей'}
           </Typography.Title>
         }
-        width="100%"
-        onCancel={onReset}
+        width="500px"
+        onCancel={onAddUpdateReset}
       >
-        <Table
-          columns={columns}
-          dataSource={currentData}
-          style={{ width: '100%' }}
-          tableLayout="fixed"
-          bordered
-          size="small"
-          loading={isLoading}
-          pagination={false}
-          rowKey={(record) => record._id}
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                onAppointmentRowClick(record);
-              },
-            };
-          }}
-          rowClassName="my-table-row"
-          className={addClass(classes, 'patients-table')}
-        />
+        <Form labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Дата и время" не должно быть пустым' }]}
+            label="Дата и время"
+            name="date"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <DatePicker
+              style={{ marginRight: '10px' }}
+              format="DD.MM.YYYY | HH:mm"
+              showTime={{ format: 'HH:mm' }}
+              onChange={onDPChange}
+              value={datePickerValue}
+            />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Продолжительность" не должно быть пустым' }]}
+            label="Продолжительность"
+            name="time"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <TimePicker format="HH:mm" id="time" />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
+            label="Количество"
+            name="amount"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <InputNumber min={1} defaultValue={1} />
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
         {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
+
       <Descriptions
         size="middle"
         title="Расписание специалиста"
         extra={
           <>
-            <Button type="primary" style={{ marginRight: '10px' }} onClick={onPrevWeek}>
+            <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
               Добавить запись
             </Button>
             <DatePicker
@@ -535,6 +483,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                                   classes,
                                   'appointment',
                                   item.service ? 'appointment-has-service' : '',
+                                  item.service && new Date(item.endDate) < nowDate ? 'appointment-bad-service' : '',
                                 )}
                                 onClick={(e) => onAppointmentClick(item)}
                               >
@@ -554,7 +503,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                                         marginBottom: '10px',
                                       }}
                                     >
-                                      нет записи
+                                      ------
                                     </div>
                                   </div>
                                 )}
