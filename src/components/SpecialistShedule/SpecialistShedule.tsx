@@ -75,14 +75,42 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const [isAppInfoOpen, setIsAppInfoOpen] = useState(false);
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
   const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
+  const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
+  const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
+
+  const [form] = Form.useForm();
+  const begDateField = Form.useWatch('begDate', form);
+  const timeField = Form.useWatch('time', form);
+  const amountField = Form.useWatch('amount', form);
+
+  const onAddUpdateReset = () => {
+    form.resetFields();
+    setIsAddUpdateModalOpen(false);
+  };
 
   const onFinish = async (values: any) => {
+    console.log(values);
+    values.time = values.time.format('YYYY-MM-DDTHH:mm:ssZ');
+    values.begDate = values.begDate.format('YYYY-MM-DDTHH:mm:ssZ');
+
     try {
-      await update({ ...specialist, ...values }).unwrap();
+      const result = await addAppointments({ ...values, specialist: specialist?._id }).unwrap();
       messageApi.open({
-        type: 'success',
-        content: 'Данные специалиста успешно обновлены',
+        type: 'info',
+        content: (
+          <div>
+            {/* <p>Расписание специалиста успешно обновлено.</p> */}
+            <p>Добавлено записей: {result.amount}</p>
+            {result.notAdded.length ? <p>Из-за накладки времени, не добавлено: </p> : ''}
+            {result.notAdded.map((appment) => (
+              <p key={appment.begDate.toLocaleString()}>
+                {dayjs(appment.begDate).format('DD.MM.YY HH:mm')} - {dayjs(appment.endDate).format('DD.MM.YY HH:mm')}
+              </p>
+            ))}
+          </div>
+        ),
       });
+      onAddUpdateReset();
     } catch (e) {
       messageApi.open({
         type: 'error',
@@ -95,11 +123,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   };
   const onEdit = () => {
     setOpen(true);
-  };
-
-  const onAddUpdateReset = () => {
-    setCurrentAppointment(undefined);
-    setIsAddUpdateModalOpen(false);
   };
 
   const onAppInfoReset = () => {
@@ -134,7 +157,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     setIsAppInfoOpen(true);
   };
   const onAppointmentRemove = () => {
-    console.log(currentAppointment?._id);
+    removeAppointments({ _id: currentAppointment?._id || '' });
+    // console.log(currentAppointment?._id);
     setIsRemoveConfirmOpen(false);
     onAppInfoReset();
   };
@@ -151,6 +175,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const onAppClose = () => {
     console.log('CLOSE');
   };
+
   // const onAppointmentRemove = () => {
   //   const showConfirm = () => {
   //     confirm({
@@ -345,20 +370,19 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         width="500px"
         onCancel={onAddUpdateReset}
       >
-        <Form labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
+        <Form form={form} labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
           <Form.Item
             // initialValue={initValue?.name ? initValue.name : ''}
             rules={[{ required: true, message: 'Поле "Дата и время" не должно быть пустым' }]}
             label="Дата и время"
-            name="date"
+            name="begDate"
           >
             {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
             <DatePicker
+              id="begDate"
               style={{ marginRight: '10px' }}
               format="DD.MM.YYYY | HH:mm"
               showTime={{ format: 'HH:mm' }}
-              onChange={onDPChange}
-              value={datePickerValue}
             />
           </Form.Item>
           <Form.Item
@@ -377,8 +401,23 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             name="amount"
           >
             {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <InputNumber min={1} defaultValue={1} />
+            <InputNumber min={1} max={100} id="amount" />
           </Form.Item>
+          {begDateField && timeField && amountField ? (
+            <div>
+              <p style={{ margin: 0, color: 'gray' }}>Будет добавлено записей: {amountField}</p>
+              <p style={{ margin: 0, color: 'gray' }}>Дата и время начала: {begDateField.format('DD.MM.YY HH:mm')}</p>
+              <p style={{ marginTop: 0, marginBottom: '20px', color: 'gray' }}>
+                Дата и время окончания:{' '}
+                {dayjs(begDateField)
+                  .add(amountField * timeField.hour(), 'h')
+                  .add(amountField * timeField.minute(), 'm')
+                  .format('DD.MM.YY HH:mm')}
+              </p>
+            </div>
+          ) : (
+            ''
+          )}
           <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
             <Row>
               <Col span={24} style={{ textAlign: 'right' }}>
@@ -397,8 +436,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             </Row>
           </Form.Item>
         </Form>
-        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
 
       <Descriptions

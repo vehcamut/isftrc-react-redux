@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-cycle
 import { IService } from './IService';
 
 export interface IAppointment {
@@ -22,4 +23,23 @@ export interface IAppointmentWeek {
   friday: IAppointment[];
   saturday: IAppointment[];
   sunday: IAppointment[];
+}
+
+export interface IAddAppointment {
+  begDate: Date;
+  time: Date;
+  specialist: string;
+  amount: number;
+}
+export interface IAddedAppoitmentInfo {
+  begDate: Date;
+  endDate: Date;
+}
+export interface IAddAppointmentResult {
+  amount: number;
+  notAdded: IAddedAppoitmentInfo[];
+}
+
+export interface IRemoveAppointment {
+  _id: string;
 }

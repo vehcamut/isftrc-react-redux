@@ -16,6 +16,9 @@ import {
   IAppointment,
   IGetAppointment,
   IAppointmentWeek,
+  IAddAppointmentResult,
+  IAddAppointment,
+  IRemoveAppointment,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -64,15 +67,24 @@ export const appointmentsAPI = api.injectEndpoints({
       }),
       providesTags: ['appointments'],
     }),
-    // addRepresentative: build.mutation<any, IRepresentative>({
-    //   query: (body) => ({
-    //     url: 'representatives/add',
-    //     method: 'POST',
-    //     credentials: 'include',
-    //     body,
-    //   }),
-    //   invalidatesTags: ['representative'],
-    // }),
+    addAppointments: build.mutation<IAddAppointmentResult, IAddAppointment>({
+      query: (body) => ({
+        url: 'appointments/add',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['appointments'],
+    }),
+    removeAppointments: build.mutation<any, IRemoveAppointment>({
+      query: (body) => ({
+        url: 'appointments/remove',
+        method: 'DELETE',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['appointments'],
+    }),
 
     // getRepresentativeById: build.query<IRepresentative, IGetByID>({
     //   query: (params) => ({
