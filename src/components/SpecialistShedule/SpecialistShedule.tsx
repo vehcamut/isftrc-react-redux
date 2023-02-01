@@ -28,7 +28,7 @@ import { CalendarMode } from 'antd/es/calendar/generateCalendar';
 import { ColumnsType } from 'antd/es/table';
 import { DeleteRowOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
@@ -41,8 +41,6 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 
 const { confirm } = Modal;
-const { RangePicker } = DatePicker;
-
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   specialist?: ISpecialist;
@@ -52,8 +50,9 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   const [update] = specialistAPI.useUpdateSpecialistMutation();
+  const params = useParams();
   const nowDate = new Date();
-  let today = dayjs();
+  let today = Date.parse(params.date || '') ? dayjs(Date.parse(params.date || '')) : dayjs();
   if (today.day() === 0) today = today.subtract(6, 'day');
   else today = today.subtract(today.day() - 1, 'day');
   const [begDate, setBegDate] = useState(today.format('YYYY-MM-DD'));
@@ -143,17 +142,25 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       // console.log(newDate.format('YYYY-MM-DD'));
       setBegDate(newDate.format('YYYY-MM-DD'));
       setEndDate(newDate.add(7, 'day').format('YYYY-MM-DD'));
+      if (Date.parse(params.date || '')) navigate(`./../${newDate.format('YYYY-MM-DD')}`, { replace: true });
+      else navigate(`./${newDate.format('YYYY-MM-DD')}`, { replace: true });
     }
   };
   const onNextWeek = () => {
     setBegDate(dayjs(begDate).add(7, 'day').format('YYYY-MM-DD'));
     setEndDate(dayjs(endDate).add(7, 'day').format('YYYY-MM-DD'));
     setDatePickerValue(null);
+    if (Date.parse(params.date || ''))
+      navigate(`./../${dayjs(begDate).add(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
+    else navigate(`./${dayjs(begDate).add(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
   };
   const onPrevWeek = () => {
     setEndDate(dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD'));
     setBegDate(dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD'));
     setDatePickerValue(null);
+    if (Date.parse(params.date || ''))
+      navigate(`./../${dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
+    else navigate(`./${dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
   };
 
   const onAppointmentClick = (appointment: IAppointment) => {
