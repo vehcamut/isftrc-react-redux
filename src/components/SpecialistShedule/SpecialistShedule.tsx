@@ -28,6 +28,7 @@ import { IAppointment, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
+import Shedule from '../Shedule/Shedule';
 
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -59,11 +60,11 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
-  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
-    personId: specialist?._id || '',
-    begDate,
-    endDate,
-  });
+  // const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
+  //   personId: specialist?._id || '',
+  //   begDate,
+  //   endDate,
+  // });
   // form state
   const [form] = Form.useForm();
   const begDateField = Form.useWatch('begDate', form);
@@ -115,35 +116,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     setIsAppInfoOpen(false);
   };
 
-  const onDateChange = (firstDate: string, secondDate: string) => {
-    setBegDate(firstDate);
-    setEndDate(secondDate);
-    const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
-    navigate(path, { replace: true });
-  };
-  const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
-    setDatePickerValue(date);
-    let newDate: Dayjs;
-    if (date) {
-      if (date.day() === 0) newDate = date.subtract(6, 'day');
-      else newDate = date.subtract(date.day() - 1, 'day');
-      const firstDate = newDate.format('YYYY-MM-DD');
-      const secondDate = newDate.add(7, 'day').format('YYYY-MM-DD');
-      onDateChange(firstDate, secondDate);
-    }
-  };
-  const onNextWeek = () => {
-    const firstDate = dayjs(begDate).add(7, 'day').format('YYYY-MM-DD');
-    const secondDate = dayjs(endDate).add(7, 'day').format('YYYY-MM-DD');
-    setDatePickerValue(null);
-    onDateChange(firstDate, secondDate);
-  };
-  const onPrevWeek = () => {
-    const firstDate = dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD');
-    const secondDate = dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD');
-    setDatePickerValue(null);
-    onDateChange(firstDate, secondDate);
-  };
   const onAppointmentClick = (appointment: IAppointment) => {
     setCurrentAppointment(appointment);
     setIsAppInfoOpen(true);
@@ -401,7 +373,18 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         </Form>
       </Modal>
 
-      <Descriptions
+      <Shedule
+        dataAPI={appointmentsAPI.useGetAppointmentsQuery}
+        title="Расписание специалиста"
+        onAppointmentClick={onAppointmentClick}
+        person={specialist}
+        extra={
+          <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
+            Добавить запись
+          </Button>
+        }
+      />
+      {/* <Descriptions
         size="middle"
         title="Расписание специалиста"
         extra={
@@ -497,7 +480,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             })}
           </Row>
         </Descriptions.Item>
-      </Descriptions>
+      </Descriptions> */}
       {contextHolder}
     </>
   );

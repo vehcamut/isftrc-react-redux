@@ -30,10 +30,9 @@
 // }
 // }
 .shedule-col {
+  width: calc((100% - 30px) / 7);
   background-color: white;
-  &:hover {
-    background-color: #f6f4ff;
-  }
+ 
 }
 .shedule-cell {
   // height: 150px;
@@ -86,7 +85,8 @@
       font-size: 12px;
       white-space: nowrap;
       text-overflow: ellipsis;
-      border-bottom: 1px solid #e6f4ff;
+      // border-bottom: 1px solid #e6f4ff;
+      border-bottom: 1px solid #a3d7ff;
     }
   }
 }
@@ -96,6 +96,20 @@
   font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
+
+}
+.appointment{
+  cursor: pointer;
+  &:hover {
+    // background-color: #f6f4ff;
+    background-color: #e6f4ff;
+  }
+  &-has-service {
+    background-color: #fdf291;
+  }
+  &-bad-service {
+    background-color: #fdc591;
+  }
 }
 .notes-month {
   font-size: 28px;
