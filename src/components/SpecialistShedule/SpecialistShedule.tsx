@@ -90,6 +90,10 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
   const onFinish = async (values: any) => {
     console.log(values);
+    values.time = values.time.second(0);
+    values.time = values.time.millisecond(0);
+    values.begDate = values.begDate.second(0);
+    values.begDate = values.begDate.millisecond(0);
     values.time = values.time.format('YYYY-MM-DDTHH:mm:ssZ');
     values.begDate = values.begDate.format('YYYY-MM-DDTHH:mm:ssZ');
 
