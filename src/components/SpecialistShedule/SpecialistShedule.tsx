@@ -8,39 +8,27 @@ import {
   Typography,
   Descriptions,
   message,
-  Calendar,
-  Badge,
-  BadgeProps,
   Tooltip,
-  Table,
   Row,
   Col,
   DatePicker,
   Empty,
   Form,
-  Input,
   TimePicker,
   InputNumber,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import { CalendarMode } from 'antd/es/calendar/generateCalendar';
-import { ColumnsType } from 'antd/es/table';
-import { DeleteRowOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
-import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistShedule.module.scss';
-import { IAppointment, IAppointmentWeek, IPatient, IRepresentative, ISpecialist } from '../../models';
-import AddPatientForm from '../AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+import { IAppointment, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
-import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 
-const { confirm } = Modal;
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   specialist?: ISpecialist;
@@ -49,34 +37,34 @@ interface SpecialistSheduleProps extends PropsWithChildren {
 const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ specialist }) => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const [update] = specialistAPI.useUpdateSpecialistMutation();
   const params = useParams();
+
+  // date
   const nowDate = new Date();
   let today = Date.parse(params.date || '') ? dayjs(Date.parse(params.date || '')) : dayjs();
+
   if (today.day() === 0) today = today.subtract(6, 'day');
   else today = today.subtract(today.day() - 1, 'day');
+
   const [begDate, setBegDate] = useState(today.format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState(today.add(7, 'day').format('YYYY-MM-DD'));
   const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string | undefined>(undefined);
-  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
-    specialistId: specialist?._id || '',
-    begDate,
-    endDate,
-  });
-  const { data: currentData, isLoading: isCurrentDataLoading } = appointmentsAPI.useGetAppointmentsOnCurrentDateQuery({
-    specialistId: specialist?._id || '',
-    begDate: selectedDate || '',
-    endDate: selectedDate ? dayjs(selectedDate).add(1, 'day').format('YYYY-MM-DD') : '',
-  });
-  const [open, setOpen] = useState(false);
+
+  // modals
   const [isAddUpdateModalOpen, setIsAddUpdateModalOpen] = useState(false);
   const [isAppInfoOpen, setIsAppInfoOpen] = useState(false);
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
+  // current
   const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
+  // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
-
+  const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
+    personId: specialist?._id || '',
+    begDate,
+    endDate,
+  });
+  // form state
   const [form] = Form.useForm();
   const begDateField = Form.useWatch('begDate', form);
   const timeField = Form.useWatch('time', form);
@@ -121,52 +109,46 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
       });
     }
   };
-  const onReset = () => {
-    setOpen(false);
-  };
-  const onEdit = () => {
-    setOpen(true);
-  };
 
   const onAppInfoReset = () => {
     setCurrentAppointment(undefined);
     setIsAppInfoOpen(false);
   };
 
+  const onDateChange = (firstDate: string, secondDate: string) => {
+    setBegDate(firstDate);
+    setEndDate(secondDate);
+    const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
+    navigate(path, { replace: true });
+  };
   const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
     setDatePickerValue(date);
     let newDate: Dayjs;
     if (date) {
       if (date.day() === 0) newDate = date.subtract(6, 'day');
       else newDate = date.subtract(date.day() - 1, 'day');
-      // console.log(newDate.format('YYYY-MM-DD'));
-      setBegDate(newDate.format('YYYY-MM-DD'));
-      setEndDate(newDate.add(7, 'day').format('YYYY-MM-DD'));
-      if (Date.parse(params.date || '')) navigate(`./../${newDate.format('YYYY-MM-DD')}`, { replace: true });
-      else navigate(`./${newDate.format('YYYY-MM-DD')}`, { replace: true });
+      const firstDate = newDate.format('YYYY-MM-DD');
+      const secondDate = newDate.add(7, 'day').format('YYYY-MM-DD');
+      onDateChange(firstDate, secondDate);
     }
   };
   const onNextWeek = () => {
-    setBegDate(dayjs(begDate).add(7, 'day').format('YYYY-MM-DD'));
-    setEndDate(dayjs(endDate).add(7, 'day').format('YYYY-MM-DD'));
+    const firstDate = dayjs(begDate).add(7, 'day').format('YYYY-MM-DD');
+    const secondDate = dayjs(endDate).add(7, 'day').format('YYYY-MM-DD');
     setDatePickerValue(null);
-    if (Date.parse(params.date || ''))
-      navigate(`./../${dayjs(begDate).add(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
-    else navigate(`./${dayjs(begDate).add(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
+    onDateChange(firstDate, secondDate);
   };
   const onPrevWeek = () => {
-    setEndDate(dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD'));
-    setBegDate(dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD'));
+    const firstDate = dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD');
+    const secondDate = dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD');
     setDatePickerValue(null);
-    if (Date.parse(params.date || ''))
-      navigate(`./../${dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
-    else navigate(`./${dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD')}`, { replace: true });
+    onDateChange(firstDate, secondDate);
   };
-
   const onAppointmentClick = (appointment: IAppointment) => {
     setCurrentAppointment(appointment);
     setIsAppInfoOpen(true);
   };
+
   const onAppointmentRemove = () => {
     removeAppointments({ _id: currentAppointment?._id || '' });
     // console.log(currentAppointment?._id);
@@ -187,36 +169,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     console.log('CLOSE');
   };
 
-  // const onAppointmentRemove = () => {
-  //   const showConfirm = () => {
-  //     confirm({
-  //       title:
-  //         'На данное время уже записан пациент. Вы точно хотите удалить запись? Вы можете также презаписать пациента на другое время',
-  //       icon: <ExclamationCircleFilled />,
-  //       onOk() {
-  //         console.log();
-  //         // removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
-  //         // messageApi.open({
-  //         //   type: 'success',
-  //         //   content: 'Пациент успешно отвязан.',
-  //         // });
-  //       },
-  //       okText: 'Да',
-  //       cancelText: 'Нет',
-  //     });
-  //   };
-  //   if (appointment?.service) {
-  //     showConfirm();
-  //   } else {
-  //     setCurrentAppointment(appointment);
-  //     setIsAddUpdateModalOpen(true);
-  //   }
-  // };
-
-  //
-  // const onDateClick = (e: any) => {
-
-  // }
   return (
     <>
       <Modal
@@ -470,19 +422,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         }
       >
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-          {/* <div style={{ display: 'flex', paddingBottom: '10px', justifyContent: 'flex-end', width: '100%' }}>
-            <DatePicker
-              style={{ marginRight: '10px' }}
-              format="DD.MM.YYYY"
-              onChange={onDPChange}
-              value={datePickerValue}
-            />
-
-            <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-            <Button type="default" style={{ marginRight: '10px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-          </div> */}
-
-          {/* <Row style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', width: '100%', gap: '5px' }}> */}
           <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
             {data?.map((appointemnts, index) => {
               const day = dayjs(begDate).add(index, 'day').format('DD MMM');
@@ -491,23 +430,12 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                 new Date(begDate).setDate(new Date(begDate).getDate() + index),
               ).toLocaleDateString('ru-RU', { weekday: 'short' });
               return (
-                <Col
-                  key={day}
-                  style={{ minHeight: '250px' }}
-                  // onClick={(e) => {
-                  //   setSelectedDate(thisDate);
-                  //   setOpen(true);
-                  // }}
-                  className={addClass(classes, 'shedule-col')}
-                >
+                <Col key={day} style={{ minHeight: '250px' }} className={addClass(classes, 'shedule-col')}>
                   <div className={addClass(classes, 'shedule-cell')}>
                     <div className={addClass(classes, 'shedule-cell-title')}>{`${dayOfWeek}. ${day}`}</div>
                     <ul className={addClass(classes, 'shedule-cell-list')}>
                       {appointemnts.length ? (
                         appointemnts.map((item: IAppointment) => {
-                          // if (value.toDate().toDateString() === new Date(item.begDate).toDateString()) {
-                          // console.log(value.toDate().toDateString());
-                          // console.log(new Date(item.begDate).toDateString());
                           const beg = new Date(item.begDate).toLocaleString('ru-RU', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -555,22 +483,9 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                                     </div>
                                   </div>
                                 )}
-                                {/* <Badge
-                              status={item.type as BadgeProps['status']}
-                              text={item.content}
-                              style={{
-                                width: '100%',
-                                overflow: 'hidden',
-                                fontSize: '12px',
-                                whiteSpace: 'nowrap',
-                                textOverflow: 'ellipsis',
-                              }}
-                            /> */}
                               </li>
                             </Tooltip>
                           );
-                          // }
-                          // return null;
                         })
                       ) : (
                         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
