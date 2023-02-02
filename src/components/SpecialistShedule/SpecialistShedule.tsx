@@ -38,33 +38,16 @@ interface SpecialistSheduleProps extends PropsWithChildren {
 const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ specialist }) => {
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-  const params = useParams();
-
-  // date
-  const nowDate = new Date();
-  let today = Date.parse(params.date || '') ? dayjs(Date.parse(params.date || '')) : dayjs();
-
-  if (today.day() === 0) today = today.subtract(6, 'day');
-  else today = today.subtract(today.day() - 1, 'day');
-
-  const [begDate, setBegDate] = useState(today.format('YYYY-MM-DD'));
-  const [endDate, setEndDate] = useState(today.add(7, 'day').format('YYYY-MM-DD'));
-  const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
-
   // modals
   const [isAddUpdateModalOpen, setIsAddUpdateModalOpen] = useState(false);
   const [isAppInfoOpen, setIsAppInfoOpen] = useState(false);
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
+  const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
   // current
   const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
   // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
-  // const { data, isLoading } = appointmentsAPI.useGetAppointmentsQuery({
-  //   personId: specialist?._id || '',
-  //   begDate,
-  //   endDate,
-  // });
   // form state
   const [form] = Form.useForm();
   const begDateField = Form.useWatch('begDate', form);
@@ -130,8 +113,9 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const onAppointmentRewrite = () => {
     console.log(currentAppointment?._id);
     console.log(currentAppointment?.service?._id);
-    setIsRemoveConfirmOpen(false);
-    onAppInfoReset();
+    setIsChangeServiceTimeOpen(true);
+    // setIsRemoveConfirmOpen(false);
+    // onAppInfoReset();
   };
   const onBeforeAppRemove = () => {
     if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
@@ -143,6 +127,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
   return (
     <>
+      {contextHolder}
       <Modal
         destroyOnClose
         open={isRemoveConfirmOpen}
@@ -372,116 +357,60 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
           </Form.Item>
         </Form>
       </Modal>
+      {/* ПЕРЕЗАПИСЬ!!! */}
+      <Modal
+        destroyOnClose
+        open={isChangeServiceTimeOpen}
+        footer={
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={onAppointmentRemove}
+            >
+              Удалить
+            </Button>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={onAppointmentRewrite}
+            >
+              Перезаписать
+            </Button>
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsRemoveConfirmOpen(false)}>
+              Отмена
+            </Button>
+          </>
+        }
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Изменение записи пацциента
+          </Typography.Title>
+        }
+        width="100%"
+        onCancel={() => setIsChangeServiceTimeOpen(false)}
+      >
+        <Shedule
+          dataAPI={appointmentsAPI.useGetAppointmentsQuery}
+          title="Расписание специалиста"
+          extraOptions={{ specialistId: specialist?._id, isFree: true }}
+          onAppointmentClick={onAppointmentClick}
+          type="Specialist"
+        />
+      </Modal>
 
       <Shedule
         dataAPI={appointmentsAPI.useGetAppointmentsQuery}
         title="Расписание специалиста"
+        extraOptions={{ specialistId: specialist?._id }}
         onAppointmentClick={onAppointmentClick}
-        person={specialist}
+        type="Specialist"
         extra={
           <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
             Добавить запись
           </Button>
         }
       />
-      {/* <Descriptions
-        size="middle"
-        title="Расписание специалиста"
-        extra={
-          <>
-            <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
-              Добавить запись
-            </Button>
-            <DatePicker
-              style={{ marginRight: '10px' }}
-              format="DD.MM.YYYY"
-              onChange={onDPChange}
-              value={datePickerValue}
-            />
-
-            <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-            <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-          </>
-        }
-      >
-        <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-          <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
-            {data?.map((appointemnts, index) => {
-              const day = dayjs(begDate).add(index, 'day').format('DD MMM');
-              const thisDate = dayjs(begDate).add(index, 'day').format('YYYY-MM-DD');
-              const dayOfWeek = new Date(
-                new Date(begDate).setDate(new Date(begDate).getDate() + index),
-              ).toLocaleDateString('ru-RU', { weekday: 'short' });
-              return (
-                <Col key={day} style={{ minHeight: '250px' }} className={addClass(classes, 'shedule-col')}>
-                  <div className={addClass(classes, 'shedule-cell')}>
-                    <div className={addClass(classes, 'shedule-cell-title')}>{`${dayOfWeek}. ${day}`}</div>
-                    <ul className={addClass(classes, 'shedule-cell-list')}>
-                      {appointemnts.length ? (
-                        appointemnts.map((item: IAppointment) => {
-                          const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          });
-                          const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          });
-                          const time = `${beg}-${end}`;
-                          const patient = `${item.service?.patient?.number} ${item.service?.patient?.surname} ${item.service?.patient?.name[0]}.${item.service?.patient?.patronymic[0]}.`;
-                          const serviceName = item.service?.type.name;
-                          return (
-                            <Tooltip
-                              title={item.service ? `${time} ${patient} ${serviceName}` : time}
-                              key={item._id}
-                              mouseLeaveDelay={0}
-                              mouseEnterDelay={0.5}
-                            >
-                              <li
-                                className={addClass(
-                                  classes,
-                                  'appointment',
-                                  item.service ? 'appointment-has-service' : '',
-                                  item.service && new Date(item.endDate) < nowDate ? 'appointment-bad-service' : '',
-                                )}
-                                onClick={(e) => onAppointmentClick(item)}
-                              >
-                                <div>{time}</div>
-                                {item.service ? (
-                                  <div>
-                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{patient}</div>
-                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{serviceName}</div>
-                                  </div>
-                                ) : (
-                                  <div>
-                                    <div
-                                      style={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        marginTop: '10px',
-                                        marginBottom: '10px',
-                                      }}
-                                    >
-                                      ------
-                                    </div>
-                                  </div>
-                                )}
-                              </li>
-                            </Tooltip>
-                          );
-                        })
-                      ) : (
-                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
-                      )}
-                    </ul>
-                  </div>
-                </Col>
-              );
-            })}
-          </Row>
-        </Descriptions.Item>
-      </Descriptions> */}
-      {contextHolder}
     </>
   );
 };

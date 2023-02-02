@@ -12,7 +12,7 @@ export interface IAppointment {
 export interface IGetAppointment {
   begDate: string;
   endDate: string;
-  personId: string;
+  specialistId: string;
 }
 
 export interface IAppointmentWeek {

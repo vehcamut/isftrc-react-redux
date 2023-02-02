@@ -16,6 +16,7 @@ import {
   Form,
   TimePicker,
   InputNumber,
+  Spin,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, ReactNode, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -30,14 +31,24 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 
 interface SheduleProps extends PropsWithChildren {
-  person?: ISpecialist;
+  extraOptions?: any;
+  // person?: ISpecialist;
   title: string;
   extra?: ReactNode;
   onAppointmentClick: (appointment: IAppointment) => void;
   dataAPI: any;
+  type: 'Specialist' | 'Patient';
 }
 
-const Shedule: FunctionComponent<SheduleProps> = ({ person, title, extra, onAppointmentClick, dataAPI }) => {
+const Shedule: FunctionComponent<SheduleProps> = ({
+  // person,
+  title,
+  extra,
+  onAppointmentClick,
+  dataAPI,
+  type,
+  extraOptions,
+}) => {
   const navigate = useNavigate();
   const params = useParams();
 
@@ -52,9 +63,9 @@ const Shedule: FunctionComponent<SheduleProps> = ({ person, title, extra, onAppo
   const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
 
   const { data, isLoading } = dataAPI({
-    personId: person?._id || '',
     begDate,
     endDate,
+    ...extraOptions,
   });
 
   const onDateChange = (firstDate: string, secondDate: string) => {
@@ -106,87 +117,97 @@ const Shedule: FunctionComponent<SheduleProps> = ({ person, title, extra, onAppo
       }
     >
       <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-        <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
-          {data?.map((appointments: any, index: any) => {
-            const day = dayjs(begDate).add(index, 'day').format('DD MMM');
-            const dayOfWeek = new Date(
-              new Date(begDate).setDate(new Date(begDate).getDate() + index),
-            ).toLocaleDateString('ru-RU', { weekday: 'short' });
-            return (
-              <Col key={day} style={{ minHeight: '250px' }} className={addClass(classes, 'shedule-col')}>
-                <div className={addClass(classes, 'shedule-cell')}>
-                  <div className={addClass(classes, 'shedule-cell-title')}>{`${dayOfWeek}. ${day}`}</div>
-                  <ul className={addClass(classes, 'shedule-cell-list')}>
-                    {appointments.length ? (
-                      appointments.map((item: IAppointment) => {
-                        const beg = new Date(item.begDate).toLocaleString('ru-RU', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        });
-                        const end = new Date(item.endDate).toLocaleString('ru-RU', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        });
-                        const time = `${beg}-${end}`;
-                        const patient = `${item.service?.patient?.number} ${item.service?.patient?.surname} ${item.service?.patient?.name[0]}.${item.service?.patient?.patronymic[0]}.`;
-                        const serviceName = item.service?.type.name;
-                        return (
-                          <Tooltip
-                            title={item.service ? `${time} ${patient} ${serviceName}` : time}
-                            key={item._id}
-                            mouseLeaveDelay={0}
-                            mouseEnterDelay={0.5}
-                          >
-                            <li
-                              className={addClass(
-                                classes,
-                                'appointment',
-                                item.service ? 'appointment-has-service' : '',
-                                item.service && new Date(item.endDate) < nowDate ? 'appointment-bad-service' : '',
-                              )}
-                              onClick={(e) => onAppointmentClick(item)}
+        {isLoading ? (
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
+            <Spin tip="Загрузка..." />
+          </div>
+        ) : (
+          <Row style={{ display: 'flex', width: '100%', gap: '5px' }}>
+            {data?.map((appointments: any, index: any) => {
+              const day = dayjs(begDate).add(index, 'day').format('DD MMM');
+              const dayOfWeek = new Date(
+                new Date(begDate).setDate(new Date(begDate).getDate() + index),
+              ).toLocaleDateString('ru-RU', { weekday: 'short' });
+              return (
+                <Col key={day} style={{ minHeight: '250px' }} className={addClass(classes, 'shedule-col')}>
+                  <div className={addClass(classes, 'shedule-cell')}>
+                    <div className={addClass(classes, 'shedule-cell-title')}>{`${dayOfWeek}. ${day}`}</div>
+                    <ul className={addClass(classes, 'shedule-cell-list')}>
+                      {appointments.length ? (
+                        appointments.map((item: IAppointment) => {
+                          const beg = new Date(item.begDate).toLocaleString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                          const end = new Date(item.endDate).toLocaleString('ru-RU', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          });
+                          const time = `${beg}-${end}`;
+                          let personStr;
+                          if (type === 'Specialist')
+                            personStr = `${item.service?.patient?.number} ${item.service?.patient?.surname} ${item.service?.patient?.name[0]}.${item.service?.patient?.patronymic[0]}.`;
+                          else personStr = `${item.specialist} ${item.specialist}.${item.specialist}.`;
+                          const serviceName = item.service?.type.name;
+                          return (
+                            <Tooltip
+                              title={item.service ? `${time} ${personStr} ${serviceName}` : time}
+                              key={item._id}
+                              mouseLeaveDelay={0}
+                              mouseEnterDelay={0.5}
                             >
-                              <div>{time}</div>
-                              {item.service ? (
-                                <div>
-                                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{patient}</div>
-                                  <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{serviceName}</div>
-                                </div>
-                              ) : (
-                                <div>
-                                  <div
-                                    style={{
-                                      overflow: 'hidden',
-                                      textOverflow: 'ellipsis',
-                                      marginTop: '10px',
-                                      marginBottom: '10px',
-                                    }}
-                                  >
-                                    ------
+                              <li
+                                className={addClass(
+                                  classes,
+                                  'appointment',
+                                  item.service ? 'appointment-has-service' : '',
+                                  item.service && new Date(item.endDate) < nowDate ? 'appointment-bad-service' : '',
+                                )}
+                                onClick={(e) => onAppointmentClick(item)}
+                              >
+                                <div>{time}</div>
+                                {item.service ? (
+                                  <div>
+                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{personStr}</div>
+                                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{serviceName}</div>
                                   </div>
-                                </div>
-                              )}
-                            </li>
-                          </Tooltip>
-                        );
-                      })
-                    ) : (
-                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
-                    )}
-                  </ul>
-                </div>
-              </Col>
-            );
-          })}
-        </Row>
+                                ) : (
+                                  <div>
+                                    <div
+                                      style={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        marginTop: '10px',
+                                        marginBottom: '10px',
+                                      }}
+                                    >
+                                      ------
+                                    </div>
+                                  </div>
+                                )}
+                              </li>
+                            </Tooltip>
+                          );
+                        })
+                      ) : (
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
+                      )}
+                    </ul>
+                  </div>
+                </Col>
+              );
+            })}
+          </Row>
+        )}
       </Descriptions.Item>
     </Descriptions>
   );
 };
 
 Shedule.defaultProps = {
-  person: undefined,
+  // person: undefined,
   extra: undefined,
+  extraOptions: undefined,
 };
 
 export default Shedule;
