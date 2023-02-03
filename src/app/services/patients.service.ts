@@ -15,6 +15,7 @@ import {
   IPatientData,
   IGetCourses,
   ICourseWithServices,
+  IPatientCourse,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -103,6 +104,16 @@ export const patientsAPI = api.injectEndpoints({
       //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       // },
     }),
+    openCourse: build.mutation<any, IPatientCourse>({
+      query: (body) => ({
+        url: 'patients/openCourse',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+
     // editType: build.mutation<object, ISpecialistType>({
     //   query: (body) => ({
     //     url: 'specialists/types/update',

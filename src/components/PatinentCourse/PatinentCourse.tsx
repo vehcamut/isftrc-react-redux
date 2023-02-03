@@ -1,8 +1,9 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Collapse, Table, Spin } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Collapse, Table, Spin, Empty } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { RightOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
@@ -105,7 +106,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const [messageApi, contextHolder] = message.useMessage();
   const [serv, setServ] = useState<string>('');
   const { data: servData, isLoading: isServDataLoading } = servicesAPI.useGetServiseByIdQuery({ id: serv });
-  const [updatePatient] = patientsAPI.useUpdatePatientMutation();
+  const [openCourse] = patientsAPI.useOpenCourseMutation();
   const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
   const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
@@ -130,6 +131,9 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const onRowClick = (record: string) => {
     setServ(record);
     setIsServInfoOpen(true);
+  };
+  const onOpenCourse = () => {
+    openCourse({ patientId: patient?._id || '' });
   };
   // const onEdit = () => {
   //   setOpen(true);
@@ -222,114 +226,135 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         )}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} /> */}
       </Modal>
-      <Descriptions
-        size="middle"
-        title="Курсы пациента. Общий баланс: "
-        extra={
-          <>
-            {patient?.isActive ? (
+      {isLoading ? (
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
+          <Spin tip="Загрузка..." />
+        </div>
+      ) : coursesData ? (
+        <Descriptions
+          size="middle"
+          title="Курсы пациента. Общий баланс: "
+          extra={
+            <>
+              {coursesData[coursesData.length - 1].number === 0 ||
+              coursesData[coursesData.length - 1].status === false ? (
+                <Button type="link" onClick={onOpenCourse}>
+                  Открыть курс
+                </Button>
+              ) : (
+                <Button type="link" style={{ marginRight: '0px' }}>
+                  Закрыть курс
+                </Button>
+              )}
               <Button type="link">Добавить услугу</Button>
-            ) : (
-              <Button type="link" style={{ marginRight: '10px' }}>
-                Добавить оплату
-              </Button>
-            )}
-            <Button type="link">Добавить оплату</Button>
-          </>
-        }
-      >
-        <Descriptions.Item>
-          <Collapse
-            defaultActiveKey={coursesData?.map((c) => c._id)}
-            style={{ width: '100%' }}
-            bordered={false}
-            expandIconPosition="start"
-            // eslint-disable-next-line react/no-unstable-nested-components
-            expandIcon={({ isActive }) => (
-              <RightOutlined
-                style={{ paddingTop: '7px', color: 'white', fontSize: '16px' }}
-                rotate={isActive ? 90 : 0}
-              />
-            )}
-          >
-            {coursesData?.map((course) => {
-              return (
-                <Panel
-                  header={
-                    <Title style={{ margin: 0, color: 'white' }} level={4}>
-                      {course.number ? `Курс лечения №${course.number}` : 'Услуги и оплаты вне курсов'}
-                    </Title>
-                  }
-                  key={course._id}
-                  style={{ verticalAlign: 'center' }}
-                  // #1677FF
-                >
-                  <Collapse
-                    defaultActiveKey="1"
-                    expandIcon={({ isActive }) => (
-                      <RightOutlined style={{ paddingTop: '4px', fontSize: '12px' }} rotate={isActive ? 90 : 0} />
-                    )}
+              <Button type="link">Добавить оплату</Button>
+            </>
+          }
+        >
+          <Descriptions.Item>
+            <Collapse
+              defaultActiveKey={coursesData?.map((c) => c._id)}
+              style={{ width: '100%' }}
+              bordered={false}
+              expandIconPosition="start"
+              // eslint-disable-next-line react/no-unstable-nested-components
+              expandIcon={({ isActive }) => (
+                <RightOutlined
+                  style={{ paddingTop: '7px', color: 'white', fontSize: '16px' }}
+                  rotate={isActive ? 90 : 0}
+                />
+              )}
+            >
+              {coursesData?.map((course) => {
+                return (
+                  <Panel
+                    header={
+                      <Title style={{ margin: 0, color: 'white' }} level={4}>
+                        {course.number ? `Курс лечения №${course.number}` : 'Услуги и оплаты вне курсов'}
+                      </Title>
+                    }
+                    key={course._id}
+                    style={{ verticalAlign: 'center' }}
+                    // #1677FF
                   >
-                    {course.serviceGroups.map((group) => {
-                      return (
-                        <Panel
-                          // header={group.name}
-                          header={
-                            <Title style={{ margin: 0, fontVariant: 'small-caps' }} level={5}>
-                              {group.name}
-                            </Title>
-                          }
-                          key={group._id}
-                          style={{ backgroundColor: '#f0f0f0' }}
-                          className="inner-panel"
-                        >
-                          <Table
-                            columns={columns}
-                            dataSource={group.services}
-                            pagination={false}
-                            size="small"
-                            rowKey={(record) => record._id}
-                            style={{ backgroundColor: '#e6f4ff' }}
-                            loading={isLoading}
-                            onRow={(record) => {
-                              return {
-                                onClick: () => {
-                                  // console.log(servData);
-                                  onRowClick(record._id);
-                                },
-                              };
-                            }}
-                            rowClassName={(record) =>
-                              record.status === true
-                                ? 'my-table-row course-group-table-row_yellow'
-                                : 'my-table-row course-group-table-row_yellow'
-                            }
-                            className={addClass(classes, 'patients-table')}
-                            summary={() => (
-                              <Table.Summary fixed={true ? 'top' : 'bottom'}>
-                                <Table.Summary.Row>
-                                  <Table.Summary.Cell index={0} colSpan={2}>
-                                    Итого
-                                  </Table.Summary.Cell>
-                                  <Table.Summary.Cell index={2} colSpan={3}>
-                                    5
-                                  </Table.Summary.Cell>
-                                  <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
-                                  <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
-                                </Table.Summary.Row>
-                              </Table.Summary>
-                            )}
-                          />
-                        </Panel>
-                      );
-                    })}
-                  </Collapse>
-                </Panel>
-              );
-            })}
-          </Collapse>
-        </Descriptions.Item>
-      </Descriptions>
+                    {course.serviceGroups.length ? (
+                      <Collapse
+                        defaultActiveKey={course.serviceGroups.map((c) => c._id)}
+                        expandIcon={({ isActive }) => (
+                          <RightOutlined style={{ paddingTop: '4px', fontSize: '12px' }} rotate={isActive ? 90 : 0} />
+                        )}
+                      >
+                        {course.serviceGroups.map((group) => {
+                          return (
+                            <Panel
+                              // header={group.name}
+                              header={
+                                <Title style={{ margin: 0, fontVariant: 'small-caps' }} level={5}>
+                                  {group.name}
+                                </Title>
+                              }
+                              key={group._id}
+                              style={{ backgroundColor: '#f0f0f0' }}
+                              className="inner-panel"
+                            >
+                              <Table
+                                columns={columns}
+                                dataSource={group.services}
+                                pagination={false}
+                                size="small"
+                                rowKey={(record) => record._id}
+                                style={{ backgroundColor: '#e6f4ff' }}
+                                loading={isLoading}
+                                onRow={(record) => {
+                                  return {
+                                    onClick: () => {
+                                      // console.log(servData);
+                                      onRowClick(record._id);
+                                    },
+                                  };
+                                }}
+                                rowClassName={(record) =>
+                                  record.status === true
+                                    ? 'my-table-row course-group-table-row_yellow'
+                                    : 'my-table-row course-group-table-row_yellow'
+                                }
+                                className={addClass(classes, 'patients-table')}
+                                summary={() => (
+                                  <Table.Summary fixed={true ? 'top' : 'bottom'}>
+                                    <Table.Summary.Row>
+                                      <Table.Summary.Cell index={0} colSpan={2}>
+                                        Итого
+                                      </Table.Summary.Cell>
+                                      <Table.Summary.Cell index={2} colSpan={3}>
+                                        5
+                                      </Table.Summary.Cell>
+                                      <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
+                                      <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
+                                    </Table.Summary.Row>
+                                  </Table.Summary>
+                                )}
+                              />
+                            </Panel>
+                          );
+                        })}
+                      </Collapse>
+                    ) : (
+                      <Empty
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        description="Услуги отсутствуют"
+                        style={{ backgroundColor: 'white', margin: 0, padding: '30px 0px' }}
+                      />
+                    )}
+                  </Panel>
+                );
+              })}
+            </Collapse>
+          </Descriptions.Item>
+        </Descriptions>
+      ) : (
+        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Курсы и услуги отсутствуют" />
+        // <div style={{ height: '150px' }}>d</div>
+      )}
     </>
   );
 };

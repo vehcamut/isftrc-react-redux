@@ -43,3 +43,7 @@ export interface IServiceTypeWithoutGroup {
   isActive?: boolean;
   time?: Date;
 }
+
+export interface IPatientCourse {
+  patientId: string;
+}
