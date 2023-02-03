@@ -16,6 +16,8 @@ import {
   IGetCourses,
   ICourseWithServices,
   IPatientCourse,
+  IAddService,
+  IRemoveService,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -108,6 +110,24 @@ export const patientsAPI = api.injectEndpoints({
       query: (body) => ({
         url: 'patients/openCourse',
         method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+    addService: build.mutation<any, IAddService>({
+      query: (body) => ({
+        url: 'patients/addService',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+    removeService: build.mutation<any, IRemoveService>({
+      query: (body) => ({
+        url: 'patients/removeService',
+        method: 'DELETE',
         credentials: 'include',
         body,
       }),

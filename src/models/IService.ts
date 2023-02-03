@@ -67,3 +67,34 @@ export interface IAddAppointmentToService {
   appointmentId: string;
   serviceId: string;
 }
+
+export interface IServiceGroupToSelect {
+  _id: string;
+  name: string;
+}
+
+export interface IServiceTypeToSelect {
+  _id: string;
+  name: string;
+}
+
+export interface IToSelect {
+  value: string;
+  label: string;
+}
+
+export interface IGetGroupServiceType {
+  group: string;
+}
+
+export interface IAddService {
+  type: string;
+  inCourse: boolean;
+  amount: number;
+  note?: string;
+  patient: string;
+}
+
+export interface IRemoveService {
+  id: string;
+}

@@ -3,18 +3,37 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Button, Modal, Typography, Descriptions, message, Collapse, Table, Spin, Empty } from 'antd';
+import {
+  Button,
+  Modal,
+  Typography,
+  Descriptions,
+  message,
+  Collapse,
+  Table,
+  Spin,
+  Empty,
+  Form,
+  Row,
+  Col,
+  Select,
+  Switch,
+  InputNumber,
+  Input,
+} from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { RightOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, RightOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { patientsAPI, servicesAPI } from '../../app/services';
 import classes from './PatinentCourse.module.scss';
-import { IPatient } from '../../models';
+import { IAddService, IPatient, IServiceGroupToSelect } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import './antd.rewrite.scss';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
+const { TextArea } = Input;
+const { confirm } = Modal;
 
 interface PatinentCourseProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -107,9 +126,16 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const [serv, setServ] = useState<string>('');
   const { data: servData, isLoading: isServDataLoading } = servicesAPI.useGetServiseByIdQuery({ id: serv });
   const [openCourse] = patientsAPI.useOpenCourseMutation();
-  const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
+  const [addService] = patientsAPI.useAddServiceMutation();
+  const [removeService] = patientsAPI.useRemoveServiceMutation();
   const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
+  const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
+  const [currentGroup, setCurrentGroup] = useState<string | undefined>(undefined);
+  const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery({});
+  const { data: typeToSelect, isLoading: isLoadingTypeToSelect } = servicesAPI.useGetTypesQuery({
+    group: currentGroup || '',
+  });
 
   // const onFinish = async (values: any) => {
   //   try {
@@ -126,6 +152,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   //   }
   // };
   const onReset = () => {
+    setServ('');
     setIsServInfoOpen(false);
   };
   const onRowClick = (record: string) => {
@@ -134,6 +161,66 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   };
   const onOpenCourse = () => {
     openCourse({ patientId: patient?._id || '' });
+  };
+  const [form] = Form.useForm();
+  const onAddServiceCancel = () => {
+    form.resetFields();
+    setCurrentGroup(undefined);
+    setIsAddServiceOpen(false);
+  };
+  const onGroupChange = (value: any) => {
+    setCurrentGroup(value);
+    form.resetFields(['type']);
+  };
+  const onFinish = async (values: any) => {
+    const addServiceDto: IAddService = {
+      type: values.type,
+      patient: patient?._id || '',
+      inCourse: !values.inCourse,
+      amount: values.amount,
+      note: values.note,
+    };
+    try {
+      const result = await addService(addServiceDto).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Услуги успешно добавлены',
+      });
+      onAddServiceCancel();
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+  const onRemoveService = () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите удаление улсуги.',
+        icon: <ExclamationCircleFilled />,
+        content: 'Вы точно хотите удалить услугу?',
+        async onOk() {
+          try {
+            const result = await removeService({ id: serv }).unwrap();
+            messageApi.open({
+              type: 'success',
+              content: 'Услуга успешно удалена',
+            });
+            onReset();
+          } catch (e) {
+            messageApi.open({
+              type: 'error',
+              content: 'Ошибка связи с сервером',
+            });
+          }
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    };
+    showConfirm();
   };
   // const onEdit = () => {
   //   setOpen(true);
@@ -172,7 +259,46 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       <Modal
         destroyOnClose
         open={isServInfoOpen}
-        footer={null}
+        footer={
+          <>
+            <Button
+              type="primary"
+              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+              onClick={onRemoveService}
+            >
+              Удалить запись
+            </Button>
+            {servData?.date ? (
+              <Button
+                type="primary"
+                style={{ marginRight: '10px' }}
+                // onClick={onBeforeAppRemove}
+              >
+                Изменить дату
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                style={{ marginRight: '10px' }}
+                // onClick={onBeforeAppRemove}
+              >
+                Выбрать дату
+              </Button>
+            )}
+
+            {/* {currentAppointment?.service && !currentAppointment.service.status ? (
+              <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppClose}>
+                Закрыть услугу
+              </Button>
+            ) : (
+              ''
+            )} */}
+
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
+              Отмена
+            </Button>
+          </>
+        }
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
             Информация об услуге
@@ -226,6 +352,94 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         )}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} /> */}
       </Modal>
+
+      <Modal
+        destroyOnClose
+        open={isAddServiceOpen}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Добавление услуги
+          </Typography.Title>
+        }
+        width="750px"
+        onCancel={onAddServiceCancel}
+      >
+        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onFinish} form={form}>
+          <Form.Item
+            rules={[{ required: true, message: 'Поле "Группа услуг" не должно быть пустым' }]}
+            label="Группа услуг"
+            name="group"
+          >
+            <Select
+              id="group"
+              allowClear
+              style={{ width: '100%' }}
+              options={groupToSelect}
+              loading={isLoadingGroupToSelect}
+              onChange={onGroupChange}
+            />
+          </Form.Item>
+          <Form.Item
+            rules={[{ required: true, message: 'Поле "Тип услуги" не должно быть пустым' }]}
+            label="Тип услуги"
+            name="type"
+          >
+            <Select
+              id="type"
+              allowClear
+              style={{ width: '100%' }}
+              options={typeToSelect}
+              loading={isLoadingTypeToSelect}
+              disabled={!currentGroup}
+              // onChange={onGroupChange}
+            />
+          </Form.Item>
+          <Form.Item
+            valuePropName="checked"
+            // initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
+            label={<div className={addClass(classes, 'form-item')}>Вне курса</div>}
+            name="inCourse"
+          >
+            <Switch id="inCourse" />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
+            label="Количество"
+            name="amount"
+          >
+            <InputNumber min={1} max={15} id="amount" />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            // rules={[{ required: true, message: 'Поле "Комментарий" не должно быть пустым' }]}
+            label="Комментарий"
+            name="note"
+          >
+            <TextArea id="note" rows={4} placeholder="Комментарий к услуге" />
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" onClick={onAddServiceCancel} className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
+      </Modal>
+
       {isLoading ? (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
           <Spin tip="Загрузка..." />
@@ -246,7 +460,9 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                   Закрыть курс
                 </Button>
               )}
-              <Button type="link">Добавить услугу</Button>
+              <Button type="link" onClick={() => setIsAddServiceOpen(true)}>
+                Добавить услугу
+              </Button>
               <Button type="link">Добавить оплату</Button>
             </>
           }

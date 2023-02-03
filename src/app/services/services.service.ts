@@ -22,6 +22,10 @@ import {
   IGetServiceById,
   IServiceInfo,
   IAddAppointmentToService,
+  IToSelect,
+  IServiceGroupToSelect,
+  IServiceTypeToSelect,
+  IGetGroupServiceType,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -110,6 +114,38 @@ export const servicesAPI = api.injectEndpoints({
         body,
       }),
       invalidatesTags: ['serviceGroup', 'serviceType', 'appointments'],
+    }),
+
+    getGroups: build.query<IToSelect[], any>({
+      query: (params) => ({
+        url: 'services/getGroups',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['serviceGroup', 'serviceType'],
+      transformResponse(apiResponse: IServiceGroupToSelect[], meta): any {
+        const resp: IToSelect[] = [];
+        for (let i = 0; i < apiResponse.length; i += 1) {
+          resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
+        }
+        return resp;
+      },
+    }),
+
+    getTypes: build.query<IToSelect[], IGetGroupServiceType>({
+      query: (params) => ({
+        url: 'services/getTypes',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['serviceGroup', 'serviceType'],
+      transformResponse(apiResponse: IServiceTypeToSelect[], meta): any {
+        const resp: IToSelect[] = [];
+        for (let i = 0; i < apiResponse.length; i += 1) {
+          resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
+        }
+        return resp;
+      },
     }),
   }),
 });
