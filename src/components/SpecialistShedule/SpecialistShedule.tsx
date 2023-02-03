@@ -16,19 +16,23 @@ import {
   Form,
   TimePicker,
   InputNumber,
+  Select,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import classes from './SpecialistShedule.module.scss';
-import { IAppointment, ISpecialist } from '../../models';
+import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
+import { servicesAPI } from '../../app/services';
+
+const { confirm } = Modal;
 
 interface SpecialistSheduleProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -48,11 +52,20 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
+  const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
   // form state
   const [form] = Form.useForm();
   const begDateField = Form.useWatch('begDate', form);
   const timeField = Form.useWatch('time', form);
   const amountField = Form.useWatch('amount', form);
+
+  const params = useParams();
+
+  const [currentPatient, setCurrentPatient] = useState<IService | undefined>(undefined);
+  const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
+  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery({
+    type: currentPatient?.type._id || '',
+  });
 
   const onAddUpdateReset = () => {
     form.resetFields();
@@ -104,6 +117,40 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     setIsAppInfoOpen(true);
   };
 
+  const onAppointmentRewriteClick = (appointment: IAppointment) => {
+    const date = dayjs(appointment.begDate).format('DD.MM.YYYY');
+    const time = new Date(appointment.begDate).toLocaleString('ru-RU', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const patientName = `${currentPatient?.patient?.number} ${currentPatient?.patient?.surname} ${currentPatient?.patient?.name[0]}.${currentPatient?.patient?.patronymic[0]}.`;
+    const servType = `${currentPatient?.type.name}`;
+    const specName = `${appointment.specialist.name}`;
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите запись пациента.',
+        icon: <ExclamationCircleFilled />,
+        content: (
+          <div>
+            <p>{`Дата: ${date}. Время: ${time}.`}</p>
+            <p>{`Пациент: ${patientName}`}</p>
+            <p>{`Услуга: ${servType}.`}</p>
+            <p>{`Специалист: ${specName}`}</p>
+          </div>
+        ),
+        onOk() {
+          console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
+          setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    };
+    showConfirm();
+    setIsAppInfoOpen(true);
+  };
+
   const onAppointmentRemove = () => {
     removeAppointments({ _id: currentAppointment?._id || '' });
     // console.log(currentAppointment?._id);
@@ -111,6 +158,8 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
     onAppInfoReset();
   };
   const onAppointmentRewrite = () => {
+    setCurrentPatient(currentAppointment?.service);
+    console.log(currentPatient);
     console.log(currentAppointment?._id);
     console.log(currentAppointment?.service?._id);
     setIsChangeServiceTimeOpen(true);
@@ -123,6 +172,11 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   };
   const onAppClose = () => {
     console.log('CLOSE');
+  };
+
+  const onRemoveConfirmClose = () => {
+    setIsChangeServiceTimeOpen(false);
+    setCurrentSpecialist(undefined);
   };
 
   return (
@@ -254,28 +308,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
           <Descriptions.Item label="Результат" span={3}>
             {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
           </Descriptions.Item>
-          {/* <Descriptions.Item label="Сеанс" span={3}>
-            {servData?.number ? servData?.number : 'не указан'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Статус" span={3}>
-            {
-              // eslint-disable-next-line no-nested-ternary
-              servData?.status ? 'оказана' : servData?.date ? 'неоказана' : 'отсутствует запись'
-            }
-          </Descriptions.Item>
-          
-          <Descriptions.Item label="Услуга" span={3}>
-            {servData?.type}
-          </Descriptions.Item>
-          <Descriptions.Item label="Специалист" span={3}>
-            {servData?.specialist ? servData?.specialist : 'не назначен'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Комментарий" span={3}>
-            {servData?.note ? servData?.note : 'отсутствует'}
-          </Descriptions.Item> */}
         </Descriptions>
-        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
 
       <Modal
@@ -363,7 +396,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         open={isChangeServiceTimeOpen}
         footer={
           <>
-            <Button
+            {/* <Button
               type="primary"
               style={{ marginRight: '10px', backgroundColor: '#e60000' }}
               onClick={onAppointmentRemove}
@@ -376,27 +409,51 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
               onClick={onAppointmentRewrite}
             >
               Перезаписать
-            </Button>
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsRemoveConfirmOpen(false)}>
+            </Button> */}
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onRemoveConfirmClose}>
               Отмена
             </Button>
           </>
         }
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Изменение записи пацциента
+            Изменение записи пациента
           </Typography.Title>
         }
         width="100%"
-        onCancel={() => setIsChangeServiceTimeOpen(false)}
+        onCancel={onRemoveConfirmClose}
       >
-        <Shedule
-          dataAPI={appointmentsAPI.useGetAppointmentsQuery}
-          title="Расписание специалиста"
-          extraOptions={{ specialistId: specialist?._id, isFree: true }}
-          onAppointmentClick={onAppointmentClick}
-          type="Specialist"
-        />
+        <>
+          <Select
+            id="advertisingSources"
+            // mode="multiple"
+            allowClear
+            style={{ width: '100%', marginBottom: '20px' }}
+            options={data}
+            // defaultOpen
+            onChange={(v) => setCurrentSpecialist(v)}
+            placeholder="Выберите специалиста"
+            // defaultValue={0}
+          />
+          {currentSpecialist ? (
+            <Shedule
+              dataAPI={appointmentsAPI.useGetForRecordQuery}
+              title="Расписание специалиста"
+              extraOptions={{
+                specialistId: currentSpecialist,
+                isFree: true,
+                serviceId: currentPatient?._id,
+                patientId: currentPatient?.patient?._id,
+              }}
+              // extraOptions={{ specialistId: specialist?._id, isFree: true }}
+              onAppointmentClick={onAppointmentRewriteClick}
+              type="Specialist"
+            />
+          ) : (
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Выберите специалиста" />
+            // <div style={{ height: '150px' }}>d</div>
+          )}
+        </>
       </Modal>
 
       <Shedule
@@ -405,6 +462,10 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         extraOptions={{ specialistId: specialist?._id }}
         onAppointmentClick={onAppointmentClick}
         type="Specialist"
+        onDateChange={(f, s) => {
+          const path = `${Date.parse(params.date || '') ? './.' : ''}./${f}`;
+          navigate(path, { replace: true });
+        }}
         extra={
           <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
             Добавить запись

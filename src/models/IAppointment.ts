@@ -5,8 +5,13 @@ export interface IAppointment {
   _id: string;
   begDate: Date;
   endDate: Date;
-  specialist: string;
+  specialist: ISpecialistToSelect;
   service?: IService;
+}
+
+export interface ISpecialistToSelect {
+  _id: string;
+  name: string;
 }
 
 export interface IGetAppointment {
@@ -42,4 +47,12 @@ export interface IAddAppointmentResult {
 
 export interface IRemoveAppointment {
   _id: string;
+}
+
+export interface IGetFreeAppointmetns {
+  specialistId: string;
+  patientId: string;
+  begDate?: Date;
+  endDate?: Date;
+  serviceId: string;
 }

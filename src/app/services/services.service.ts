@@ -21,6 +21,7 @@ import {
   IService,
   IGetServiceById,
   IServiceInfo,
+  IAddAppointmentToService,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -99,6 +100,16 @@ export const servicesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['serviceGroup', 'serviceType', 'appointments'],
+    }),
+
+    setAppointmentToService: build.mutation<any, IAddAppointmentToService>({
+      query: (body) => ({
+        url: 'services/setAppointment',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['serviceGroup', 'serviceType', 'appointments'],
     }),
   }),
 });

@@ -36,6 +36,7 @@ interface SheduleProps extends PropsWithChildren {
   title: string;
   extra?: ReactNode;
   onAppointmentClick: (appointment: IAppointment) => void;
+  onDateChange?: (firstDate: string, secondDate: string) => void;
   dataAPI: any;
   type: 'Specialist' | 'Patient';
 }
@@ -48,6 +49,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
   dataAPI,
   type,
   extraOptions,
+  onDateChange,
 }) => {
   const navigate = useNavigate();
   const params = useParams();
@@ -68,12 +70,12 @@ const Shedule: FunctionComponent<SheduleProps> = ({
     ...extraOptions,
   });
 
-  const onDateChange = (firstDate: string, secondDate: string) => {
-    setBegDate(firstDate);
-    setEndDate(secondDate);
-    const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
-    navigate(path, { replace: true });
-  };
+  // const onDateChange = (firstDate: string, secondDate: string) => {
+  //   setBegDate(firstDate);
+  //   setEndDate(secondDate);
+  //   const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
+  //   navigate(path, { replace: true });
+  // };
   const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
     setDatePickerValue(date);
     let newDate: Dayjs;
@@ -82,20 +84,26 @@ const Shedule: FunctionComponent<SheduleProps> = ({
       else newDate = date.subtract(date.day() - 1, 'day');
       const firstDate = newDate.format('YYYY-MM-DD');
       const secondDate = newDate.add(7, 'day').format('YYYY-MM-DD');
-      onDateChange(firstDate, secondDate);
+      setBegDate(firstDate);
+      setEndDate(secondDate);
+      if (onDateChange) onDateChange(firstDate, secondDate);
     }
   };
   const onNextWeek = () => {
     const firstDate = dayjs(begDate).add(7, 'day').format('YYYY-MM-DD');
     const secondDate = dayjs(endDate).add(7, 'day').format('YYYY-MM-DD');
     setDatePickerValue(null);
-    onDateChange(firstDate, secondDate);
+    setBegDate(firstDate);
+    setEndDate(secondDate);
+    if (onDateChange) onDateChange(firstDate, secondDate);
   };
   const onPrevWeek = () => {
     const firstDate = dayjs(begDate).subtract(7, 'day').format('YYYY-MM-DD');
     const secondDate = dayjs(endDate).subtract(7, 'day').format('YYYY-MM-DD');
     setDatePickerValue(null);
-    onDateChange(firstDate, secondDate);
+    setBegDate(firstDate);
+    setEndDate(secondDate);
+    if (onDateChange) onDateChange(firstDate, secondDate);
   };
   return (
     <Descriptions
@@ -208,6 +216,7 @@ Shedule.defaultProps = {
   // person: undefined,
   extra: undefined,
   extraOptions: undefined,
+  onDateChange: undefined,
 };
 
 export default Shedule;

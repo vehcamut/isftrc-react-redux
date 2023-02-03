@@ -27,7 +27,7 @@ const SpecialistPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) =
   };
 
   const onChange = (key: string) => {
-    navigate(`./../${key}`, { replace: true });
+    navigate(`/specialists/${params?.id}/${key}`, { replace: true });
   };
 
   return (

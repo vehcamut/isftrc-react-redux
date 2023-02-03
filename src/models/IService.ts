@@ -62,3 +62,8 @@ export interface IGetServiceType {
 export interface IGetServiceById {
   id: string;
 }
+
+export interface IAddAppointmentToService {
+  appointmentId: string;
+  serviceId: string;
+}

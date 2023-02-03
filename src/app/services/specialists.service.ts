@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import dayjs from 'dayjs';
 import { createApi } from '@reduxjs/toolkit/query/react';
-import { ISpecialistChangeStatus } from '../../models/ISpecialist';
 /* eslint-disable import/prefer-default-export */
 import {
+  IGetSpecificSpecialists,
+  ISpecialistChangeStatus,
   IRepresentative,
   IGet,
   IGetByID,
@@ -16,6 +17,8 @@ import {
   IGetRepPatients,
   ISpecialist,
   ISpecialistData,
+  ISpecificSpecialistToSelect,
+  ISpecialistToSelect,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -34,6 +37,22 @@ export const specialistAPI = api.injectEndpoints({
       providesTags: ['specialistTypes', 'specialists'],
       transformResponse(apiRespons: ISpecialist[], meta): ISpecialistData {
         return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
+      },
+    }),
+
+    getSpecificSpecialists: build.query<ISpecificSpecialistToSelect[], IGetSpecificSpecialists>({
+      query: (params) => ({
+        url: 'specialists/getSpecific',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['specialistTypes', 'specialists'],
+      transformResponse(apiResponse: ISpecialistToSelect[], meta): ISpecificSpecialistToSelect[] {
+        const resp = [];
+        for (let i = 0; i < apiResponse.length; i += 1) {
+          resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
+        }
+        return resp;
       },
     }),
 

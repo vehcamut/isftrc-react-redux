@@ -21,7 +21,16 @@ export interface ISpecialistChangeStatus {
   isActive: boolean;
 }
 
+export interface ISpecificSpecialistToSelect {
+  value: string;
+  label: string;
+}
+
 export interface ISpecialistData {
   data: ISpecialist[];
   count: number;
+}
+
+export interface IGetSpecificSpecialists {
+  type: string;
 }
