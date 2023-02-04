@@ -38,7 +38,16 @@
                     background:  #fdf291 !important;
                   }
                 }
-                
+                &_green {
+                  > td {
+                    background:  #b4e7bb !important;
+                  }
+                }
+                &_red {
+                  > td {
+                    background:  #fdc591 !important;
+                  }
+                }
               }
               &.my-table-row{
                 //#fdf291

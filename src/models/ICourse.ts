@@ -16,10 +16,14 @@ export interface IGetCourses {
 
 export interface ICourseWithServices extends ICourseWithId {
   serviceGroups: IServiceGroupWithServises[];
+  total: number;
 }
 
 export interface IServiceGroupWithServises extends IServiceGroupWithId {
   services: IServiceInCourse[];
+  total: number;
+  income: number;
+  outcome: number;
 }
 
 export interface IServiceInCourse {
@@ -28,6 +32,7 @@ export interface IServiceInCourse {
   name: string;
   price: number;
   specialist: string;
+  number?: number;
   // type: IServiceTypeWithoutGroup;
   status: boolean;
   result?: string;

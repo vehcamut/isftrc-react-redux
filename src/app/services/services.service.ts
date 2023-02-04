@@ -26,6 +26,7 @@ import {
   IServiceGroupToSelect,
   IServiceTypeToSelect,
   IGetGroupServiceType,
+  ICloseService,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -155,6 +156,16 @@ export const servicesAPI = api.injectEndpoints({
         }
         return resp;
       },
+    }),
+
+    closeService: build.mutation<any, ICloseService>({
+      query: (body) => ({
+        url: 'services/closeService',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['serviceGroup', 'serviceType', 'appointments'],
     }),
   }),
 });

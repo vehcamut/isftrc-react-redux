@@ -99,3 +99,8 @@ export interface IAddService {
 export interface IRemoveService {
   id: string;
 }
+
+export interface ICloseService {
+  id: string;
+  result: string;
+}

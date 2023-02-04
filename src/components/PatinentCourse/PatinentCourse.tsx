@@ -66,12 +66,12 @@ const columns = [
       return date ? new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '';
     },
   },
-  {
-    title: 'Сеанс',
-    dataIndex: 'number',
-    key: 'number',
-    width: '7%',
-  },
+  // {
+  //   title: 'Сеанс',
+  //   dataIndex: 'number',
+  //   key: 'number',
+  //   width: '7%',
+  // },
   {
     title: 'Тип оплаты / услуга',
     dataIndex: 'name',
@@ -128,11 +128,13 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const { data: servData, isLoading: isServDataLoading } = servicesAPI.useGetServiseByIdQuery({ id: serv });
   const [openCourse] = patientsAPI.useOpenCourseMutation();
   const [addService] = patientsAPI.useAddServiceMutation();
+  const [closeService] = servicesAPI.useCloseServiceMutation();
   const [removeService] = patientsAPI.useRemoveServiceMutation();
   const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
   const [isAddAppToServOpen, setIsAddAppToServOpen] = useState(false);
   const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
+  const [isSetResultOpen, setIsSetResultOpen] = useState(false);
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(undefined);
   const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery({});
   const { data: typeToSelect, isLoading: isLoadingTypeToSelect } = servicesAPI.useGetTypesQuery({
@@ -224,6 +226,25 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
     };
     showConfirm();
   };
+  const onSetResultFinish = async (values: any) => {
+    try {
+      const result = await closeService({ id: servData?.id || '', result: values.result }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Услуга успешно закрыта',
+      });
+      setIsSetResultOpen(false);
+      // onAddServiceCancel();
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+  // const onCloseService = () => {
+  //   closeService;
+  // };
   // const onEdit = () => {
   //   setOpen(true);
   // };
@@ -265,11 +286,14 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         footer={
           <>
             <Button type="primary" style={{ marginRight: '0px', backgroundColor: '#e60000' }} onClick={onRemoveService}>
-              Удалить запись
+              Удалить услугу
             </Button>
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
-              Закрыть запись
-            </Button>
+            {servData?.date && servData.date <= new Date() ? (
+              <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsSetResultOpen(true)}>
+                Закрыть услугу
+              </Button>
+            ) : null}
+
             {servData?.date ? (
               <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
                 Изменить дату
@@ -342,9 +366,58 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             <Descriptions.Item label="Комментарий" span={3}>
               {servData?.note ? servData?.note : 'отсутствует'}
             </Descriptions.Item>
+            <Descriptions.Item label="Результат" span={3}>
+              {servData?.result ? servData?.result : 'отсутствует'}
+            </Descriptions.Item>
           </Descriptions>
         )}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} /> */}
+      </Modal>
+
+      <Modal
+        destroyOnClose
+        open={isSetResultOpen}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Закрытие услуги
+          </Typography.Title>
+        }
+        width="750px"
+        onCancel={() => setIsSetResultOpen(false)}
+      >
+        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onSetResultFinish}>
+          <Form.Item
+            initialValue={servData?.result ? servData.result : ''}
+            rules={[{ required: true, message: 'Поле "Результат" не должно быть пустым' }]}
+            label="Результат"
+            name="result"
+          >
+            <TextArea id="result" rows={4} placeholder="Результат оказания услуги" />
+          </Form.Item>
+
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Закрыть
+                </Button>
+                <Button
+                  htmlType="button"
+                  onClick={() => setIsSetResultOpen(false)}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
       </Modal>
 
       <Modal
@@ -441,7 +514,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       ) : coursesData ? (
         <Descriptions
           size="middle"
-          title="Курсы пациента. Общий баланс: "
+          title={`Курсы пациента. Общий баланс: ${coursesData.reduce((accum, current) => accum + current.total, 0)}`}
           extra={
             <>
               {coursesData[coursesData.length - 1].number === 0 ||
@@ -480,7 +553,9 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                   <Panel
                     header={
                       <Title style={{ margin: 0, color: 'white' }} level={4}>
-                        {course.number ? `Курс лечения №${course.number}` : 'Услуги и оплаты вне курсов'}
+                        {`${
+                          course.number ? `Курс лечения №${course.number}` : 'Услуги и оплаты вне курсов'
+                        } | Баланс: ${course.total}`}
                       </Title>
                     }
                     key={course._id}
@@ -500,7 +575,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                               // header={group.name}
                               header={
                                 <Title style={{ margin: 0, fontVariant: 'small-caps' }} level={5}>
-                                  {group.name}
+                                  {`${group.name}. Баланс: ${group.total}`}
                                 </Title>
                               }
                               key={group._id}
@@ -525,8 +600,10 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                                 }}
                                 rowClassName={(record) =>
                                   record.status === true
+                                    ? 'my-table-row course-group-table-row_green'
+                                    : !record.date || new Date(record.date) > new Date()
                                     ? 'my-table-row course-group-table-row_yellow'
-                                    : 'my-table-row course-group-table-row_yellow'
+                                    : 'my-table-row course-group-table-row_red'
                                 }
                                 className={addClass(classes, 'patients-table')}
                                 summary={() => (
@@ -535,11 +612,11 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                                       <Table.Summary.Cell index={0} colSpan={2}>
                                         Итого
                                       </Table.Summary.Cell>
-                                      <Table.Summary.Cell index={2} colSpan={3}>
-                                        5
+                                      <Table.Summary.Cell index={2} colSpan={2}>
+                                        {group.services.filter((s) => s.status).length}
                                       </Table.Summary.Cell>
-                                      <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
-                                      <Table.Summary.Cell index={6}>2000</Table.Summary.Cell>
+                                      <Table.Summary.Cell index={6}>{group.outcome}</Table.Summary.Cell>
+                                      <Table.Summary.Cell index={6}>{group.income}</Table.Summary.Cell>
                                     </Table.Summary.Row>
                                   </Table.Summary>
                                 )}
