@@ -17,6 +17,7 @@ export interface IService {
 }
 
 export interface IServiceInfo {
+  id: string;
   type: string;
   status: boolean;
   course: string;

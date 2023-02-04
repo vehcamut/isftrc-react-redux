@@ -1,0 +1,11 @@
+.ant-table-tbody > tr.ant-table-row {
+  &.shedule-table-row {
+    
+    &:hover > td {
+     
+    background:  #ffffff !important;
+
+    //rgb(238, 242, 255)
+  }
+}
+}

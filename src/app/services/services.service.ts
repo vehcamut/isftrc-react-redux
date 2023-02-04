@@ -106,6 +106,15 @@ export const servicesAPI = api.injectEndpoints({
       providesTags: ['serviceGroup', 'serviceType', 'appointments'],
     }),
 
+    getAllInfoService: build.query<IService, IGetServiceById>({
+      query: (params) => ({
+        url: 'services/getAllInfoService',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['serviceGroup', 'serviceType', 'appointments'],
+    }),
+
     setAppointmentToService: build.mutation<any, IAddAppointmentToService>({
       query: (body) => ({
         url: 'services/setAppointment',

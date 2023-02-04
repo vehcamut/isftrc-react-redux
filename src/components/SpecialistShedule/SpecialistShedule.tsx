@@ -395,25 +395,9 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         destroyOnClose
         open={isChangeServiceTimeOpen}
         footer={
-          <>
-            {/* <Button
-              type="primary"
-              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={onAppointmentRemove}
-            >
-              Удалить
-            </Button>
-            <Button
-              type="primary"
-              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={onAppointmentRewrite}
-            >
-              Перезаписать
-            </Button> */}
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onRemoveConfirmClose}>
-              Отмена
-            </Button>
-          </>
+          <Button type="primary" style={{ marginRight: '0px' }} onClick={onRemoveConfirmClose}>
+            Отмена
+          </Button>
         }
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
@@ -426,14 +410,11 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         <>
           <Select
             id="advertisingSources"
-            // mode="multiple"
             allowClear
             style={{ width: '100%', marginBottom: '20px' }}
             options={data}
-            // defaultOpen
             onChange={(v) => setCurrentSpecialist(v)}
             placeholder="Выберите специалиста"
-            // defaultValue={0}
           />
           {currentSpecialist ? (
             <Shedule
@@ -445,13 +426,11 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
                 serviceId: currentPatient?._id,
                 patientId: currentPatient?.patient?._id,
               }}
-              // extraOptions={{ specialistId: specialist?._id, isFree: true }}
               onAppointmentClick={onAppointmentRewriteClick}
               type="Specialist"
             />
           ) : (
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Выберите специалиста" />
-            // <div style={{ height: '150px' }}>d</div>
           )}
         </>
       </Modal>

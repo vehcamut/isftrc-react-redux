@@ -29,6 +29,7 @@ import classes from './PatinentCourse.module.scss';
 import { IAddService, IPatient, IServiceGroupToSelect } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import './antd.rewrite.scss';
+import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -130,6 +131,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const [removeService] = patientsAPI.useRemoveServiceMutation();
   const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
+  const [isAddAppToServOpen, setIsAddAppToServOpen] = useState(false);
   const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(undefined);
   const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery({});
@@ -256,32 +258,24 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   return (
     <>
       {contextHolder}
+      <ModalAddAppToServ serviceId={servData?.id} isOpen={isAddAppToServOpen} setIsOpen={setIsAddAppToServOpen} />
       <Modal
         destroyOnClose
         open={isServInfoOpen}
         footer={
           <>
-            <Button
-              type="primary"
-              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={onRemoveService}
-            >
+            <Button type="primary" style={{ marginRight: '0px', backgroundColor: '#e60000' }} onClick={onRemoveService}>
               Удалить запись
             </Button>
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
+              Закрыть запись
+            </Button>
             {servData?.date ? (
-              <Button
-                type="primary"
-                style={{ marginRight: '10px' }}
-                // onClick={onBeforeAppRemove}
-              >
+              <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
                 Изменить дату
               </Button>
             ) : (
-              <Button
-                type="primary"
-                style={{ marginRight: '10px' }}
-                // onClick={onBeforeAppRemove}
-              >
+              <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
                 Выбрать дату
               </Button>
             )}
@@ -304,7 +298,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             Информация об услуге
           </Typography.Title>
         }
-        width="500px"
+        width="550px"
         onCancel={onReset}
       >
         {isServDataLoading ? (
