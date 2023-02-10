@@ -20,16 +20,20 @@ import {
   Switch,
   InputNumber,
   Input,
+  AutoComplete,
+  DatePicker,
 } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { ExclamationCircleFilled, RightOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { patientsAPI, servicesAPI } from '../../app/services';
 import classes from './PatinentCourse.module.scss';
-import { IAddService, IPatient, IServiceGroupToSelect } from '../../models';
+import { IAddService, IPatient, IServiceGroupToSelect, IServiceInCourse } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import './antd.rewrite.scss';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
+import { paymentAPI } from '../../app/services/payments.service';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -86,7 +90,8 @@ const columns = [
     dataIndex: 'status',
     key: 'status',
     width: '10%',
-    render: (flag: boolean) => {
+    render: (flag: boolean, r: any) => {
+      if (r.kind === 'payment') return '';
       return flag ? (
         <div className={addClass(classes, 'active-table-item__active')}>Оказана</div>
       ) : (
@@ -96,14 +101,15 @@ const columns = [
   },
   {
     title: 'Приход',
-    dataIndex: 'price',
-    key: 'price',
+    dataIndex: 'cost',
+    key: 'cost',
     width: '8%',
   },
   {
     title: 'Расход',
-    dataIndex: 'cost',
-    key: 'cost',
+    dataIndex: 'price',
+    key: 'price',
+
     width: '8%',
   },
   {
@@ -124,23 +130,35 @@ const columns = [
 
 const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const [payment, setPayment] = useState<string>('');
+  const { data: paymentData, isLoading: isPaymentDataLoading } = paymentAPI.useGetPaymentByIdQuery({ id: payment });
   const [serv, setServ] = useState<string>('');
   const { data: servData, isLoading: isServDataLoading } = servicesAPI.useGetServiseByIdQuery({ id: serv });
   const [openCourse] = patientsAPI.useOpenCourseMutation();
   const [addService] = patientsAPI.useAddServiceMutation();
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [removeService] = patientsAPI.useRemoveServiceMutation();
+  const [addPayment] = paymentAPI.useAddPaymentMutation();
+  const [removePayment] = paymentAPI.useRemovePaymentMutation();
   const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
+  const { data: advSum, isLoading: isAdvSumLoading } = paymentAPI.useGetAdvanceQuery({ patient: patient?._id || '' });
+  const { data: represToSelect, isLoading: isrepresToSelectLoading } = patientsAPI.useGetPatientRepresentativesQuery({
+    id: patient?._id || '',
+  });
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
+  const [isPayInfoOpen, setIsPayInfoOpen] = useState(false);
   const [isAddAppToServOpen, setIsAddAppToServOpen] = useState(false);
   const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
   const [isSetResultOpen, setIsSetResultOpen] = useState(false);
+
+  const [isAddPaymentOpen, setIsAddPaymentOpen] = useState(false);
+
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(undefined);
   const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery({});
   const { data: typeToSelect, isLoading: isLoadingTypeToSelect } = servicesAPI.useGetTypesQuery({
     group: currentGroup || '',
   });
-
+  const [adv, setAdv] = useState<boolean>(false);
   // const onFinish = async (values: any) => {
   //   try {
   //     await updatePatient({ ...patient, ...values }).unwrap();
@@ -159,9 +177,14 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
     setServ('');
     setIsServInfoOpen(false);
   };
-  const onRowClick = (record: string) => {
-    setServ(record);
-    setIsServInfoOpen(true);
+  const onRowClick = (record: IServiceInCourse) => {
+    if (record.kind === 'service') {
+      setServ(record._id);
+      setIsServInfoOpen(true);
+    } else {
+      setPayment(record._id);
+      setIsPayInfoOpen(true);
+    }
   };
   const onOpenCourse = () => {
     openCourse({ patientId: patient?._id || '' });
@@ -242,6 +265,77 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       });
     }
   };
+
+  const onAddPaymentCancel = () => {
+    // form.resetFields();
+    // setCurrentGroup(undefined);
+    // setIsAddServiceOpen(false);
+    setIsAddPaymentOpen(false);
+    setAdv(false);
+  };
+  const onAddPaymentFinish = async (values: any) => {
+    console.log(values);
+    values.date = values.date.second(0);
+    values.date = values.date.millisecond(0);
+    values.date = values.date.format('YYYY-MM-DDTHH:mm:ssZ');
+    values.patient = patient?._id || '';
+    values.inCourse = !values.inCourse;
+    // const addServiceDto: IAddService = {
+    //   type: values.type,
+    //   patient: patient?._id || '',
+    //   inCourse: !values.inCourse,
+    //   amount: values.amount,
+    //   note: values.note,
+    // };
+    try {
+      const result = await addPayment(values).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Оплата добавлена успешно',
+      });
+      onAddPaymentCancel();
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+
+  const onPayInfoClose = () => {
+    setPayment('');
+    setIsPayInfoOpen(false);
+  };
+  const onRemovePayment = () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите удаление оплаты.',
+        icon: <ExclamationCircleFilled />,
+        content: 'Вы точно хотите удалить оплату?',
+        async onOk() {
+          try {
+            const result = await removePayment({ id: payment }).unwrap();
+            messageApi.open({
+              type: 'success',
+              content: 'Оплата успешно удалена',
+            });
+            onPayInfoClose();
+          } catch (e) {
+            messageApi.open({
+              type: 'error',
+              content: 'Ошибка связи с сервером',
+            });
+          }
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    };
+    showConfirm();
+  };
+  // console.log(advSum, !!advSum);
+
   // const onCloseService = () => {
   //   closeService;
   // };
@@ -288,13 +382,14 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             <Button type="primary" style={{ marginRight: '0px', backgroundColor: '#e60000' }} onClick={onRemoveService}>
               Удалить услугу
             </Button>
-            {servData?.date && servData.date <= new Date() ? (
+
+            {servData?.date && new Date(servData.date) <= new Date() ? (
               <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsSetResultOpen(true)}>
                 Закрыть услугу
               </Button>
             ) : null}
 
-            {servData?.date ? (
+            {servData?.status ? null : servData?.date ? (
               <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
                 Изменить дату
               </Button>
@@ -507,6 +602,207 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         </Form>
       </Modal>
 
+      <Modal
+        destroyOnClose
+        open={isAddPaymentOpen}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Добавление оплаты
+          </Typography.Title>
+        }
+        width="750px"
+        onCancel={onAddPaymentCancel}
+      >
+        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onAddPaymentFinish}>
+          {advSum === undefined || advSum <= 0 ? (
+            <div>
+              <p style={{ margin: 0, marginBottom: '20px' }}>
+                Оплата из авансовых платежей недоступна, так как отсутствует излишок средств.
+              </p>
+            </div>
+          ) : (
+            <div>
+              <p style={{ margin: 0, marginBottom: '20px' }}>{`Сумма авнсовых платяжей ${advSum}`}</p>
+            </div>
+          )}
+          <Form.Item
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            valuePropName="checked"
+            label={<div className={addClass(classes, 'form-item')}>Опалата из авансовых платежей</div>}
+            name="fromTheAdvance"
+          >
+            <Switch id="fromTheAdvance" onChange={(checked) => setAdv(checked)} disabled={!advSum} />
+          </Form.Item>
+          {adv ? null : (
+            <Form.Item
+              // initialValue={initValue?.surname ? initValue.surname : ''}
+              rules={[{ required: true, message: 'Поле "Тип оплаты" не должно быть пустым' }]}
+              label="Тип оплаты"
+              name="name"
+            >
+              <AutoComplete
+                options={[{ value: 'Наличный расчет' }, { value: 'Безналичный расчет' }]}
+                // style={{ width: 200 }}
+                // onSelect={onSelect}
+                // onSearch={onSearch}
+                // placeholder="input here"
+              />
+              {/* <Input id="surname" /> */}
+            </Form.Item>
+          )}
+
+          <Form.Item
+            rules={[{ message: 'Поле "Группа услуг" не должно быть пустым' }]}
+            label="Группа услуг"
+            name="groupId"
+          >
+            <Select
+              id="groupId"
+              allowClear
+              style={{ width: '100%' }}
+              options={groupToSelect}
+              loading={isLoadingGroupToSelect}
+              onChange={onGroupChange}
+            />
+          </Form.Item>
+          {adv ? null : (
+            <Form.Item
+              valuePropName="checked"
+              // initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
+              label={<div className={addClass(classes, 'form-item')}>Вне курса</div>}
+              name="inCourse"
+            >
+              <Switch id="inCourse" />
+            </Form.Item>
+          )}
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Сумма" не должно быть пустым' }]}
+            label="Сумма"
+            name="amount"
+          >
+            <InputNumber min={1} max={adv ? advSum : 1000000} id="amount" />
+          </Form.Item>
+          <Form.Item
+            rules={[{ required: true, message: 'Поле "Дата" не должно быть пустым' }]}
+            label="Дата"
+            name="date"
+            initialValue={dayjs()}
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <DatePicker
+              // defaultValue={dayjs()}
+              id="begDate"
+              style={{ marginRight: '10px' }}
+              format="DD.MM.YYYY | HH:mm"
+              showTime={{ format: 'HH:mm' }}
+            />
+          </Form.Item>
+          {adv ? null : (
+            <Form.Item
+              // rules={[{ message: 'Поле "Группа услуг" не должно быть пустым' }]}
+              label="Плательщик"
+              name="payer"
+            >
+              <Select
+                id="payer"
+                allowClear
+                style={{ width: '100%' }}
+                options={represToSelect?.data.map((r) => {
+                  return { value: r._id, label: `${r.surname} ${r.name[0]}.${r.patronymic[0]}.` };
+                })}
+                loading={isrepresToSelectLoading}
+                onChange={onGroupChange}
+              />
+            </Form.Item>
+          )}
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" onClick={onAddPaymentCancel} className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal
+        destroyOnClose
+        open={isPayInfoOpen}
+        footer={
+          <>
+            {paymentData?.canRemove ? (
+              <Button
+                type="primary"
+                style={{ marginRight: '0px', backgroundColor: '#e60000' }}
+                onClick={onRemovePayment}
+              >
+                Удалить оплату
+              </Button>
+            ) : null}
+
+            <Button type="primary" style={{ marginRight: '0px' }} onClick={onPayInfoClose}>
+              Отмена
+            </Button>
+          </>
+        }
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Информация об опалет
+          </Typography.Title>
+        }
+        width="550px"
+        onCancel={onPayInfoClose}
+      >
+        {isPaymentDataLoading ? (
+          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
+            <Spin tip="Загрузка..." />
+          </div>
+        ) : (
+          <Descriptions>
+            <Descriptions.Item label="Тип оплаты" span={3}>
+              {paymentData?.name}
+            </Descriptions.Item>
+            <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }}>
+              {paymentData?.date
+                ? new Date(paymentData?.date).toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: '2-digit',
+                  })
+                : 'не указана'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Время" span={2} contentStyle={{ fontWeight: 'bold' }}>
+              {paymentData?.date
+                ? new Date(paymentData?.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+                : 'не указано'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Группа" span={3}>
+              {paymentData?.group ? paymentData?.group : 'оплата вне групп'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Сумма" span={3}>
+              {paymentData?.amount}
+            </Descriptions.Item>
+            <Descriptions.Item label="Плательщик" span={3}>
+              {paymentData?.payer ? paymentData?.payer : 'не назначен'}
+            </Descriptions.Item>
+          </Descriptions>
+        )}
+        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} /> */}
+      </Modal>
+
       {isLoading ? (
         <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
           <Spin tip="Загрузка..." />
@@ -530,7 +826,9 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
               <Button type="link" onClick={() => setIsAddServiceOpen(true)}>
                 Добавить услугу
               </Button>
-              <Button type="link">Добавить оплату</Button>
+              <Button type="link" onClick={() => setIsAddPaymentOpen(true)}>
+                Добавить оплату
+              </Button>
             </>
           }
         >
@@ -594,16 +892,18 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                                   return {
                                     onClick: () => {
                                       // console.log(servData);
-                                      onRowClick(record._id);
+                                      onRowClick(record);
                                     },
                                   };
                                 }}
                                 rowClassName={(record) =>
-                                  record.status === true
-                                    ? 'my-table-row course-group-table-row_green'
-                                    : !record.date || new Date(record.date) > new Date()
-                                    ? 'my-table-row course-group-table-row_yellow'
-                                    : 'my-table-row course-group-table-row_red'
+                                  record.kind === 'service'
+                                    ? record.status === true
+                                      ? 'my-table-row course-group-table-row_green'
+                                      : !record.date || new Date(record.date) > new Date()
+                                      ? 'my-table-row course-group-table-row_yellow'
+                                      : 'my-table-row course-group-table-row_red'
+                                    : 'my-table-row course-group-table-row_blue'
                                 }
                                 className={addClass(classes, 'patients-table')}
                                 summary={() => (
@@ -615,8 +915,8 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                                       <Table.Summary.Cell index={2} colSpan={2}>
                                         {group.services.filter((s) => s.status).length}
                                       </Table.Summary.Cell>
-                                      <Table.Summary.Cell index={6}>{group.outcome}</Table.Summary.Cell>
                                       <Table.Summary.Cell index={6}>{group.income}</Table.Summary.Cell>
+                                      <Table.Summary.Cell index={6}>{group.outcome}</Table.Summary.Cell>
                                     </Table.Summary.Row>
                                   </Table.Summary>
                                 )}

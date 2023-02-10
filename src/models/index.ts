@@ -9,3 +9,4 @@ export * from './ISpecialist';
 export * from './IAppointment';
 export * from './IService';
 export * from './ICourse';
+export * from './IPayment';
