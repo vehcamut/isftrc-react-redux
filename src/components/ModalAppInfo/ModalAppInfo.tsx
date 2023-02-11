@@ -53,9 +53,12 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
   const [currentService, setCurrentService] = useState<IService | undefined>(undefined);
 
   // API
-  const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery({
-    id: appointmentId || '',
-  });
+  const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery(
+    {
+      id: appointmentId || '',
+    },
+    { skip: appointmentId === '' },
+  );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
 
@@ -68,7 +71,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
     try {
       await openService({ id: currentAppointment?.service?._id || '' }).unwrap();
       messageApi.open({
-        type: 'info',
+        type: 'success',
         content: 'Запись успешно открыта',
       });
     } catch (e) {
@@ -82,7 +85,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
     try {
       await closeService({ id: currentAppointment?.service?._id || '', result: 'dfd' }).unwrap();
       messageApi.open({
-        type: 'info',
+        type: 'success',
         content: 'Запись успешно закрыта',
       });
     } catch (e) {
@@ -174,20 +177,21 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
         onCancel={onReset}
       >
         <Descriptions
-        // extra={
-        //   <>
-        //
-        //     <DatePicker
-        //       style={{ marginRight: '10px' }}
-        //       format="DD.MM.YYYY"
-        //       onChange={onDPChange}
-        //       value={datePickerValue}
-        //     />
+          column={3}
+          // extra={
+          //   <>
+          //
+          //     <DatePicker
+          //       style={{ marginRight: '10px' }}
+          //       format="DD.MM.YYYY"
+          //       onChange={onDPChange}
+          //       value={datePickerValue}
+          //     />
 
-        //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-        //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-        //   </>
-        // }
+          //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
+          //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+          //   </>
+          // }
         >
           <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
             {currentAppointment?.begDate
@@ -209,6 +213,13 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
                 })}`
               : 'не указаны'}
           </Descriptions.Item>
+          <Descriptions.Item
+            label="Статус"
+            span={3}
+            contentStyle={{ color: currentAppointment?.service?.status ? 'green' : 'red' }}
+          >
+            {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'}
+          </Descriptions.Item>
           <Descriptions.Item label="Пациент" span={3}>
             {currentAppointment?.service
               ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
@@ -228,7 +239,9 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
           <Descriptions.Item label="Курс" span={3}>
             {currentAppointment?.service?.course?.number === 0
               ? 'вне курса'
-              : `№${currentAppointment?.service?.course?.number}`}
+              : `№${currentAppointment?.service?.course?.number}${
+                  currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
+                }`}
           </Descriptions.Item>
           <Descriptions.Item label="Услуга" span={3}>
             {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}

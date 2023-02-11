@@ -48,33 +48,22 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   // modals
   const [isAddUpdateModalOpen, setIsAddUpdateModalOpen] = useState(false);
   const [isAppInfoOpen, setIsAppInfoOpen] = useState(false);
-  const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
-  const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
   // current
   // const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
   // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
-  const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
-  const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
-  const [closeService] = servicesAPI.useCloseServiceMutation();
-  const [openService] = servicesAPI.useOpenServiceMutation();
   // form state
   const [form] = Form.useForm();
-  const begDateField = Form.useWatch('begDate', form);
-  const timeField = Form.useWatch('time', form);
-  const amountField = Form.useWatch('amount', form);
+  // const begDateField = Form.useWatch('begDate', form);
+  // const timeField = Form.useWatch('time', form);
+  // const amountField = Form.useWatch('amount', form);
 
   const params = useParams();
 
-  const [currentPatient, setCurrentPatient] = useState<IService | undefined>(undefined);
-  // const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
   const [curAppId, setCurAppId] = useState<string>('');
-  const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery({
-    id: curAppId || '',
-  });
-  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery({
-    type: currentPatient?.type._id || '',
-  });
+  // const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery({
+  //   id: curAppId || '',
+  // });
 
   const onAddUpdateReset = () => {
     form.resetFields();
@@ -116,135 +105,12 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     }
   };
 
-  const onAppInfoReset = () => {
-    setCurAppId('');
-    // setCurrentAppointment(undefined);
-    setIsAppInfoOpen(false);
-  };
-
   const onAppointmentClick = (appointment: IAppointment) => {
     setCurAppId(appointment._id);
     // appointment.begDate = new Date();
     // setCurrentAppointment(appointment);
     setIsAppInfoOpen(true);
   };
-
-  const onAppointmentRewriteClick = (appointment: IAppointment) => {
-    const date = dayjs(appointment.begDate).format('DD.MM.YYYY');
-    const time = new Date(appointment.begDate).toLocaleString('ru-RU', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    const patientName = `${currentPatient?.patient?.number} ${currentPatient?.patient?.surname} ${currentPatient?.patient?.name[0]}.${currentPatient?.patient?.patronymic[0]}.`;
-    const servType = `${currentPatient?.type.name}`;
-    const specName = `${appointment?.specialist?.name}`;
-    const showConfirm = () => {
-      confirm({
-        title: 'Подтвердите запись пациента.',
-        icon: <ExclamationCircleFilled />,
-        content: (
-          <div>
-            <p>{`Дата: ${date}. Время: ${time}.`}</p>
-            <p>{`Пациент: ${patientName}`}</p>
-            <p>{`Услуга: ${servType}.`}</p>
-            <p>{`Специалист: ${specName}`}</p>
-          </div>
-        ),
-        onOk() {
-          console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
-          setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
-        },
-        onCancel() {
-          console.log('Cancel');
-        },
-      });
-    };
-    showConfirm();
-    setIsAppInfoOpen(true);
-  };
-
-  // const onAppointmentRemove = () => {
-  //   removeAppointments({ _id: currentAppointment?._id || '' });
-  //   // console.log(currentAppointment?._id);
-  //   setIsRemoveConfirmOpen(false);
-  //   onAppInfoReset();
-  // };
-  // const onBeforeAppRemove = () => {
-  //   const showConfirm = () => {
-  //     confirm({
-  //       title: 'Подтвердите удаление записи.',
-  //       icon: <ExclamationCircleFilled />,
-  //       content: (
-  //         <>
-  //           <p>Вы точно хотите удалить запись?</p>
-  //           {currentAppointment?.service ? <p>На данное время уже записан пациент!</p> : null}
-  //         </>
-  //       ),
-  //       // `Вы точно хотите удалить запись? ${
-  //       //   currentAppointment?.service ? 'На данное время уже записан пациент!' : ''
-  //       // }`,
-  //       onOk() {
-  //         onAppointmentRemove();
-  //         // console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
-  //         // setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
-  //       },
-  //       onCancel() {
-  //         console.log('Cancel');
-  //       },
-  //     });
-  //   };
-  //   showConfirm();
-  //   // if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
-  //   // else onAppointmentRemove();
-  // };
-  const onAppointmentRewrite = () => {
-    setCurrentPatient(currentAppointment?.service);
-    // console.log(currentPatient);
-    // console.log(currentAppointment?._id);
-    // console.log(currentAppointment?.service?._id);
-    setIsChangeServiceTimeOpen(true);
-    // setIsRemoveConfirmOpen(false);
-    // onAppInfoReset();
-  };
-
-  const onOpenService = async () => {
-    try {
-      await openService({ id: currentAppointment?.service?._id || '' }).unwrap();
-      messageApi.open({
-        type: 'info',
-        content: 'Запись успешно открыта',
-      });
-      onAddUpdateReset();
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  };
-  const onCloseService = async () => {
-    try {
-      await closeService({ id: currentAppointment?.service?._id || '', result: 'dfd' }).unwrap();
-      messageApi.open({
-        type: 'info',
-        content: 'Запись успешно закрыта',
-      });
-      onAddUpdateReset();
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  };
-  const onAppClose = () => {
-    console.log('CLOSE');
-  };
-
-  // const onRemoveConfirmClose = () => {
-  //   setIsChangeServiceTimeOpen(false);
-  //   setCurrentSpecialist(undefined);
-  // };
 
   return (
     <>
@@ -293,86 +159,6 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         setAppointmentId={setCurAppId}
       />
 
-      <Modal
-        destroyOnClose
-        open={isAddUpdateModalOpen}
-        footer={null}
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            {currentAppointment ? 'Обновление записи' : 'Добавление записей'}
-          </Typography.Title>
-        }
-        width="500px"
-        onCancel={onAddUpdateReset}
-      >
-        <Form form={form} labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Дата и время" не должно быть пустым' }]}
-            label="Дата и время"
-            name="begDate"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <DatePicker
-              id="begDate"
-              style={{ marginRight: '10px' }}
-              format="DD.MM.YYYY | HH:mm"
-              showTime={{ format: 'HH:mm' }}
-            />
-          </Form.Item>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Продолжительность" не должно быть пустым' }]}
-            label="Продолжительность"
-            name="time"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <TimePicker format="HH:mm" id="time" />
-          </Form.Item>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
-            label="Количество"
-            name="amount"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <InputNumber min={1} max={100} id="amount" />
-          </Form.Item>
-          {begDateField && timeField && amountField ? (
-            <div>
-              <p style={{ margin: 0, color: 'gray' }}>Будет добавлено записей: {amountField}</p>
-              <p style={{ margin: 0, color: 'gray' }}>Дата и время начала: {begDateField.format('DD.MM.YY HH:mm')}</p>
-              <p style={{ marginTop: 0, marginBottom: '20px', color: 'gray' }}>
-                Дата и время окончания:{' '}
-                {dayjs(begDateField)
-                  .add(amountField * timeField.hour(), 'h')
-                  .add(amountField * timeField.minute(), 'm')
-                  .format('DD.MM.YY HH:mm')}
-              </p>
-            </div>
-          ) : (
-            ''
-          )}
-          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
-            <Row>
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: '10px' }}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Сохранить
-                </Button>
-                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
-                  Отменить
-                </Button>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Modal>
-
       <Shedule
         dataAPI={appointmentsAPI.useGetForPatientAppointmentsQuery}
         title="Расписание пациента"
@@ -383,154 +169,9 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
           const path = `${Date.parse(params.date || '') ? './.' : ''}./${f}`;
           navigate(path, { replace: true });
         }}
-        extra={
-          <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
-            Добавить запись
-          </Button>
-        }
       />
     </>
   );
 };
 
 export default PatientShedule;
-
-{
-  //   <Modal
-  // destroyOnClose
-  // open={isAppInfoOpen}
-  // footer={
-  //   <>
-  //     {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-  //       <Button
-  //         type="primary"
-  //         style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-  //         onClick={onBeforeAppRemove}
-  //       >
-  //         Удалить
-  //       </Button>
-  //     ) : (
-  //       ''
-  //     )} */}
-  //     {currentAppointment?.service?.canBeRemoved ? (
-  //       <>
-  //         {currentAppointment?.service && !currentAppointment.service.status ? (
-  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
-  //             Перенести
-  //           </Button>
-  //         ) : (
-  //           ''
-  //         )}
-  //         {currentAppointment?.service &&
-  //         !currentAppointment.service.status &&
-  //         currentAppointment?.begDate &&
-  //         new Date(currentAppointment?.begDate) <= new Date() ? (
-  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
-  //             Закрыть
-  //           </Button>
-  //         ) : null}
-  //         {currentAppointment?.service && currentAppointment.service.status ? (
-  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-  //             Открыть
-  //           </Button>
-  //         ) : null}
-  //         {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-  //           currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
-  //             <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
-  //               Закрыть
-  //             </Button>
-  //           ) : null
-  //         ) : (
-  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-  //             Открыть
-  //           </Button>
-  //         )} */}
-  //       </>
-  //     ) : null}
-  //     <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
-  //       Назад
-  //     </Button>
-  //   </>
-  // }
-  // title={
-  //   <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-  //     Информация о записи
-  //   </Typography.Title>
-  // }
-  // width="600px"
-  // onCancel={onAppInfoReset}
-  // >
-  // <Descriptions
-  // // extra={
-  // //   <>
-  // //
-  // //     <DatePicker
-  // //       style={{ marginRight: '10px' }}
-  // //       format="DD.MM.YYYY"
-  // //       onChange={onDPChange}
-  // //       value={datePickerValue}
-  // //     />
-  // //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-  // //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-  // //   </>
-  // // }
-  // >
-  //   <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
-  //     {currentAppointment?.begDate
-  //       ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
-  //           day: '2-digit',
-  //           month: 'long',
-  //           year: 'numeric',
-  //         })
-  //       : 'не указаны'}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
-  //     {currentAppointment?.endDate
-  //       ? `${new Date(currentAppointment.begDate).toLocaleTimeString('ru-RU', {
-  //           hour: '2-digit',
-  //           minute: '2-digit',
-  //         })} - ${new Date(currentAppointment.endDate).toLocaleTimeString('ru-RU', {
-  //           hour: '2-digit',
-  //           minute: '2-digit',
-  //         })}`
-  //       : 'не указаны'}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Пациент" span={3}>
-  //     {currentAppointment?.service
-  //       ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
-  //       : ' - '}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Специалист" span={3}>
-  //     {currentAppointment?.service ? (
-  //       <Button
-  //         type="link"
-  //         size="small"
-  //         onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
-  //       >{`${currentAppointment?.specialist?.name}`}</Button>
-  //     ) : (
-  //       ' - '
-  //     )}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Курс" span={3}>
-  //     {currentAppointment?.service?.course?.number === 0
-  //       ? 'вне курса'
-  //       : `№${currentAppointment?.service?.course?.number}`}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Услуга" span={3}>
-  //     {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Комментарий" span={3}>
-  //     {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
-  //   </Descriptions.Item>
-  //   <Descriptions.Item label="Результат" span={3}>
-  //     {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
-  //   </Descriptions.Item>
-  // </Descriptions>
-  // </Modal>
-  // <ModalAddAppToServ
-  // serviceId={currentPatient?._id}
-  // isOpen={isChangeServiceTimeOpen}
-  // setIsOpen={setIsChangeServiceTimeOpen}
-  // setAppId={setCurAppId}
-  // />
-}

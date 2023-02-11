@@ -64,11 +64,16 @@ const Shedule: FunctionComponent<SheduleProps> = ({
   const [endDate, setEndDate] = useState(today.add(7, 'day').format('YYYY-MM-DD'));
   const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
 
-  const { data, isLoading } = dataAPI({
-    begDate,
-    endDate,
-    ...extraOptions,
-  });
+  const { data, isLoading } = dataAPI(
+    {
+      begDate,
+      endDate,
+      ...extraOptions,
+    },
+    {
+      skip: 'patientId' in extraOptions ? !extraOptions.patientId : false,
+    },
+  );
 
   // const onDateChange = (firstDate: string, secondDate: string) => {
   //   setBegDate(firstDate);
@@ -169,7 +174,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
                                   classes,
                                   'appointment',
                                   item.service ? 'appointment-has-service' : '',
-                                  !item.service?.status && item.service && new Date(item.endDate) < nowDate
+                                  !item.service?.status && item.service && new Date(item.begDate) < nowDate
                                     ? 'appointment-bad-service'
                                     : '',
                                   item.service?.status ? 'appointment-good-service' : '',

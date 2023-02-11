@@ -50,12 +50,22 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
   const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
 
   const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
-  const { data: currentService, isLoading: isLoadingCurrentServise } = servicesAPI.useGetAllInfoServiceQuery({
-    id: serviceId || '',
-  });
-  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery({
-    type: currentService?.type._id || '',
-  });
+  const { data: currentService, isLoading: isLoadingCurrentServise } = servicesAPI.useGetAllInfoServiceQuery(
+    {
+      id: serviceId || '',
+    },
+    {
+      skip: !serviceId,
+    },
+  );
+  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery(
+    {
+      type: currentService?.type._id || '',
+    },
+    {
+      skip: !currentService?.type._id,
+    },
+  );
 
   const onAppointmentRewriteClick = (appointment: IAppointment) => {
     const date = dayjs(appointment.begDate).format('DD.MM.YYYY');
