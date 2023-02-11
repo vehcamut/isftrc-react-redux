@@ -2,13 +2,15 @@ import { IPatient } from './IPatient';
 // eslint-disable-next-line import/no-cycle
 import { IAppointment } from './IAppointment';
 import { ISpecialistType } from './ISpecialistType';
+// eslint-disable-next-line import/no-cycle
+import { ICourse } from './ICourse';
 
 export interface IService {
   canBeRemoved?: boolean;
   _id: string;
   status: boolean;
   type: IServiceTypeWithId;
-  course: string;
+  course: ICourse;
   result?: string;
   time: Date;
   number?: number;

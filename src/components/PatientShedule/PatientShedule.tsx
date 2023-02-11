@@ -116,8 +116,9 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   };
 
   const onAppointmentClick = (appointment: IAppointment) => {
-    setCurrentAppointment(appointment);
-    setIsAppInfoOpen(true);
+    appointment.begDate = new Date();
+    // setCurrentAppointment(appointment);
+    // setIsAppInfoOpen(true);
   };
 
   const onAppointmentRewriteClick = (appointment: IAppointment) => {
@@ -154,40 +155,40 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     setIsAppInfoOpen(true);
   };
 
-  const onAppointmentRemove = () => {
-    removeAppointments({ _id: currentAppointment?._id || '' });
-    // console.log(currentAppointment?._id);
-    setIsRemoveConfirmOpen(false);
-    onAppInfoReset();
-  };
-  const onBeforeAppRemove = () => {
-    const showConfirm = () => {
-      confirm({
-        title: 'Подтвердите удаление записи.',
-        icon: <ExclamationCircleFilled />,
-        content: (
-          <>
-            <p>Вы точно хотите удалить запись?</p>
-            {currentAppointment?.service ? <p>На данное время уже записан пациент!</p> : null}
-          </>
-        ),
-        // `Вы точно хотите удалить запись? ${
-        //   currentAppointment?.service ? 'На данное время уже записан пациент!' : ''
-        // }`,
-        onOk() {
-          onAppointmentRemove();
-          // console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
-          // setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
-        },
-        onCancel() {
-          console.log('Cancel');
-        },
-      });
-    };
-    showConfirm();
-    // if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
-    // else onAppointmentRemove();
-  };
+  // const onAppointmentRemove = () => {
+  //   removeAppointments({ _id: currentAppointment?._id || '' });
+  //   // console.log(currentAppointment?._id);
+  //   setIsRemoveConfirmOpen(false);
+  //   onAppInfoReset();
+  // };
+  // const onBeforeAppRemove = () => {
+  //   const showConfirm = () => {
+  //     confirm({
+  //       title: 'Подтвердите удаление записи.',
+  //       icon: <ExclamationCircleFilled />,
+  //       content: (
+  //         <>
+  //           <p>Вы точно хотите удалить запись?</p>
+  //           {currentAppointment?.service ? <p>На данное время уже записан пациент!</p> : null}
+  //         </>
+  //       ),
+  //       // `Вы точно хотите удалить запись? ${
+  //       //   currentAppointment?.service ? 'На данное время уже записан пациент!' : ''
+  //       // }`,
+  //       onOk() {
+  //         onAppointmentRemove();
+  //         // console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
+  //         // setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
+  //       },
+  //       onCancel() {
+  //         console.log('Cancel');
+  //       },
+  //     });
+  //   };
+  //   showConfirm();
+  //   // if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
+  //   // else onAppointmentRemove();
+  // };
   const onAppointmentRewrite = () => {
     setCurrentPatient(currentAppointment?.service);
     // console.log(currentPatient);
@@ -240,7 +241,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   return (
     <>
       {contextHolder}
-      <Modal
+      {/* <Modal
         destroyOnClose
         open={isRemoveConfirmOpen}
         footer={
@@ -275,14 +276,14 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         <div>На данное время уже записан пациент.</div>
         <div>Вы точно хотите удалить запись?</div>
         <div>Вы можете также презаписать пациента на другое время.</div>
-      </Modal>
+      </Modal> */}
 
       <Modal
         destroyOnClose
         open={isAppInfoOpen}
         footer={
           <>
-            {currentAppointment?.service && !currentAppointment.service.status ? (
+            {/* {currentAppointment?.service && !currentAppointment.service.status ? (
               <Button
                 type="primary"
                 style={{ marginRight: '10px', backgroundColor: '#e60000' }}
@@ -292,7 +293,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
               </Button>
             ) : (
               ''
-            )}
+            )} */}
             {currentAppointment?.service?.canBeRemoved ? (
               <>
                 {currentAppointment?.service && !currentAppointment.service.status ? (
@@ -381,15 +382,25 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
               : 'не указаны'}
           </Descriptions.Item>
           <Descriptions.Item label="Пациент" span={3}>
+            {currentAppointment?.service
+              ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
+              : ' - '}
+          </Descriptions.Item>
+          <Descriptions.Item label="Специалист" span={3}>
             {currentAppointment?.service ? (
               <Button
                 type="link"
                 size="small"
-                onClick={(e) => navigate(`/patients/${currentAppointment.service?.patient?._id}/course`)}
-              >{`${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`}</Button>
+                onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
+              >{`${currentAppointment.specialist.name}`}</Button>
             ) : (
               ' - '
             )}
+          </Descriptions.Item>
+          <Descriptions.Item label="Курс" span={3}>
+            {currentAppointment?.service?.course.number === 0
+              ? 'вне курса'
+              : `№${currentAppointment?.service?.course.number}`}
           </Descriptions.Item>
           <Descriptions.Item label="Услуга" span={3}>
             {currentAppointment?.service ? `${currentAppointment?.service.type.name}` : ' - '}
