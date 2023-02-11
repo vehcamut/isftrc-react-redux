@@ -1,3 +1,4 @@
+/* eslint-disable no-lone-blocks */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
@@ -32,6 +33,7 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
+import ModalAppInfo from '../ModalAppInfo/ModalAppInfo';
 
 const { confirm } = Modal;
 
@@ -66,7 +68,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
 
   const [currentPatient, setCurrentPatient] = useState<IService | undefined>(undefined);
   // const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
-  const [curAppId, setCurAppId] = useState<string | undefined>(undefined);
+  const [curAppId, setCurAppId] = useState<string>('');
   const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery({
     id: curAppId || '',
   });
@@ -284,141 +286,12 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         <div>Вы можете также презаписать пациента на другое время.</div>
       </Modal> */}
 
-      <Modal
-        destroyOnClose
-        open={isAppInfoOpen}
-        footer={
-          <>
-            {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-              <Button
-                type="primary"
-                style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-                onClick={onBeforeAppRemove}
-              >
-                Удалить
-              </Button>
-            ) : (
-              ''
-            )} */}
-            {currentAppointment?.service?.canBeRemoved ? (
-              <>
-                {currentAppointment?.service && !currentAppointment.service.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
-                    Перенести
-                  </Button>
-                ) : (
-                  ''
-                )}
-
-                {currentAppointment?.service &&
-                !currentAppointment.service.status &&
-                currentAppointment?.begDate &&
-                new Date(currentAppointment?.begDate) <= new Date() ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
-                    Закрыть
-                  </Button>
-                ) : null}
-
-                {currentAppointment?.service && currentAppointment.service.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-                    Открыть
-                  </Button>
-                ) : null}
-                {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-                  currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
-                    <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
-                      Закрыть
-                    </Button>
-                  ) : null
-                ) : (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-                    Открыть
-                  </Button>
-                )} */}
-              </>
-            ) : null}
-
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
-              Назад
-            </Button>
-          </>
-        }
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Информация о записи
-          </Typography.Title>
-        }
-        width="600px"
-        onCancel={onAppInfoReset}
-      >
-        <Descriptions
-        // extra={
-        //   <>
-        //
-        //     <DatePicker
-        //       style={{ marginRight: '10px' }}
-        //       format="DD.MM.YYYY"
-        //       onChange={onDPChange}
-        //       value={datePickerValue}
-        //     />
-
-        //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-        //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-        //   </>
-        // }
-        >
-          <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentAppointment?.begDate
-              ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })
-              : 'не указаны'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentAppointment?.endDate
-              ? `${new Date(currentAppointment.begDate).toLocaleTimeString('ru-RU', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })} - ${new Date(currentAppointment.endDate).toLocaleTimeString('ru-RU', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`
-              : 'не указаны'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Пациент" span={3}>
-            {currentAppointment?.service
-              ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
-              : ' - '}
-          </Descriptions.Item>
-          <Descriptions.Item label="Специалист" span={3}>
-            {currentAppointment?.service ? (
-              <Button
-                type="link"
-                size="small"
-                onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
-              >{`${currentAppointment?.specialist?.name}`}</Button>
-            ) : (
-              ' - '
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="Курс" span={3}>
-            {currentAppointment?.service?.course?.number === 0
-              ? 'вне курса'
-              : `№${currentAppointment?.service?.course?.number}`}
-          </Descriptions.Item>
-          <Descriptions.Item label="Услуга" span={3}>
-            {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
-          </Descriptions.Item>
-          <Descriptions.Item label="Комментарий" span={3}>
-            {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
-          </Descriptions.Item>
-          <Descriptions.Item label="Результат" span={3}>
-            {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
-          </Descriptions.Item>
-        </Descriptions>
-      </Modal>
+      <ModalAppInfo
+        isOpen={isAppInfoOpen}
+        setIsOpen={setIsAppInfoOpen}
+        appointmentId={curAppId}
+        setAppointmentId={setCurAppId}
+      />
 
       <Modal
         destroyOnClose
@@ -500,13 +373,6 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         </Form>
       </Modal>
 
-      <ModalAddAppToServ
-        serviceId={currentPatient?._id}
-        isOpen={isChangeServiceTimeOpen}
-        setIsOpen={setIsChangeServiceTimeOpen}
-        setAppId={setCurAppId}
-      />
-
       <Shedule
         dataAPI={appointmentsAPI.useGetForPatientAppointmentsQuery}
         title="Расписание пациента"
@@ -528,3 +394,143 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
 };
 
 export default PatientShedule;
+
+{
+  //   <Modal
+  // destroyOnClose
+  // open={isAppInfoOpen}
+  // footer={
+  //   <>
+  //     {/* {currentAppointment?.service && !currentAppointment.service.status ? (
+  //       <Button
+  //         type="primary"
+  //         style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+  //         onClick={onBeforeAppRemove}
+  //       >
+  //         Удалить
+  //       </Button>
+  //     ) : (
+  //       ''
+  //     )} */}
+  //     {currentAppointment?.service?.canBeRemoved ? (
+  //       <>
+  //         {currentAppointment?.service && !currentAppointment.service.status ? (
+  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+  //             Перенести
+  //           </Button>
+  //         ) : (
+  //           ''
+  //         )}
+  //         {currentAppointment?.service &&
+  //         !currentAppointment.service.status &&
+  //         currentAppointment?.begDate &&
+  //         new Date(currentAppointment?.begDate) <= new Date() ? (
+  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
+  //             Закрыть
+  //           </Button>
+  //         ) : null}
+  //         {currentAppointment?.service && currentAppointment.service.status ? (
+  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+  //             Открыть
+  //           </Button>
+  //         ) : null}
+  //         {/* {currentAppointment?.service && !currentAppointment.service.status ? (
+  //           currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
+  //             <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
+  //               Закрыть
+  //             </Button>
+  //           ) : null
+  //         ) : (
+  //           <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+  //             Открыть
+  //           </Button>
+  //         )} */}
+  //       </>
+  //     ) : null}
+  //     <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
+  //       Назад
+  //     </Button>
+  //   </>
+  // }
+  // title={
+  //   <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+  //     Информация о записи
+  //   </Typography.Title>
+  // }
+  // width="600px"
+  // onCancel={onAppInfoReset}
+  // >
+  // <Descriptions
+  // // extra={
+  // //   <>
+  // //
+  // //     <DatePicker
+  // //       style={{ marginRight: '10px' }}
+  // //       format="DD.MM.YYYY"
+  // //       onChange={onDPChange}
+  // //       value={datePickerValue}
+  // //     />
+  // //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
+  // //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+  // //   </>
+  // // }
+  // >
+  //   <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+  //     {currentAppointment?.begDate
+  //       ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
+  //           day: '2-digit',
+  //           month: 'long',
+  //           year: 'numeric',
+  //         })
+  //       : 'не указаны'}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+  //     {currentAppointment?.endDate
+  //       ? `${new Date(currentAppointment.begDate).toLocaleTimeString('ru-RU', {
+  //           hour: '2-digit',
+  //           minute: '2-digit',
+  //         })} - ${new Date(currentAppointment.endDate).toLocaleTimeString('ru-RU', {
+  //           hour: '2-digit',
+  //           minute: '2-digit',
+  //         })}`
+  //       : 'не указаны'}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Пациент" span={3}>
+  //     {currentAppointment?.service
+  //       ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
+  //       : ' - '}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Специалист" span={3}>
+  //     {currentAppointment?.service ? (
+  //       <Button
+  //         type="link"
+  //         size="small"
+  //         onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
+  //       >{`${currentAppointment?.specialist?.name}`}</Button>
+  //     ) : (
+  //       ' - '
+  //     )}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Курс" span={3}>
+  //     {currentAppointment?.service?.course?.number === 0
+  //       ? 'вне курса'
+  //       : `№${currentAppointment?.service?.course?.number}`}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Услуга" span={3}>
+  //     {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Комментарий" span={3}>
+  //     {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
+  //   </Descriptions.Item>
+  //   <Descriptions.Item label="Результат" span={3}>
+  //     {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
+  //   </Descriptions.Item>
+  // </Descriptions>
+  // </Modal>
+  // <ModalAddAppToServ
+  // serviceId={currentPatient?._id}
+  // isOpen={isChangeServiceTimeOpen}
+  // setIsOpen={setIsChangeServiceTimeOpen}
+  // setAppId={setCurAppId}
+  // />
+}

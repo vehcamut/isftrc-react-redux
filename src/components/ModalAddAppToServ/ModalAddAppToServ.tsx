@@ -40,7 +40,7 @@ interface ModalAddAppToServProps extends PropsWithChildren {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   // eslint-disable-next-line react/require-default-props
-  setAppId?: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setAppId?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
