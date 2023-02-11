@@ -26,6 +26,13 @@ export interface IServiceGroupWithServises extends IServiceGroupWithId {
   outcome: number;
 }
 
+export interface IPatientCourses {
+  courses: ICourseWithServices[];
+  canBeClose: boolean;
+  canBeOpen: boolean;
+  canBeNew: boolean;
+}
+
 export interface IServiceInCourse {
   kind: string;
   _id: string;

@@ -17,6 +17,7 @@ export interface IService {
 }
 
 export interface IServiceInfo {
+  canBeRemoved: boolean;
   id: string;
   type: string;
   status: boolean;

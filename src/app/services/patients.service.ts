@@ -18,6 +18,7 @@ import {
   IPatientCourse,
   IAddService,
   IRemoveService,
+  IPatientCourses,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -95,7 +96,7 @@ export const patientsAPI = api.injectEndpoints({
       }),
       invalidatesTags: ['patients'],
     }),
-    getPatientCourses: build.query<ICourseWithServices[], IGetCourses>({
+    getPatientCourses: build.query<IPatientCourses, IGetCourses>({
       query: (params) => ({
         url: 'patients/getCourses',
         params,
@@ -109,6 +110,24 @@ export const patientsAPI = api.injectEndpoints({
     openCourse: build.mutation<any, IPatientCourse>({
       query: (body) => ({
         url: 'patients/openCourse',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+    newCourse: build.mutation<any, IPatientCourse>({
+      query: (body) => ({
+        url: 'patients/newCourse',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['patients'],
+    }),
+    closeCourse: build.mutation<any, IPatientCourse>({
+      query: (body) => ({
+        url: 'patients/closeCourse',
         method: 'POST',
         credentials: 'include',
         body,
