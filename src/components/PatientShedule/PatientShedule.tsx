@@ -160,6 +160,34 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     setIsRemoveConfirmOpen(false);
     onAppInfoReset();
   };
+  const onBeforeAppRemove = () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите удаление записи.',
+        icon: <ExclamationCircleFilled />,
+        content: (
+          <>
+            <p>Вы точно хотите удалить запись?</p>
+            {currentAppointment?.service ? <p>На данное время уже записан пациент!</p> : null}
+          </>
+        ),
+        // `Вы точно хотите удалить запись? ${
+        //   currentAppointment?.service ? 'На данное время уже записан пациент!' : ''
+        // }`,
+        onOk() {
+          onAppointmentRemove();
+          // console.log('Appointment', appointment._id, 'Service', currentPatient?._id);
+          // setAppointments({ appointmentId: appointment._id, serviceId: currentPatient?._id || '' });
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    };
+    showConfirm();
+    // if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
+    // else onAppointmentRemove();
+  };
   const onAppointmentRewrite = () => {
     setCurrentPatient(currentAppointment?.service);
     // console.log(currentPatient);
@@ -169,10 +197,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     // setIsRemoveConfirmOpen(false);
     // onAppInfoReset();
   };
-  const onBeforeAppRemove = () => {
-    if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
-    else onAppointmentRemove();
-  };
+
   const onOpenService = async () => {
     try {
       await openService({ id: currentAppointment?.service?._id || '' }).unwrap();
@@ -463,50 +488,6 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         isOpen={isChangeServiceTimeOpen}
         setIsOpen={setIsChangeServiceTimeOpen}
       />
-      {/* ПЕРЕЗАПИСЬ!!!
-      <Modal
-        destroyOnClose
-        open={isChangeServiceTimeOpen}
-        footer={
-          <Button type="primary" style={{ marginRight: '0px' }} onClick={onRemoveConfirmClose}>
-            Отмена
-          </Button>
-        }
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Изменение записи пациента
-          </Typography.Title>
-        }
-        width="100%"
-        onCancel={onRemoveConfirmClose}
-      >
-        <>
-          <Select
-            id="advertisingSources"
-            allowClear
-            style={{ width: '100%', marginBottom: '20px' }}
-            options={data}
-            onChange={(v) => setCurrentSpecialist(v)}
-            placeholder="Выберите специалиста"
-          />
-          {currentSpecialist ? (
-            <Shedule
-              dataAPI={appointmentsAPI.useGetAppointmentsQuery}
-              title="Расписание специалиста"
-              extraOptions={{
-                specialistId: currentSpecialist,
-                isFree: true,
-                serviceId: currentPatient?._id,
-                patientId: currentPatient?.patient?._id,
-              }}
-              onAppointmentClick={onAppointmentRewriteClick}
-              type="Specialist"
-            />
-          ) : (
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Выберите специалиста" />
-          )}
-        </>
-      </Modal> */}
 
       <Shedule
         dataAPI={appointmentsAPI.useGetForPatientAppointmentsQuery}
