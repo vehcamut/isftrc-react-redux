@@ -233,6 +233,32 @@ const router = createBrowserRouter([
       {
         children: [
           {
+            path: '/patients/:id/shedule',
+            element: (
+              <Template activeKey="patients">
+                <PatientPage activeKey="shedule" />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
+            path: '/patients/:id/shedule/:date',
+            element: (
+              <Template activeKey="patients">
+                <PatientPage activeKey="shedule" />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      {
+        children: [
+          {
             path: '/handbooks',
             element: (
               <Template activeKey="handbooks">

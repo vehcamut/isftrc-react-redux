@@ -394,22 +394,38 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                   type="primary"
                   style={{ marginRight: '0px', backgroundColor: '#e60000' }}
                   onClick={onRemoveService}
+                  disabled={!patient?.isActive}
                 >
                   Удалить услугу
                 </Button>
 
                 {servData?.date && new Date(servData.date) <= new Date() ? (
-                  <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsSetResultOpen(true)}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '0px' }}
+                    onClick={() => setIsSetResultOpen(true)}
+                    disabled={!patient?.isActive}
+                  >
                     Закрыть услугу
                   </Button>
                 ) : null}
 
                 {servData?.status ? null : servData?.date ? (
-                  <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '0px' }}
+                    onClick={() => setIsAddAppToServOpen(true)}
+                    disabled={!patient?.isActive}
+                  >
                     Изменить дату
                   </Button>
                 ) : (
-                  <Button type="primary" style={{ marginRight: '0px' }} onClick={() => setIsAddAppToServOpen(true)}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '0px' }}
+                    onClick={() => setIsAddAppToServOpen(true)}
+                    disabled={!patient?.isActive}
+                  >
                     Выбрать дату
                   </Button>
                 )}
@@ -628,7 +644,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         onCancel={onAddPaymentCancel}
       >
         <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onAddPaymentFinish}>
-          {advSum === undefined || advSum <= 0 ? (
+          {/* {advSum === undefined || advSum <= 0 ? (
             <div>
               <p style={{ margin: 0, marginBottom: '20px' }}>
                 Оплата из авансовых платежей недоступна, так как отсутствует излишок средств.
@@ -638,13 +654,14 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             <div>
               <p style={{ margin: 0, marginBottom: '20px' }}>{`Сумма авнсовых платяжей ${advSum}`}</p>
             </div>
-          )}
+          )} */}
           <Form.Item
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
             valuePropName="checked"
             label={<div className={addClass(classes, 'form-item')}>Опалата из авансовых платежей</div>}
             name="fromTheAdvance"
+            help={!advSum ? 'Нет излишних средств' : undefined}
           >
             <Switch id="fromTheAdvance" onChange={(checked) => setAdv(checked)} disabled={!advSum} />
           </Form.Item>
@@ -683,18 +700,31 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
           {adv ? null : (
             <Form.Item
               valuePropName="checked"
+              initialValue={coursesData?.canBeNew ? true : undefined}
               // initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
               label={<div className={addClass(classes, 'form-item')}>Вне курса</div>}
               name="inCourse"
+              // validateStatus={coursesData?.canBeNew ? 'warning' : undefined}
+              // hasFeedback={coursesData?.canBeNew}
+              help={coursesData?.canBeNew ? 'Нет ни одного открытого курса' : undefined}
             >
-              <Switch id="inCourse" />
+              <Switch id="inCourse" disabled={!!coursesData?.canBeNew} />
             </Form.Item>
+            // <Form.Item
+            //   valuePropName="checked"
+            //   // initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
+            //   label={<div className={addClass(classes, 'form-item')}>Вне курса</div>}
+            //   name="inCourse"
+            // >
+            //   <Switch id="inCourse" />
+            // </Form.Item>
           )}
           <Form.Item
             // initialValue={initValue?.name ? initValue.name : ''}
             rules={[{ required: true, message: 'Поле "Сумма" не должно быть пустым' }]}
             label="Сумма"
             name="amount"
+            help={adv ? `Максимальная сумма: ${advSum}` : undefined}
           >
             <InputNumber min={1} max={adv ? advSum : 1000000} id="amount" />
           </Form.Item>
@@ -761,6 +791,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                 type="primary"
                 style={{ marginRight: '0px', backgroundColor: '#e60000' }}
                 onClick={onRemovePayment}
+                disabled={!patient?.isActive}
               >
                 Удалить оплату
               </Button>
@@ -773,7 +804,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         }
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Информация об опалет
+            Информация об оплате
           </Typography.Title>
         }
         width="550px"
@@ -832,17 +863,17 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
               {/* coursesData.courses[coursesData.courses.length - 1].number === 0 ||
               coursesData.courses[coursesData.courses.length - 1].status === false  */}
               {coursesData.canBeNew ? (
-                <Button type="link" onClick={onNewCourse}>
+                <Button type="link" onClick={onNewCourse} disabled={!patient?.isActive}>
                   Создать курс
                 </Button>
               ) : null}
               {coursesData.canBeOpen ? (
-                <Button type="link" onClick={onOpenCourse}>
+                <Button type="link" onClick={onOpenCourse} disabled={!patient?.isActive}>
                   Открыть курс
                 </Button>
               ) : null}
               {coursesData.canBeClose ? (
-                <Button type="link" onClick={onCloseCourse}>
+                <Button type="link" onClick={onCloseCourse} disabled={!patient?.isActive}>
                   Закрыть курс
                 </Button>
               ) : null}
@@ -852,10 +883,10 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                   Закрыть курс
                 </Button>
               )} */}
-              <Button type="link" onClick={() => setIsAddServiceOpen(true)}>
+              <Button type="link" onClick={() => setIsAddServiceOpen(true)} disabled={!patient?.isActive}>
                 Добавить услугу
               </Button>
-              <Button type="link" onClick={() => setIsAddPaymentOpen(true)}>
+              <Button type="link" onClick={() => setIsAddPaymentOpen(true)} disabled={!patient?.isActive}>
                 Добавить оплату
               </Button>
             </>

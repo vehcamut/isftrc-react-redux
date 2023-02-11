@@ -20,6 +20,12 @@ export interface IGetAppointment {
   specialistId: string;
 }
 
+export interface IGetForPatientAppointment {
+  begDate: string;
+  endDate: string;
+  patientId: string;
+}
+
 export interface IAppointmentWeek {
   monday: IAppointment[];
   tuesday: IAppointment[];

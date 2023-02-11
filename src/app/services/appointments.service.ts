@@ -20,6 +20,7 @@ import {
   IAddAppointment,
   IRemoveAppointment,
   IGetFreeAppointmetns,
+  IGetForPatientAppointment,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -38,6 +39,38 @@ export const appointmentsAPI = api.injectEndpoints({
       providesTags: ['appointments'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         console.log(apiResponse);
+        const week: IAppointment[][] = [[], [], [], [], [], [], []];
+        apiResponse.forEach((appointment) => {
+          const date = new Date(appointment.begDate);
+          switch (date.getDay()) {
+            case 0:
+              week[6].push(appointment);
+              break;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+              week[date.getDay() - 1].push(appointment);
+              break;
+            default:
+              break;
+          }
+        });
+
+        return week;
+      },
+    }),
+    getForPatientAppointments: build.query<IAppointment[][], IGetForPatientAppointment>({
+      query: (params) => ({
+        url: 'appointments/getForPatient',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['appointments'],
+      transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
+        // console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
         apiResponse.forEach((appointment) => {
           const date = new Date(appointment.begDate);

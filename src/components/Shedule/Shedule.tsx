@@ -169,7 +169,10 @@ const Shedule: FunctionComponent<SheduleProps> = ({
                                   classes,
                                   'appointment',
                                   item.service ? 'appointment-has-service' : '',
-                                  item.service && new Date(item.endDate) < nowDate ? 'appointment-bad-service' : '',
+                                  !item.service?.status && item.service && new Date(item.endDate) < nowDate
+                                    ? 'appointment-bad-service'
+                                    : '',
+                                  item.service?.status ? 'appointment-good-service' : '',
                                 )}
                                 onClick={(e) => onAppointmentClick(item)}
                               >

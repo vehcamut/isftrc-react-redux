@@ -6,9 +6,10 @@ import { patientsAPI } from '../app/services';
 import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
 import PatinentCourse from '../components/PatinentCourse/PatinentCourse';
+import PatientShedule from '../components/PatientShedule/PatientShedule';
 
 interface FormDialogProps extends PropsWithChildren {
-  activeKey: 'info' | 'representatives' | 'course';
+  activeKey: 'info' | 'representatives' | 'course' | 'shedule';
 }
 
 const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
@@ -23,7 +24,8 @@ const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
   };
 
   const onChange = (key: string) => {
-    navigate(`./../${key}`, { replace: true });
+    navigate(`/patients/${params?.id}/${key}`, { replace: true });
+    // navigate(`./../${key}`, { replace: true });
   };
 
   return (
@@ -70,8 +72,8 @@ const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
               children: <PatientRepresentatives patient={patient} />,
             },
             { label: 'Курсы', key: 'course', children: <PatinentCourse patient={patient} /> },
-            { label: 'Расписание', key: 'patients' },
-            { label: 'Документы', key: 'documents' },
+            { label: 'Расписание', key: 'shedule', children: <PatientShedule patient={patient} /> },
+            // { label: 'Документы', key: 'documents' },
           ]}
         />
       </Spin>
