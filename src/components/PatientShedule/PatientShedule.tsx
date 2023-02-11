@@ -23,6 +23,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
+import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import { addClass } from '../../app/common';
 import classes from './PatientShedule.module.scss';
 import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
@@ -53,6 +54,8 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
   const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
+  const [closeService] = servicesAPI.useCloseServiceMutation();
+  const [openService] = servicesAPI.useOpenServiceMutation();
   // form state
   const [form] = Form.useForm();
   const begDateField = Form.useWatch('begDate', form);
@@ -159,9 +162,9 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   };
   const onAppointmentRewrite = () => {
     setCurrentPatient(currentAppointment?.service);
-    console.log(currentPatient);
-    console.log(currentAppointment?._id);
-    console.log(currentAppointment?.service?._id);
+    // console.log(currentPatient);
+    // console.log(currentAppointment?._id);
+    // console.log(currentAppointment?.service?._id);
     setIsChangeServiceTimeOpen(true);
     // setIsRemoveConfirmOpen(false);
     // onAppInfoReset();
@@ -169,6 +172,36 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   const onBeforeAppRemove = () => {
     if (currentAppointment?.service) setIsRemoveConfirmOpen(true);
     else onAppointmentRemove();
+  };
+  const onOpenService = async () => {
+    try {
+      await openService({ id: currentAppointment?.service?._id || '' }).unwrap();
+      messageApi.open({
+        type: 'info',
+        content: 'Запись успешно открыта',
+      });
+      onAddUpdateReset();
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+  const onCloseService = async () => {
+    try {
+      await closeService({ id: currentAppointment?.service?._id || '', result: 'dfd' }).unwrap();
+      messageApi.open({
+        type: 'info',
+        content: 'Запись успешно открыта',
+      });
+      onAddUpdateReset();
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
   };
   const onAppClose = () => {
     console.log('CLOSE');
@@ -224,20 +257,54 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         open={isAppInfoOpen}
         footer={
           <>
-            <Button
-              type="primary"
-              style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-              onClick={onBeforeAppRemove}
-            >
-              Удалить запись
-            </Button>
             {currentAppointment?.service && !currentAppointment.service.status ? (
-              <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppClose}>
-                Закрыть услугу
+              <Button
+                type="primary"
+                style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+                onClick={onBeforeAppRemove}
+              >
+                Удалить
               </Button>
             ) : (
               ''
             )}
+            {currentAppointment?.service?.canBeRemoved ? (
+              <>
+                {currentAppointment?.service && !currentAppointment.service.status ? (
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+                    Перенести
+                  </Button>
+                ) : (
+                  ''
+                )}
+
+                {currentAppointment?.service &&
+                !currentAppointment.service.status &&
+                currentAppointment?.begDate &&
+                new Date(currentAppointment?.begDate) <= new Date() ? (
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
+                    Закрыть
+                  </Button>
+                ) : null}
+
+                {currentAppointment?.service && currentAppointment.service.status ? (
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+                    Открыть
+                  </Button>
+                ) : null}
+                {/* {currentAppointment?.service && !currentAppointment.service.status ? (
+                  currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
+                    <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
+                      Закрыть
+                    </Button>
+                  ) : null
+                ) : (
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+                    Открыть
+                  </Button>
+                )} */}
+              </>
+            ) : null}
 
             <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
               Отмена
@@ -390,7 +457,13 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
           </Form.Item>
         </Form>
       </Modal>
-      {/* ПЕРЕЗАПИСЬ!!! */}
+
+      <ModalAddAppToServ
+        serviceId={currentPatient?._id}
+        isOpen={isChangeServiceTimeOpen}
+        setIsOpen={setIsChangeServiceTimeOpen}
+      />
+      {/* ПЕРЕЗАПИСЬ!!!
       <Modal
         destroyOnClose
         open={isChangeServiceTimeOpen}
@@ -433,14 +506,14 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Выберите специалиста" />
           )}
         </>
-      </Modal>
+      </Modal> */}
 
       <Shedule
         dataAPI={appointmentsAPI.useGetForPatientAppointmentsQuery}
-        title="Расписание специалиста"
+        title="Расписание пациента"
         extraOptions={{ patientId: patient?._id }}
         onAppointmentClick={onAppointmentClick}
-        type="Specialist"
+        type="Patient"
         onDateChange={(f, s) => {
           const path = `${Date.parse(params.date || '') ? './.' : ''}./${f}`;
           navigate(path, { replace: true });

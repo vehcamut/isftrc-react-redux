@@ -155,7 +155,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
                           let personStr;
                           if (type === 'Specialist')
                             personStr = `${item.service?.patient?.number} ${item.service?.patient?.surname} ${item.service?.patient?.name[0]}.${item.service?.patient?.patronymic[0]}.`;
-                          else personStr = `${item.specialist} ${item.specialist}.${item.specialist}.`;
+                          else personStr = `${item.specialist.name}`;
                           const serviceName = item.service?.type.name;
                           return (
                             <Tooltip

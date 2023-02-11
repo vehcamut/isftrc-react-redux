@@ -4,6 +4,7 @@ import { IAppointment } from './IAppointment';
 import { ISpecialistType } from './ISpecialistType';
 
 export interface IService {
+  canBeRemoved?: boolean;
   _id: string;
   status: boolean;
   type: IServiceTypeWithId;
@@ -104,4 +105,8 @@ export interface IRemoveService {
 export interface ICloseService {
   id: string;
   result: string;
+}
+
+export interface IOpenService {
+  id: string;
 }
