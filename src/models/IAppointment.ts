@@ -62,3 +62,7 @@ export interface IGetFreeAppointmetns {
   endDate?: Date;
   serviceId: string;
 }
+
+export interface IGetAppointmentById {
+  id: string;
+}

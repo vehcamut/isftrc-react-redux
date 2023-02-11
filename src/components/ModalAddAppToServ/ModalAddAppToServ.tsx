@@ -39,9 +39,11 @@ interface ModalAddAppToServProps extends PropsWithChildren {
   serviceId: string | undefined;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  // eslint-disable-next-line react/require-default-props
+  setAppId?: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen }) => {
+const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
   // API
@@ -83,6 +85,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
               serviceId: currentService?._id || '',
             }).unwrap();
             setIsSuccess(true);
+            if (setAppId) setAppId(result);
           } catch (e) {
             messageApi.open({
               type: 'error',
@@ -113,7 +116,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
         footer={
           !isSuccess ? (
             <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
-              Отмена
+              Назад
             </Button>
           ) : null
         }

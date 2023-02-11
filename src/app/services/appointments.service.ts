@@ -21,6 +21,7 @@ import {
   IRemoveAppointment,
   IGetFreeAppointmetns,
   IGetForPatientAppointment,
+  IGetAppointmentById,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -151,6 +152,14 @@ export const appointmentsAPI = api.injectEndpoints({
         body,
       }),
       invalidatesTags: ['appointments'],
+    }),
+    getAppointmentById: build.query<IAppointment, IGetAppointmentById>({
+      query: (params) => ({
+        url: 'appointments/getById',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['appointments'],
     }),
 
     // getRepresentativeById: build.query<IRepresentative, IGetByID>({

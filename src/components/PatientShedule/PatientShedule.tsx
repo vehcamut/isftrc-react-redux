@@ -49,7 +49,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   const [isRemoveConfirmOpen, setIsRemoveConfirmOpen] = useState(false);
   const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
   // current
-  const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
+  // const [currentAppointment, setCurrentAppointment] = useState<IAppointment | undefined>(undefined);
   // API
   const [addAppointments] = appointmentsAPI.useAddAppointmentsMutation();
   const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
@@ -65,7 +65,11 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   const params = useParams();
 
   const [currentPatient, setCurrentPatient] = useState<IService | undefined>(undefined);
-  const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
+  // const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
+  const [curAppId, setCurAppId] = useState<string | undefined>(undefined);
+  const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery({
+    id: curAppId || '',
+  });
   const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery({
     type: currentPatient?.type._id || '',
   });
@@ -111,14 +115,16 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
   };
 
   const onAppInfoReset = () => {
-    setCurrentAppointment(undefined);
+    setCurAppId('');
+    // setCurrentAppointment(undefined);
     setIsAppInfoOpen(false);
   };
 
   const onAppointmentClick = (appointment: IAppointment) => {
-    appointment.begDate = new Date();
+    setCurAppId(appointment._id);
+    // appointment.begDate = new Date();
     // setCurrentAppointment(appointment);
-    // setIsAppInfoOpen(true);
+    setIsAppInfoOpen(true);
   };
 
   const onAppointmentRewriteClick = (appointment: IAppointment) => {
@@ -129,7 +135,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     });
     const patientName = `${currentPatient?.patient?.number} ${currentPatient?.patient?.surname} ${currentPatient?.patient?.name[0]}.${currentPatient?.patient?.patronymic[0]}.`;
     const servType = `${currentPatient?.type.name}`;
-    const specName = `${appointment.specialist.name}`;
+    const specName = `${appointment?.specialist?.name}`;
     const showConfirm = () => {
       confirm({
         title: 'Подтвердите запись пациента.',
@@ -219,7 +225,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
       await closeService({ id: currentAppointment?.service?._id || '', result: 'dfd' }).unwrap();
       messageApi.open({
         type: 'info',
-        content: 'Запись успешно открыта',
+        content: 'Запись успешно закрыта',
       });
       onAddUpdateReset();
     } catch (e) {
@@ -233,10 +239,10 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     console.log('CLOSE');
   };
 
-  const onRemoveConfirmClose = () => {
-    setIsChangeServiceTimeOpen(false);
-    setCurrentSpecialist(undefined);
-  };
+  // const onRemoveConfirmClose = () => {
+  //   setIsChangeServiceTimeOpen(false);
+  //   setCurrentSpecialist(undefined);
+  // };
 
   return (
     <>
@@ -333,7 +339,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
             ) : null}
 
             <Button type="primary" style={{ marginRight: '0px' }} onClick={onAppInfoReset}>
-              Отмена
+              Назад
             </Button>
           </>
         }
@@ -392,18 +398,18 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
                 type="link"
                 size="small"
                 onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
-              >{`${currentAppointment.specialist.name}`}</Button>
+              >{`${currentAppointment?.specialist?.name}`}</Button>
             ) : (
               ' - '
             )}
           </Descriptions.Item>
           <Descriptions.Item label="Курс" span={3}>
-            {currentAppointment?.service?.course.number === 0
+            {currentAppointment?.service?.course?.number === 0
               ? 'вне курса'
-              : `№${currentAppointment?.service?.course.number}`}
+              : `№${currentAppointment?.service?.course?.number}`}
           </Descriptions.Item>
           <Descriptions.Item label="Услуга" span={3}>
-            {currentAppointment?.service ? `${currentAppointment?.service.type.name}` : ' - '}
+            {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
           </Descriptions.Item>
           <Descriptions.Item label="Комментарий" span={3}>
             {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
@@ -498,6 +504,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         serviceId={currentPatient?._id}
         isOpen={isChangeServiceTimeOpen}
         setIsOpen={setIsChangeServiceTimeOpen}
+        setAppId={setCurAppId}
       />
 
       <Shedule
