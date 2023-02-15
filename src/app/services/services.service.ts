@@ -28,6 +28,7 @@ import {
   IGetGroupServiceType,
   ICloseService,
   IOpenService,
+  IChangeNote,
 } from '../../models';
 import baseQuery from './baseQuery';
 import { api } from './api.service';
@@ -172,6 +173,16 @@ export const servicesAPI = api.injectEndpoints({
     openService: build.mutation<any, IOpenService>({
       query: (body) => ({
         url: 'services/openService',
+        method: 'POST',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['serviceGroup', 'serviceType', 'appointments'],
+    }),
+
+    changeServNote: build.mutation<any, IChangeNote>({
+      query: (body) => ({
+        url: 'services/changeNote',
         method: 'POST',
         credentials: 'include',
         body,

@@ -18,10 +18,11 @@ import {
   InputNumber,
   Select,
   Result,
+  Input,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
-import { ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
@@ -33,8 +34,10 @@ import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
+import ModalTextEnter from '../ModalTextEnter/ModalTextEnter';
 
 const { confirm } = Modal;
+const { TextArea } = Input;
 
 interface ModalAppInfoProps extends PropsWithChildren {
   // serviceId: string | undefined;
@@ -61,6 +64,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
+  const [changeServNote] = servicesAPI.useChangeServNoteMutation();
 
   const onAppointmentRewrite = () => {
     setCurrentService(currentAppointment?.service);
@@ -81,13 +85,20 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
       });
     }
   };
-  const onCloseService = async () => {
+
+  const onReset = () => {
+    setAppointmentId('');
+    setIsOpen(false);
+  };
+  const [isChangeNoteOpen, setIsChangeNoteOpen] = useState(false);
+  const onChangeNote = async (note: string) => {
     try {
-      await closeService({ id: currentAppointment?.service?._id || '', result: 'dfd' }).unwrap();
+      await changeServNote({ id: currentAppointment?.service?._id || '', note }).unwrap();
       messageApi.open({
         type: 'success',
-        content: 'Запись успешно закрыта',
+        content: 'Комментарий успешно изменен',
       });
+      setIsChangeNoteOpen(false);
     } catch (e) {
       messageApi.open({
         type: 'error',
@@ -95,9 +106,37 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
       });
     }
   };
-  const onReset = () => {
-    setAppointmentId('');
-    setIsOpen(false);
+
+  const [isAddResultOpen, setIsAddResultOpen] = useState(false);
+  // const onAddResult = async (note: string) => {
+  //   try {
+  //     await changeServNote({ id: currentAppointment?.service?._id || '', note }).unwrap();
+  //     messageApi.open({
+  //       type: 'success',
+  //       content: 'Комментарий успешно изменен',
+  //     });
+  //     setIsChangeNoteOpen(false);
+  //   } catch (e) {
+  //     messageApi.open({
+  //       type: 'error',
+  //       content: 'Ошибка связи с сервером',
+  //     });
+  //   }
+  // };
+  const onCloseService = async (result: string) => {
+    try {
+      await closeService({ id: currentAppointment?.service?._id || '', result }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Запись успешно закрыта',
+      });
+      setIsAddResultOpen(false);
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
   };
 
   return (
@@ -108,6 +147,22 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
         isOpen={isChangeServiceTimeOpen}
         setIsOpen={setIsChangeServiceTimeOpen}
         setAppId={setAppointmentId}
+      />
+      <ModalTextEnter
+        isOpen={isChangeNoteOpen}
+        setIsOpen={setIsChangeNoteOpen}
+        title="Изменение комментария записи"
+        onFinish={onChangeNote}
+        initText={currentAppointment?.service?.note}
+      />
+      <ModalTextEnter
+        isOpen={isAddResultOpen}
+        setIsOpen={setIsAddResultOpen}
+        placeholder="Результат оказания услуги"
+        title="Закрытие услуги"
+        required
+        onFinish={onCloseService}
+        initText={currentAppointment?.service?.result}
       />
       <Modal
         destroyOnClose
@@ -139,7 +194,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
                 !currentAppointment.service.status &&
                 currentAppointment?.begDate &&
                 new Date(currentAppointment?.begDate) <= new Date() ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddResultOpen(true)}>
                     Закрыть
                   </Button>
                 ) : null}
@@ -149,6 +204,12 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
                     Открыть
                   </Button>
                 ) : null}
+
+                {/* {currentAppointment?.service && !currentAppointment.service.status ? (
+                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+                    Изменить комментарий
+                  </Button>
+                ) : null} */}
                 {/* {currentAppointment?.service && !currentAppointment.service.status ? (
                   currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
                     <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
@@ -163,7 +224,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
               </>
             ) : null}
 
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
+            <Button type="default" style={{ marginRight: '0px' }} onClick={onReset}>
               Назад
             </Button>
           </>
@@ -246,13 +307,58 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
           <Descriptions.Item label="Услуга" span={3}>
             {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
           </Descriptions.Item>
-          <Descriptions.Item label="Комментарий" span={3}>
+
+          <Descriptions.Item
+            label={
+              <>
+                Комментарий
+                {!currentAppointment?.service?.status && currentAppointment?.service?.canBeRemoved ? (
+                  <Button type="link" icon={<EditOutlined />} size="small" onClick={() => setIsChangeNoteOpen(true)} />
+                ) : null}
+              </>
+            }
+            span={3}
+          >
             {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
           </Descriptions.Item>
           <Descriptions.Item label="Результат" span={3}>
             {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
           </Descriptions.Item>
         </Descriptions>
+        {/* <Form labelWrap>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            // rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
+            label="Комментарий"
+            name="note"
+            initialValue={currentAppointment?.service?.note}
+          >
+            <TextArea autoSize={{ minRows: 1, maxRows: 8 }} />
+          </Form.Item>
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form> */}
+        {/* <TextArea />
+
+        <Input.Group style={{ minWidth: '100%' }} >
+          {/* <Input style={{ width: 'calc(100% - 200px)' }} defaultValue="https://ant.design" /> */}
+        {/* <Button type="dashed" >Submit</Button>
+        </Input.Group> */}
       </Modal>
     </>
   );

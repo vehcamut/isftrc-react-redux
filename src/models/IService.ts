@@ -112,3 +112,8 @@ export interface ICloseService {
 export interface IOpenService {
   id: string;
 }
+
+export interface IChangeNote {
+  id: string;
+  note?: string;
+}
