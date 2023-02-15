@@ -34,6 +34,7 @@ import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import './antd.rewrite.scss';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import { paymentAPI } from '../../app/services/payments.service';
+import ModalServiceInfo from '../ModalServiceInfo/ModalServiceInfo';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -147,6 +148,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const { data: represToSelect, isLoading: isrepresToSelectLoading } = patientsAPI.useGetPatientRepresentativesQuery({
     id: patient?._id || '',
   });
+  // console.log(advSum);
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
   const [isPayInfoOpen, setIsPayInfoOpen] = useState(false);
   const [isAddAppToServOpen, setIsAddAppToServOpen] = useState(false);
@@ -348,7 +350,13 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
     <>
       {contextHolder}
       <ModalAddAppToServ serviceId={servData?.id} isOpen={isAddAppToServOpen} setIsOpen={setIsAddAppToServOpen} />
-      <Modal
+      <ModalServiceInfo
+        isOpen={isServInfoOpen}
+        setIsOpen={setIsServInfoOpen}
+        serviceId={servData?.id || ''}
+        title="Информация об услуге"
+      />
+      {/* <Modal
         destroyOnClose
         open={isServInfoOpen}
         footer={
@@ -456,8 +464,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             </Descriptions.Item>
           </Descriptions>
         )}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} /> */}
-      </Modal>
+      </Modal> */}
 
       <Modal
         destroyOnClose
@@ -626,9 +633,13 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             valuePropName="checked"
             label={<div className={addClass(classes, 'form-item')}>Опалата из авансовых платежей</div>}
             name="fromTheAdvance"
-            help={!advSum ? 'Нет излишних средств' : undefined}
+            help={advSum && advSum <= 0 ? 'Нет излишних средств' : undefined}
           >
-            <Switch id="fromTheAdvance" onChange={(checked) => setAdv(checked)} disabled={!advSum} />
+            <Switch
+              id="fromTheAdvance"
+              onChange={(checked) => setAdv(checked)}
+              disabled={advSum === undefined || advSum <= 0}
+            />
           </Form.Item>
           {adv ? null : (
             <Form.Item

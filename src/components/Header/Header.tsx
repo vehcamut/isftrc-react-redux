@@ -51,12 +51,12 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         // defaultActiveKey={defaultActiveKey}
         items={[
           { label: 'Личные данные', key: 'profile' },
-          { label: 'Расписание', key: 'shedules' },
+          // { label: 'Расписание', key: 'shedules' },
           { label: 'Пациенты', key: 'patients' },
           { label: 'Представители', key: 'representatives' },
           { label: 'Специалисты', key: 'specialists' },
           { label: 'Справочники', key: 'handbooks' },
-          { label: 'Очтеты', key: 'reports' },
+          // { label: 'Очтеты', key: 'reports' },
         ]}
         size="small"
         tabBarStyle={{ marginBottom: '0px' }}

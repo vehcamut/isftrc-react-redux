@@ -39,20 +39,20 @@ import ModalTextEnter from '../ModalTextEnter/ModalTextEnter';
 const { confirm } = Modal;
 const { TextArea } = Input;
 
-interface ModalAppInfoProps extends PropsWithChildren {
+interface ModalServiceInfoProps extends PropsWithChildren {
   // serviceId: string | undefined;
   title: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  appointmentId: string;
-  setAppointmentId: React.Dispatch<React.SetStateAction<string>>;
+  serviceId: string;
+  // setAppointmentId: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
+const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   isOpen,
   setIsOpen,
-  appointmentId,
-  setAppointmentId,
+  serviceId,
+  // setAppointmentId,
   title,
 }) => {
   const navigate = useNavigate();
@@ -60,27 +60,27 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
 
   // const [appointmentId, setAppointmentId] = useState<string>('');
   const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
-  const [currentService, setCurrentService] = useState<IService | undefined>(undefined);
+  // const [currentService, setCurrentService] = useState<IService | undefined>(undefined);
 
   // API
-  const { data: currentAppointment } = appointmentsAPI.useGetAppointmentByIdQuery(
+  const { data: currentService } = servicesAPI.useGetAllInfoServiceQuery(
     {
-      id: appointmentId || '',
+      id: serviceId || '',
     },
-    { skip: appointmentId === '' },
+    { skip: serviceId === '' },
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
   const [changeServNote] = servicesAPI.useChangeServNoteMutation();
 
   const onAppointmentRewrite = () => {
-    setCurrentService(currentAppointment?.service);
+    // setCurrentService(currentAppointment?.service);
     setIsChangeServiceTimeOpen(true);
   };
 
   const onOpenService = async () => {
     try {
-      await openService({ id: currentAppointment?.service?._id || '' }).unwrap();
+      await openService({ id: currentService?._id || '' }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Запись успешно открыта',
@@ -94,13 +94,13 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
   };
 
   const onReset = () => {
-    setAppointmentId('');
+    // setAppointmentId('');
     setIsOpen(false);
   };
   const [isChangeNoteOpen, setIsChangeNoteOpen] = useState(false);
   const onChangeNote = async (note: string) => {
     try {
-      await changeServNote({ id: currentAppointment?.service?._id || '', note }).unwrap();
+      await changeServNote({ id: currentService?._id || '', note }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Комментарий успешно изменен',
@@ -132,7 +132,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
   // };
   const onCloseService = async (result: string) => {
     try {
-      await closeService({ id: currentAppointment?.service?._id || '', result }).unwrap();
+      await closeService({ id: currentService?._id || '', result }).unwrap();
       messageApi.open({
         type: 'success',
         content: 'Запись успешно закрыта',
@@ -153,14 +153,14 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
         serviceId={currentService?._id}
         isOpen={isChangeServiceTimeOpen}
         setIsOpen={setIsChangeServiceTimeOpen}
-        setAppId={setAppointmentId}
+        // setAppId={setAppointmentId}
       />
       <ModalTextEnter
         isOpen={isChangeNoteOpen}
         setIsOpen={setIsChangeNoteOpen}
         title="Изменение комментария записи"
         onFinish={onChangeNote}
-        initText={currentAppointment?.service?.note}
+        initText={currentService?.note}
       />
       <ModalTextEnter
         isOpen={isAddResultOpen}
@@ -169,16 +169,21 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
         title="Закрытие услуги"
         required
         onFinish={onCloseService}
-        initText={currentAppointment?.service?.result}
+        initText={currentService?.result}
       />
       <Modal
         destroyOnClose
         open={isOpen}
         footer={
           <>
-            {currentAppointment?.service?.canBeRemoved ? (
+            {!currentService?.canBeRemoved && !currentService?.appointment ? (
+              <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+                Записать
+              </Button>
+            ) : null}
+            {currentService?.canBeRemoved ? (
               <>
-                {currentAppointment?.service && !currentAppointment.service.status ? (
+                {!currentService.status ? (
                   <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
                     Перенести
                   </Button>
@@ -186,16 +191,15 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                   ''
                 )}
 
-                {currentAppointment?.service &&
-                !currentAppointment.service.status &&
-                currentAppointment?.begDate &&
-                new Date(currentAppointment?.begDate) <= new Date() ? (
+                {!currentService.status &&
+                currentService.appointment &&
+                new Date(currentService.appointment.begDate) <= new Date() ? (
                   <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddResultOpen(true)}>
                     Закрыть
                   </Button>
                 ) : null}
 
-                {currentAppointment?.service && currentAppointment.service.status ? (
+                {currentService.status ? (
                   <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
                     Открыть
                   </Button>
@@ -218,8 +222,8 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
       >
         <Descriptions column={3}>
           <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentAppointment?.begDate
-              ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
+            {currentService?.appointment?.begDate
+              ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
                   day: '2-digit',
                   month: 'long',
                   year: 'numeric',
@@ -227,66 +231,60 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
               : 'не указаны'}
           </Descriptions.Item>
           <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentAppointment?.endDate
-              ? `${new Date(currentAppointment.begDate).toLocaleTimeString('ru-RU', {
+            {currentService?.appointment?.endDate
+              ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
                   hour: '2-digit',
                   minute: '2-digit',
-                })} - ${new Date(currentAppointment.endDate).toLocaleTimeString('ru-RU', {
+                })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
                   hour: '2-digit',
                   minute: '2-digit',
                 })}`
               : 'не указаны'}
           </Descriptions.Item>
-          <Descriptions.Item
-            label="Статус"
-            span={3}
-            contentStyle={{ color: currentAppointment?.service?.status ? 'green' : 'red' }}
-          >
-            {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'}
+          <Descriptions.Item label="Статус" span={3} contentStyle={{ color: currentService?.status ? 'green' : 'red' }}>
+            {currentService?.status ? 'Оказана' : 'Неоказана'}
           </Descriptions.Item>
           <Descriptions.Item label="Пациент" span={3}>
-            {currentAppointment?.service
-              ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
-              : ' - '}
+            {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
           </Descriptions.Item>
           <Descriptions.Item label="Специалист" span={3}>
-            {currentAppointment?.service ? (
+            {currentService?.appointment ? (
               <Button
                 type="link"
                 size="small"
-                onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
-              >{`${currentAppointment?.specialist?.name}`}</Button>
+                onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
+              >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
             ) : (
               ' - '
             )}
           </Descriptions.Item>
           <Descriptions.Item label="Курс" span={3}>
-            {currentAppointment?.service?.course?.number === 0
+            {currentService?.course?.number === 0
               ? 'вне курса'
-              : `№${currentAppointment?.service?.course?.number}${
-                  currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
-                }`}
+              : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
           </Descriptions.Item>
           <Descriptions.Item label="Услуга" span={3}>
-            {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
+            {currentService?.type.name}
           </Descriptions.Item>
 
           <Descriptions.Item
             label={
               <>
                 Комментарий
-                {!currentAppointment?.service?.status && currentAppointment?.service?.canBeRemoved ? (
+                {!currentService?.status && currentService?.canBeRemoved ? (
                   <Button type="link" icon={<EditOutlined />} size="small" onClick={() => setIsChangeNoteOpen(true)} />
                 ) : null}
               </>
             }
             span={3}
           >
-            {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
+            {currentService?.note ? `${currentService.note}` : ' - '}
           </Descriptions.Item>
-          <Descriptions.Item label="Результат" span={3}>
-            {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
-          </Descriptions.Item>
+          {currentService?.status ? (
+            <Descriptions.Item label="Результат" span={3}>
+              {currentService?.result ? `${currentService.result}` : ' - '}
+            </Descriptions.Item>
+          ) : null}
         </Descriptions>
       </Modal>
     </>
@@ -297,4 +295,4 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
 //   title
 // }
 
-export default ModalAppInfo;
+export default ModalServiceInfo;

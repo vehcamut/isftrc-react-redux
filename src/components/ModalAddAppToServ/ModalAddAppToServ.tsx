@@ -44,7 +44,7 @@ interface ModalAddAppToServProps extends PropsWithChildren {
 }
 
 const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
   // API
   const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
@@ -94,7 +94,35 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
               appointmentId: appointment._id,
               serviceId: currentService?._id || '',
             }).unwrap();
-            setIsSuccess(true);
+            setIsSuccess(1);
+            if (setAppId) setAppId(result);
+          } catch (e) {
+            messageApi.open({
+              type: 'error',
+              content: 'Ошибка связи с сервером',
+            });
+          }
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      });
+    };
+    showConfirm();
+  };
+
+  const onAppointmentReset = () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите отмену записи пациента.',
+        icon: <ExclamationCircleFilled />,
+        content: 'Вы точно хотите отменть запись?',
+        async onOk() {
+          try {
+            const result = await setAppointments({
+              serviceId: currentService?._id || '',
+            }).unwrap();
+            setIsSuccess(-1);
             if (setAppId) setAppId(result);
           } catch (e) {
             messageApi.open({
@@ -112,7 +140,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
   };
 
   const onReset = () => {
-    setIsSuccess(false);
+    setIsSuccess(0);
     setCurrentSpecialist(undefined);
     setIsOpen(false);
   };
@@ -125,9 +153,18 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
         open={isOpen}
         footer={
           !isSuccess ? (
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
-              Назад
-            </Button>
+            <>
+              <Button
+                type="primary"
+                style={{ marginRight: '0px', backgroundColor: '#e60000' }}
+                onClick={onAppointmentReset}
+              >
+                Отменить
+              </Button>
+              <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
+                Назад
+              </Button>
+            </>
           ) : null
         }
         title={
@@ -141,7 +178,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
         {isSuccess ? (
           <Result
             status="success"
-            title="Пациент успешно записан на прием к специалисту"
+            title={isSuccess > 0 ? 'Пациент успешно записан на прием к специалисту' : 'Запись пациента отменена'}
             // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
             extra={[
               <Button type="primary" key="ok" onClick={onReset} style={{ width: '160px' }}>

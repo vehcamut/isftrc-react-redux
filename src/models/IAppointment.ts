@@ -12,6 +12,8 @@ export interface IAppointment {
 export interface ISpecialistToSelect {
   _id: string;
   name: string;
+  surname?: string;
+  patronymic?: string;
 }
 
 export interface IGetAppointment {

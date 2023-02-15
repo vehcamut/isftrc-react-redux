@@ -153,6 +153,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
       </Modal> */}
 
       <ModalAppInfo
+        title="Информация о записи"
         isOpen={isAppInfoOpen}
         setIsOpen={setIsAppInfoOpen}
         appointmentId={curAppId}

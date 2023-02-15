@@ -69,7 +69,7 @@ export interface IGetServiceById {
 }
 
 export interface IAddAppointmentToService {
-  appointmentId: string;
+  appointmentId?: string;
   serviceId: string;
 }
 
