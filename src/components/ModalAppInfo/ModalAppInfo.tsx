@@ -45,7 +45,7 @@ interface ModalAppInfoProps extends PropsWithChildren {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   appointmentId: string;
-  setAppointmentId: React.Dispatch<React.SetStateAction<string>>;
+  setAppointmentId?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
@@ -72,6 +72,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
   const [changeServNote] = servicesAPI.useChangeServNoteMutation();
+  const [removeAppointments] = appointmentsAPI.useRemoveAppointmentsMutation();
 
   const onAppointmentRewrite = () => {
     setCurrentService(currentAppointment?.service);
@@ -94,7 +95,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
   };
 
   const onReset = () => {
-    setAppointmentId('');
+    if (setAppointmentId) setAppointmentId('');
     setIsOpen(false);
   };
   const [isChangeNoteOpen, setIsChangeNoteOpen] = useState(false);
@@ -145,7 +146,35 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
       });
     }
   };
-  // console.log(currentAppointment?.service?.patient);
+
+  const onAppointmentRemove = async () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите удаление записи.',
+        icon: <ExclamationCircleFilled />,
+        content: 'Вы точно хотите удалить запись?',
+        async onOk() {
+          try {
+            await removeAppointments({ _id: currentAppointment?._id || '' }).unwrap();
+            messageApi.open({
+              type: 'success',
+              content: 'Запись успешно удалена',
+            });
+            setIsOpen(false);
+          } catch (e) {
+            messageApi.open({
+              type: 'error',
+              content: 'Ошибка связи с сервером',
+            });
+          }
+        },
+        // onCancel() {
+        //   console.log('Cancel');
+        // },
+      });
+    };
+    showConfirm();
+  };
   return (
     <>
       {contextHolder}
@@ -176,6 +205,16 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
         open={isOpen}
         footer={
           <>
+            {!currentAppointment?.service ? (
+              <Button
+                type="primary"
+                style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+                onClick={onAppointmentRemove}
+                // disabled={!currentAppointment.service.patient?.isActive}
+              >
+                Удалить
+              </Button>
+            ) : null}
             {currentAppointment?.service?.canBeRemoved ? (
               <>
                 {currentAppointment?.service && !currentAppointment.service.status ? (
@@ -257,7 +296,11 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
             span={3}
             contentStyle={{ color: currentAppointment?.service?.status ? 'green' : 'red' }}
           >
-            {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'}
+            {
+              // eslint-disable-next-line no-nested-ternary
+              currentAppointment?.service ? (currentAppointment?.service?.status ? 'Оказана' : 'Неоказана') : '-'
+            }
+            {/* {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'} */}
           </Descriptions.Item>
           <Descriptions.Item label="Пациент" span={3}>
             {currentAppointment?.service
@@ -276,11 +319,16 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
             )}
           </Descriptions.Item>
           <Descriptions.Item label="Курс" span={3}>
-            {currentAppointment?.service?.course?.number === 0
-              ? 'вне курса'
-              : `№${currentAppointment?.service?.course?.number}${
-                  currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
-                }`}
+            {
+              // eslint-disable-next-line no-nested-ternary
+              currentAppointment?.service
+                ? currentAppointment?.service?.course?.number === 0
+                  ? 'вне курса'
+                  : `№${currentAppointment?.service?.course?.number}${
+                      currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
+                    }`
+                : '-'
+            }
           </Descriptions.Item>
           <Descriptions.Item label="Услуга" span={3}>
             {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}
@@ -299,17 +347,19 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
           >
             {currentAppointment?.service?.note ? `${currentAppointment?.service.note}` : ' - '}
           </Descriptions.Item>
-          <Descriptions.Item label="Результат" span={3}>
-            {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
-          </Descriptions.Item>
+          {currentAppointment?.service?.status ? (
+            <Descriptions.Item label="Результат" span={3}>
+              {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
+            </Descriptions.Item>
+          ) : null}
         </Descriptions>
       </Modal>
     </>
   );
 };
 
-// ModalAppInfo.defaultProps = {
-//   title
-// }
+ModalAppInfo.defaultProps = {
+  setAppointmentId: undefined,
+};
 
 export default ModalAppInfo;

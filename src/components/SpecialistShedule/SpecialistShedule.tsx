@@ -31,6 +31,7 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
+import ModalAppInfo from '../ModalAppInfo/ModalAppInfo';
 
 const { confirm } = Modal;
 
@@ -221,6 +222,94 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
       <Modal
         destroyOnClose
+        open={isAddUpdateModalOpen}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            {currentAppointment ? 'Обновление записи' : 'Добавление записей'}
+          </Typography.Title>
+        }
+        width="500px"
+        onCancel={onAddUpdateReset}
+      >
+        <Form form={form} labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Дата и время" не должно быть пустым' }]}
+            label="Дата и время"
+            name="begDate"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <DatePicker
+              id="begDate"
+              style={{ marginRight: '10px' }}
+              format="DD.MM.YYYY | HH:mm"
+              showTime={{ format: 'HH:mm' }}
+            />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Продолжительность" не должно быть пустым' }]}
+            label="Продолжительность"
+            name="time"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <TimePicker format="HH:mm" id="time" />
+          </Form.Item>
+          <Form.Item
+            // initialValue={initValue?.name ? initValue.name : ''}
+            rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
+            label="Количество"
+            name="amount"
+          >
+            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
+            <InputNumber min={1} max={100} id="amount" />
+          </Form.Item>
+          {begDateField && timeField && amountField ? (
+            <div>
+              <p style={{ margin: 0, color: 'gray' }}>Будет добавлено записей: {amountField}</p>
+              <p style={{ margin: 0, color: 'gray' }}>Дата и время начала: {begDateField.format('DD.MM.YY HH:mm')}</p>
+              <p style={{ marginTop: 0, marginBottom: '20px', color: 'gray' }}>
+                Дата и время окончания:{' '}
+                {dayjs(begDateField)
+                  .add(amountField * timeField.hour(), 'h')
+                  .add(amountField * timeField.minute(), 'm')
+                  .format('DD.MM.YY HH:mm')}
+              </p>
+            </div>
+          ) : (
+            ''
+          )}
+          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+            <Row>
+              <Col span={24} style={{ textAlign: 'right' }}>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  style={{ marginRight: '10px' }}
+                  className={addClass(classes, 'form-button')}
+                >
+                  Сохранить
+                </Button>
+                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
+                  Отменить
+                </Button>
+              </Col>
+            </Row>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <ModalAppInfo
+        title="Информация о записи"
+        isOpen={isAppInfoOpen}
+        setIsOpen={setIsAppInfoOpen}
+        appointmentId={currentAppointment?._id || ''}
+        // setAppointmentId={setCurAppId}
+      />
+
+      {/* <Modal
+        destroyOnClose
         open={isAppInfoOpen}
         footer={
           <>
@@ -309,89 +398,9 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
           </Descriptions.Item>
         </Descriptions>
-      </Modal>
-
-      <Modal
-        destroyOnClose
-        open={isAddUpdateModalOpen}
-        footer={null}
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            {currentAppointment ? 'Обновление записи' : 'Добавление записей'}
-          </Typography.Title>
-        }
-        width="500px"
-        onCancel={onAddUpdateReset}
-      >
-        <Form form={form} labelWrap labelCol={{ span: 9 }} wrapperCol={{ span: 15 }} onFinish={onFinish}>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Дата и время" не должно быть пустым' }]}
-            label="Дата и время"
-            name="begDate"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <DatePicker
-              id="begDate"
-              style={{ marginRight: '10px' }}
-              format="DD.MM.YYYY | HH:mm"
-              showTime={{ format: 'HH:mm' }}
-            />
-          </Form.Item>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Продолжительность" не должно быть пустым' }]}
-            label="Продолжительность"
-            name="time"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <TimePicker format="HH:mm" id="time" />
-          </Form.Item>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
-            label="Количество"
-            name="amount"
-          >
-            {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <InputNumber min={1} max={100} id="amount" />
-          </Form.Item>
-          {begDateField && timeField && amountField ? (
-            <div>
-              <p style={{ margin: 0, color: 'gray' }}>Будет добавлено записей: {amountField}</p>
-              <p style={{ margin: 0, color: 'gray' }}>Дата и время начала: {begDateField.format('DD.MM.YY HH:mm')}</p>
-              <p style={{ marginTop: 0, marginBottom: '20px', color: 'gray' }}>
-                Дата и время окончания:{' '}
-                {dayjs(begDateField)
-                  .add(amountField * timeField.hour(), 'h')
-                  .add(amountField * timeField.minute(), 'm')
-                  .format('DD.MM.YY HH:mm')}
-              </p>
-            </div>
-          ) : (
-            ''
-          )}
-          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
-            <Row>
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: '10px' }}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Сохранить
-                </Button>
-                <Button htmlType="button" onClick={onAddUpdateReset} className={addClass(classes, 'form-button')}>
-                  Отменить
-                </Button>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Modal>
+      </Modal> */}
       {/* ПЕРЕЗАПИСЬ!!! */}
-      <Modal
+      {/* <Modal
         destroyOnClose
         open={isChangeServiceTimeOpen}
         footer={
@@ -433,7 +442,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Выберите специалиста" />
           )}
         </>
-      </Modal>
+      </Modal> */}
 
       <Shedule
         dataAPI={appointmentsAPI.useGetAppointmentsQuery}
