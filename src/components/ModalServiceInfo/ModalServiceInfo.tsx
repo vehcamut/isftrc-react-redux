@@ -45,6 +45,7 @@ interface ModalServiceInfoProps extends PropsWithChildren {
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   serviceId: string;
+  patient: IPatient | undefined;
   // setAppointmentId: React.Dispatch<React.SetStateAction<string>>;
 }
 
@@ -52,6 +53,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   isOpen,
   setIsOpen,
   serviceId,
+  patient,
   // setAppointmentId,
   title,
 }) => {
@@ -177,14 +179,24 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
         footer={
           <>
             {!currentService?.canBeRemoved && !currentService?.appointment ? (
-              <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+              <Button
+                type="primary"
+                style={{ marginRight: '10px' }}
+                onClick={onAppointmentRewrite}
+                disabled={!patient?.isActive}
+              >
                 Записать
               </Button>
             ) : null}
             {currentService?.canBeRemoved ? (
               <>
                 {!currentService.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={onAppointmentRewrite}
+                    disabled={!patient?.isActive}
+                  >
                     Перенести
                   </Button>
                 ) : (
@@ -194,13 +206,23 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                 {!currentService.status &&
                 currentService.appointment &&
                 new Date(currentService.appointment.begDate) <= new Date() ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddResultOpen(true)}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={() => setIsAddResultOpen(true)}
+                    disabled={!patient?.isActive}
+                  >
                     Закрыть
                   </Button>
                 ) : null}
 
                 {currentService.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={onOpenService}
+                    disabled={!patient?.isActive}
+                  >
                     Открыть
                   </Button>
                 ) : null}

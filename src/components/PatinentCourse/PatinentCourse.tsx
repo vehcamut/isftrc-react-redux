@@ -351,6 +351,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       {contextHolder}
       <ModalAddAppToServ serviceId={servData?.id} isOpen={isAddAppToServOpen} setIsOpen={setIsAddAppToServOpen} />
       <ModalServiceInfo
+        patient={patient}
         isOpen={isServInfoOpen}
         setIsOpen={setIsServInfoOpen}
         serviceId={servData?.id || ''}

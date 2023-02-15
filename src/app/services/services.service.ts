@@ -115,7 +115,7 @@ export const servicesAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['serviceGroup', 'serviceType', 'appointments'],
+      providesTags: ['serviceGroup', 'serviceType', 'appointments', 'patients'],
     }),
 
     setAppointmentToService: build.mutation<any, IAddAppointmentToService>({

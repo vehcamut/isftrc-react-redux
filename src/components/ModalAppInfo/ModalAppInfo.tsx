@@ -145,7 +145,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
       });
     }
   };
-
+  // console.log(currentAppointment?.service?.patient);
   return (
     <>
       {contextHolder}
@@ -179,7 +179,12 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
             {currentAppointment?.service?.canBeRemoved ? (
               <>
                 {currentAppointment?.service && !currentAppointment.service.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onAppointmentRewrite}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={onAppointmentRewrite}
+                    disabled={!currentAppointment.service.patient?.isActive}
+                  >
                     Перенести
                   </Button>
                 ) : (
@@ -190,13 +195,23 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                 !currentAppointment.service.status &&
                 currentAppointment?.begDate &&
                 new Date(currentAppointment?.begDate) <= new Date() ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddResultOpen(true)}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={() => setIsAddResultOpen(true)}
+                    disabled={!currentAppointment.service.patient?.isActive}
+                  >
                     Закрыть
                   </Button>
                 ) : null}
 
                 {currentAppointment?.service && currentAppointment.service.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
+                  <Button
+                    type="primary"
+                    style={{ marginRight: '10px' }}
+                    onClick={onOpenService}
+                    disabled={!currentAppointment.service.patient?.isActive}
+                  >
                     Открыть
                   </Button>
                 ) : null}
