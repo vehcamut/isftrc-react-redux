@@ -11,7 +11,7 @@ import { patientsAPI, representativesAPI } from '../app/services';
 import { IPatient, IRepresentative } from '../models';
 import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { patientTableSlice } from '../app/reducers';
+import { patientTableSlice, representativesTableSlice } from '../app/reducers';
 
 const { Search } = Input;
 
@@ -37,7 +37,7 @@ function CustomCell(props: any) {
 const Representatives = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
+  const { limit, page, filter, isActive } = useAppSelector((state) => state.representativesTableReducer);
   const { data, isLoading } = representativesAPI.useGetRepresentativesQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IRepresentative> = [
@@ -128,7 +128,7 @@ const Representatives = () => {
       ],
     },
   ];
-  const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
+  const { setPage, setLimit, setFilter, setIsActive } = representativesTableSlice.actions;
 
   const handleTableChange = (
     pagination: TablePaginationConfig,

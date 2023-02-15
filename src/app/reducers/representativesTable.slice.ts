@@ -1,6 +1,6 @@
 import { createSlice /* , PayloadAction */, PayloadAction } from '@reduxjs/toolkit';
 
-interface IPatientsTableState {
+interface IRepresentativesTableState {
   page: number;
   limit?: number;
   order?: 'descend' | 'ascend' | 'desc' | 'asc' | undefined;
@@ -10,41 +10,41 @@ interface IPatientsTableState {
   isActive?: boolean;
 }
 
-const initialState: IPatientsTableState = {
+const initialState: IRepresentativesTableState = {
   page: 0,
   limit: 10,
   filter: '',
 };
 
-export const patientTableSlice = createSlice({
-  name: 'patientTableSlice',
+export const representativesTableSlice = createSlice({
+  name: 'representativesTableSlice',
   initialState,
   reducers: {
-    setPage(state: IPatientsTableState, action: PayloadAction<number>) {
+    setPage(state: IRepresentativesTableState, action: PayloadAction<number>) {
       state.page = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setLimit(state: IPatientsTableState, action: PayloadAction<number>) {
+    setLimit(state: IRepresentativesTableState, action: PayloadAction<number>) {
       state.limit = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setSort(state: IPatientsTableState, action: PayloadAction<string>) {
+    setSort(state: IRepresentativesTableState, action: PayloadAction<string>) {
       state.sort = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setOrder(state: IPatientsTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
+    setOrder(state: IRepresentativesTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
       state.order = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setFilter(state: IPatientsTableState, action: PayloadAction<string>) {
+    setFilter(state: IRepresentativesTableState, action: PayloadAction<string>) {
       state.filter = action.payload;
       // Object.assign(state.filter, action.payload);
     },
-    setIsActive(state: IPatientsTableState, action: PayloadAction<boolean | undefined>) {
+    setIsActive(state: IRepresentativesTableState, action: PayloadAction<boolean | undefined>) {
       state.isActive = action.payload;
       // Object.assign(state.filter, action.payload);
     },
   },
 });
 
-export const patientTableReducer = patientTableSlice.reducer;
+export const representativesTableReducer = representativesTableSlice.reducer;

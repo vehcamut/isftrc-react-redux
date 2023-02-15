@@ -15,6 +15,7 @@ import { authReducer } from './reducers/auth.slise';
 import {
   // specTypesDialogReducer,
   // specTypesTableReducer,
+  representativesTableReducer,
   confirmDialogReducer,
   alertReducer,
   loginFormReducer,
@@ -29,6 +30,7 @@ export const store = configureStore({
     loginFormReducer,
     confirmDialogReducer,
     patientTableReducer,
+    representativesTableReducer,
     specialistsReducer,
     authReducer,
     addPatientReducer,
