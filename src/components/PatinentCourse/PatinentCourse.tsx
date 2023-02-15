@@ -343,42 +343,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const onCloseCourse = () => {
     closeCourse({ patientId: patient?._id || '' });
   };
-  // console.log(advSum, !!advSum);
 
-  // const onCloseService = () => {
-  //   closeService;
-  // };
-  // const onEdit = () => {
-  //   setOpen(true);
-  // };
-  // const onActivate = async () => {
-  //   try {
-  //     await changeStatus({ _id: patient?._id ? patient?._id : '', isActive: true }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Пациент успешно активирован',
-  //     });
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
-  // const onDeactivate = async () => {
-  //   try {
-  //     await changeStatus({ _id: patient?._id ? patient?._id : '', isActive: false }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Пациент успешно деактивирован',
-  //     });
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
   return (
     <>
       {contextHolder}

@@ -169,17 +169,6 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
         open={isOpen}
         footer={
           <>
-            {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-              <Button
-                type="primary"
-                style={{ marginRight: '10px', backgroundColor: '#e60000' }}
-                onClick={onBeforeAppRemove}
-              >
-                Удалить
-              </Button>
-            ) : (
-              ''
-            )} */}
             {currentAppointment?.service?.canBeRemoved ? (
               <>
                 {currentAppointment?.service && !currentAppointment.service.status ? (
@@ -204,23 +193,6 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
                     Открыть
                   </Button>
                 ) : null}
-
-                {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-                    Изменить комментарий
-                  </Button>
-                ) : null} */}
-                {/* {currentAppointment?.service && !currentAppointment.service.status ? (
-                  currentAppointment?.service?.date && new Date(currentAppointment?.service.date) <= new Date() ? (
-                    <Button type="primary" style={{ marginRight: '10px' }} onClick={onCloseService}>
-                      Закрыть
-                    </Button>
-                  ) : null
-                ) : (
-                  <Button type="primary" style={{ marginRight: '10px' }} onClick={onOpenService}>
-                    Открыть
-                  </Button>
-                )} */}
               </>
             ) : null}
 
@@ -237,23 +209,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
         width="600px"
         onCancel={onReset}
       >
-        <Descriptions
-          column={3}
-          // extra={
-          //   <>
-          //
-          //     <DatePicker
-          //       style={{ marginRight: '10px' }}
-          //       format="DD.MM.YYYY"
-          //       onChange={onDPChange}
-          //       value={datePickerValue}
-          //     />
-
-          //     <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-          //     <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
-          //   </>
-          // }
-        >
+        <Descriptions column={3}>
           <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
             {currentAppointment?.begDate
               ? new Date(currentAppointment.begDate).toLocaleString('ru-RU', {
@@ -325,40 +281,6 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({ isOpen, setIsOpen,
             {currentAppointment?.service?.result ? `${currentAppointment?.service.result}` : ' - '}
           </Descriptions.Item>
         </Descriptions>
-        {/* <Form labelWrap>
-          <Form.Item
-            // initialValue={initValue?.name ? initValue.name : ''}
-            // rules={[{ required: true, message: 'Поле "Количество" не должно быть пустым' }]}
-            label="Комментарий"
-            name="note"
-            initialValue={currentAppointment?.service?.note}
-          >
-            <TextArea autoSize={{ minRows: 1, maxRows: 8 }} />
-          </Form.Item>
-          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
-            <Row>
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: '10px' }}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Сохранить
-                </Button>
-                <Button htmlType="button" className={addClass(classes, 'form-button')}>
-                  Отменить
-                </Button>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form> */}
-        {/* <TextArea />
-
-        <Input.Group style={{ minWidth: '100%' }} >
-          {/* <Input style={{ width: 'calc(100% - 200px)' }} defaultValue="https://ant.design" /> */}
-        {/* <Button type="dashed" >Submit</Button>
-        </Input.Group> */}
       </Modal>
     </>
   );
