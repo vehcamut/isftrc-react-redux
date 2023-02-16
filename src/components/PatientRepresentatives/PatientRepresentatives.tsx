@@ -415,10 +415,15 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
                 Активировать
               </Button>
             )} */}
-            <Button type="primary" onClick={onModalNewOpen} style={{ marginRight: '10px' }}>
+            <Button
+              type="primary"
+              onClick={onModalNewOpen}
+              style={{ marginRight: '10px' }}
+              disabled={!patient?.isActive}
+            >
               Добавить нового
             </Button>
-            <Button type="primary" onClick={onModalAddOpen}>
+            <Button type="primary" onClick={onModalAddOpen} disabled={!patient?.isActive}>
               Добавить существующего
             </Button>
           </>
@@ -436,7 +441,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
           <RepresentativesTable
             // columns={columnsA}
-            onRemove={onRemove}
+            onRemove={patient?.isActive ? onRemove : undefined}
             onRowClick={(record: any) => navigate(`/representatives/${record._id}/info`)}
             dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}

@@ -24,11 +24,11 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
   }, 800);
 
   return (
-    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
+    <Form labelWrap labelCol={{ span: 3 }} wrapperCol={{ span: 21 }} onFinish={onFinish}>
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Фамилия</div>}
+        label="Фамилия"
         name="surname"
       >
         <Input id="surname" />
@@ -36,7 +36,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       <Form.Item
         initialValue={initValue?.name ? initValue.name : ''}
         rules={[{ required: true, message: 'Поле "Имя" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Имя</div>}
+        label="Имя"
         name="name"
       >
         <Input id="name" />
@@ -44,7 +44,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       <Form.Item
         initialValue={initValue?.patronymic ? initValue.patronymic : ''}
         rules={[{ required: true, message: 'Поле "Отчество" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Отчество</div>}
+        label="Отчество"
         name="patronymic"
       >
         <Input id="patronymic" />
@@ -52,7 +52,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       <Form.Item
         initialValue={initValue?.gender ? initValue.gender : ''}
         rules={[{ required: true, message: 'Поле "Пол" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Пол</div>}
+        label="Пол"
         name="gender"
       >
         <Radio.Group name="radiogroup" id="gender">
@@ -67,7 +67,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
             message: 'Поле "Дата рождения" не должно быть пустым',
           },
         ]}
-        label={<div className={addClass(classes, 'form-item')}>Дата рождения</div>}
+        label="Дата рождения"
         name="dateOfBirth"
         initialValue={initValue?.dateOfBirth ? dayjs(initValue.dateOfBirth) : undefined}
       >
@@ -75,7 +75,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Адрес" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Адрес</div>}
+        label="Адрес"
         name="address"
         initialValue={initValue?.address ? initValue.address : ''}
       >
@@ -88,11 +88,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
           onSearch={onSearchAC}
         />
       </Form.Item>
-      <Form.Item
-        label={<div className={addClass(classes, 'form-item')}>Примечание</div>}
-        name="note"
-        initialValue={initValue?.note ? initValue.note : ''}
-      >
+      <Form.Item label="Примечание" name="note" initialValue={initValue?.note ? initValue.note : ''}>
         <TextArea rows={4} id="note" />
       </Form.Item>
       <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>

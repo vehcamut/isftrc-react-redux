@@ -32,7 +32,7 @@ import { specialistAPI } from '../../app/services/specialists.service';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
-import { servicesAPI } from '../../app/services';
+import { patientsAPI, servicesAPI } from '../../app/services';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import ModalTextEnter from '../ModalTextEnter/ModalTextEnter';
 
@@ -73,6 +73,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
+  const [removeService] = patientsAPI.useRemoveServiceMutation();
   const [changeServNote] = servicesAPI.useChangeServNoteMutation();
 
   const onAppointmentRewrite = () => {
@@ -148,6 +149,35 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
     }
   };
 
+  const onRemoveService = () => {
+    const showConfirm = () => {
+      confirm({
+        title: 'Подтвердите удаление улсуги.',
+        icon: <ExclamationCircleFilled />,
+        content: 'Вы точно хотите удалить услугу?',
+        async onOk() {
+          try {
+            const result = await removeService({ id: currentService?._id || '' }).unwrap();
+            messageApi.open({
+              type: 'success',
+              content: 'Услуга успешно удалена',
+            });
+            onReset();
+          } catch (e) {
+            messageApi.open({
+              type: 'error',
+              content: 'Ошибка связи с сервером',
+            });
+          }
+        },
+        // onCancel() {
+        //   console.log('Cancel');
+        // },
+      });
+    };
+    showConfirm();
+  };
+
   return (
     <>
       {contextHolder}
@@ -178,6 +208,17 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
         open={isOpen}
         footer={
           <>
+            {!currentService?.canBeRemoved && !currentService?.appointment ? (
+              <Button
+                type="primary"
+                style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+                onClick={onRemoveService}
+                disabled={!patient?.isActive}
+                // disabled={!currentAppointment.service.patient?.isActive}
+              >
+                Удалить
+              </Button>
+            ) : null}
             {!currentService?.canBeRemoved && !currentService?.appointment ? (
               <Button
                 type="primary"

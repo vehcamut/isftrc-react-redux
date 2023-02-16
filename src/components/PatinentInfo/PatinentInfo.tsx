@@ -24,6 +24,7 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         type: 'success',
         content: 'Данные пациента успешно обновлены',
       });
+      setOpen(false);
     } catch (e) {
       messageApi.open({
         type: 'error',
@@ -104,8 +105,7 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
                 Активировать
               </Button>
             )}
-
-            <Button type="primary" onClick={onEdit}>
+            <Button type="primary" onClick={onEdit} disabled={!patient?.isActive}>
               Редактировать
             </Button>
           </>
