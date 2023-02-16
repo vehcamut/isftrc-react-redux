@@ -16,7 +16,7 @@ interface RepresentativeInfoProps extends PropsWithChildren {
 const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ representative }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const [updateRepresentative] = representativesAPI.useUpdateRepresentativeMutation();
-  const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
+  const [changeStatus] = representativesAPI.useChangeRepresentativeStatusMutation();
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
@@ -108,7 +108,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
               </Button>
             )}
 
-            <Button type="primary" onClick={onEdit}>
+            <Button type="primary" onClick={onEdit} disabled={!representative?.isActive}>
               Редактировать
             </Button>
           </>

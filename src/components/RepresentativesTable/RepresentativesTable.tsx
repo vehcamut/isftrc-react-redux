@@ -160,7 +160,7 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
       ],
     },
   ];
-  if (onRemove) {
+  if (onRemove !== undefined) {
     columns.push({
       key: 'remove',
       render: (v, record) => {
@@ -168,13 +168,14 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
           <Button
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
-            type="primary"
+            type="link"
             // shape="circle"
             icon={<DeleteRowOutlined />}
+            disabled={!record.isActive || !onRemove}
             onClick={(e) => {
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               e.stopPropagation();
-              onRemove(record);
+              if (onRemove) onRemove(record);
             }}
           />
         );

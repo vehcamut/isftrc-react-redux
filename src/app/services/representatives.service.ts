@@ -52,6 +52,16 @@ export const representativesAPI = api.injectEndpoints({
       }),
       providesTags: ['representative', 'advertisingSource'],
     }),
+
+    changeRepresentativeStatus: build.mutation<any, IPatientChangeStatus>({
+      query: (body) => ({
+        url: 'representatives/changeStatus',
+        method: 'PATCH',
+        credentials: 'include',
+        body,
+      }),
+      invalidatesTags: ['representative'],
+    }),
     //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
     //   // transformResponse(apiResponse: any, meta): IPatient {
     //   //   const x = dayjs(apiResponse.dateOfBirth);

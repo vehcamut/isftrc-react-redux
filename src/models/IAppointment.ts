@@ -11,6 +11,7 @@ export interface IAppointment {
 
 export interface ISpecialistToSelect {
   _id: string;
+  isActive: boolean;
   name: string;
   surname?: string;
   patronymic?: string;

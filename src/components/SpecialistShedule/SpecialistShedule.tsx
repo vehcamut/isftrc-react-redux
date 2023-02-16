@@ -455,7 +455,12 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
           navigate(path, { replace: true });
         }}
         extra={
-          <Button type="primary" style={{ marginRight: '10px' }} onClick={() => setIsAddUpdateModalOpen(true)}>
+          <Button
+            type="primary"
+            style={{ marginRight: '10px' }}
+            onClick={() => setIsAddUpdateModalOpen(true)}
+            disabled={!specialist?.isActive}
+          >
             Добавить запись
           </Button>
         }

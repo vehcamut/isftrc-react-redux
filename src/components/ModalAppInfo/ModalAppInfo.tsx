@@ -210,7 +210,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                 type="primary"
                 style={{ marginRight: '10px', backgroundColor: '#e60000' }}
                 onClick={onAppointmentRemove}
-                // disabled={!currentAppointment.service.patient?.isActive}
+                disabled={!currentAppointment?.specialist.isActive}
               >
                 Удалить
               </Button>

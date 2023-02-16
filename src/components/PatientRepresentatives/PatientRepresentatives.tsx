@@ -441,7 +441,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
           <RepresentativesTable
             // columns={columnsA}
-            onRemove={patient?.isActive ? onRemove : undefined}
+            onRemove={patient?.isActive ? onRemove : false}
             onRowClick={(record: any) => navigate(`/representatives/${record._id}/info`)}
             dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}

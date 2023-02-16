@@ -54,7 +54,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  const [isActive, setIsActive] = useState<boolean | undefined>(true);
+  const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
   // const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
   const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
     id: representative?._id || '',
@@ -129,7 +129,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
-      defaultFilteredValue: ['1'],
+      // defaultFilteredValue: ['1'],
 
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
@@ -153,7 +153,8 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
           <Button
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
-            type="primary"
+            type="link"
+            disabled={!r.isActive || !representative?.isActive}
             // shape="circle"
             icon={<DeleteRowOutlined />}
             onClick={(e) => {
@@ -347,11 +348,16 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
                 Активировать
               </Button>
             )} */}
-            <Button type="primary" onClick={onModalNewOpen} style={{ marginRight: '10px' }}>
-              Добавить нового
+            <Button
+              type="primary"
+              onClick={onModalNewOpen}
+              style={{ marginRight: '10px' }}
+              disabled={!representative?.isActive}
+            >
+              Новый
             </Button>
-            <Button type="primary" onClick={onModalAddOpen}>
-              Добавить существующего
+            <Button type="primary" onClick={onModalAddOpen} disabled={!representative?.isActive}>
+              Добавить
             </Button>
           </>
         }

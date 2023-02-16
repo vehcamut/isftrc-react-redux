@@ -110,7 +110,7 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
               </Button>
             )}
 
-            <Button type="primary" onClick={onEdit}>
+            <Button type="primary" onClick={onEdit} disabled={!specialist?.isActive}>
               Редактировать
             </Button>
           </>

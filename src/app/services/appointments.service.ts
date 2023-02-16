@@ -37,7 +37,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments'],
+      providesTags: ['appointments', 'specialists'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -69,7 +69,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments'],
+      providesTags: ['appointments', 'specialists'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         // console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -101,7 +101,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments'],
+      providesTags: ['appointments', 'specialists'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -133,7 +133,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments'],
+      providesTags: ['appointments', 'specialists'],
     }),
     addAppointments: build.mutation<IAddAppointmentResult, IAddAppointment>({
       query: (body) => ({
@@ -159,7 +159,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments'],
+      providesTags: ['appointments', 'specialists'],
     }),
 
     // getRepresentativeById: build.query<IRepresentative, IGetByID>({
