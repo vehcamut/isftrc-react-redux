@@ -6,7 +6,8 @@ import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './RepresentativeInfo.module.scss';
 import { IPatient, IRepresentative } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+import UserForm from '../UserForm/UserForm';
+// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 
 interface RepresentativeInfoProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -82,7 +83,8 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         width="100%"
         onCancel={onReset}
       >
-        <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} />
+        <UserForm onReset={onReset} onFinish={onFinish} initValue={representative} userType="representative" />
+        {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
       <Descriptions

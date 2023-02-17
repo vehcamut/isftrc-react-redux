@@ -47,9 +47,10 @@ import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { addPatientSlice, patientTableSlice } from '../app/reducers';
 import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepresentativeForm';
-import AddSpecialistForm from '../components/AddSpecialistForm/AddSpecialistForm';
+// import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepresentativeForm';
+// import AddSpecialistForm from '../components/AddSpecialistForm/AddSpecialistForm';
 import { specialistAPI } from '../app/services/specialists.service';
+import UserForm from '../components/UserForm/UserForm';
 
 const AddSpecialist = () => {
   const [isAdded, setIsAdded] = useState(false);
@@ -133,7 +134,8 @@ const AddSpecialist = () => {
           ]}
         />
       ) : (
-        <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" />
+        <UserForm onFinish={onFinish} onReset={onReset} userType="specialist" />
+        // <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" />
       )}
     </>
   );

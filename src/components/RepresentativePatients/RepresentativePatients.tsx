@@ -11,7 +11,7 @@ import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './RepresentativePatients.module.scss';
 import { IPatient, IRepresentative } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { patientTableSlice } from '../../app/reducers';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import PatientsTable from '../PatientsTable/PatientsTable';

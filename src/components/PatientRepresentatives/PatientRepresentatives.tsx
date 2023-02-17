@@ -11,11 +11,12 @@ import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './PatientRepresentatives.module.scss';
 import { IPatient, IRepresentative } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { patientTableSlice } from '../../app/reducers';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import PatientsTable from '../PatientsTable/PatientsTable';
 import RepresentativesTable from '../RepresentativesTable/RepresentativesTable';
+import UserForm from '../UserForm/UserForm';
 
 interface PatientRepresentativesProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -389,13 +390,14 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         footer={null}
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Добавление нового пациента
+            Добавление нового представителя
           </Typography.Title>
         }
         width="100%"
         onCancel={onModalNewClose}
       >
-        <AddRepresentativeForm type="add" onReset={onModalNewClose} onFinish={onFinishAddNew} />
+        <UserForm onReset={onModalNewClose} onFinish={onFinishAddNew} userType="representative" />
+        {/* <AddRepresentativeForm type="add" onReset={onModalNewClose} onFinish={onFinishAddNew} /> */}
         {/* <PatientsTable onRowClick={onRowClick} /> */}
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}

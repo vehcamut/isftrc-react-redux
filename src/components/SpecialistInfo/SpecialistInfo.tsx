@@ -6,9 +6,10 @@ import { patientsAPI, representativesAPI } from '../../app/services';
 import classes from './SpecialistInfo.module.scss';
 import { IPatient, IRepresentative, ISpecialist } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
-import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 import { specialistAPI } from '../../app/services/specialists.service';
-import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
+import UserForm from '../UserForm/UserForm';
+// import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
 
 interface SpecialistInfoProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -84,7 +85,8 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         width="100%"
         onCancel={onReset}
       >
-        <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} />
+        <UserForm onFinish={onFinish} onReset={onReset} initValue={specialist} userType="specialist" />
+        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
       <Descriptions
