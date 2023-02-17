@@ -2,7 +2,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, redirect, RouterProvider } from 'react-router-dom';
 import { store } from './app/store';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -38,13 +38,32 @@ const root = createRoot(container);
 // const location = useLocation();
 const router = createBrowserRouter([
   {
-    path: 'about',
+    // children: [
+    //   {
+    //     path: '/about',
+    //     element: (
+    //       <Template activeKey="about">
+    //         <AboutPage />
+    //       </Template>
+    //     ),
+    //   },
+    // ],
+    // element: <RolesGuard requiredRoles={['registrator']} />,
+    path: 'notauth/about',
     element: (
       <Template activeKey="about">
         <AboutPage />
       </Template>
     ),
   },
+  // {
+  //   path: '/about',
+  //   element: (
+  //     <Template activeKey="about">
+  //       <AboutPage />
+  //     </Template>
+  //   ),
+  // },
   {
     path: 'auth/signin',
     element: (
@@ -53,6 +72,12 @@ const router = createBrowserRouter([
       </Template>
     ),
   },
+
+  {
+    path: '*',
+    element: <Navigate to="./" />,
+  },
+
   {
     children: [
       {
@@ -86,6 +111,19 @@ const router = createBrowserRouter([
       //   ],
       //   element: <RolesGuard requiredRoles={['registrator']} />,
       // },
+      {
+        children: [
+          {
+            path: '/about',
+            element: (
+              <Template activeKey="about">
+                <AboutPage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
       {
         children: [
           {
@@ -353,6 +391,7 @@ const router = createBrowserRouter([
     ],
     element: <AuthGuard />,
   },
+
   // {
   //   children: [
   //     {

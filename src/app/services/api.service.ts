@@ -16,6 +16,7 @@ export const api = createApi({
     'appointments',
     'serviceGroup',
     'serviceType',
+    'user',
   ],
   endpoints: () => ({}),
 });

@@ -33,7 +33,7 @@ interface ConfirmDialogProps extends PropsWithChildren {
 // // { label: 'Очтеты', key: 'reports' },
 const notAuthTabs = [
   // { label: 'Войти', key: 'login' },
-  { label: 'О компании', key: 'about' },
+  { label: 'О компании', key: 'notauth/about' },
 ];
 const isAuthTabs = [
   { label: 'Личные данные', key: 'profile' },
@@ -47,6 +47,7 @@ const isAuthTabs = [
 const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, */ activeKey }) => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  // const location = useLocation();
   const [logout] = authAPI.useLogoutMutation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
@@ -58,8 +59,10 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
       dispatch(setIsAuth(false));
       dispatch(setRoles([]));
       dispatch(setName(''));
+      // eslint-disable-next-line no-restricted-globals
+      // location.reload();
       // const payload = getTokenPayload()?.roles;
-      navigate('/');
+      navigate(0);
     } catch (e) {
       // messageApi.open({
       //   type: 'error',

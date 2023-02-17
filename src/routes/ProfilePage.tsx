@@ -3,7 +3,7 @@ import React, { FunctionComponent, PropsWithChildren } from 'react';
 import { Typography, Row, Col, Button, Tabs, message, Spin, Descriptions, Divider } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
-import { patientsAPI } from '../app/services';
+import { authAPI, patientsAPI, userAPI } from '../app/services';
 import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
 import PatinentCourse from '../components/PatinentCourse/PatinentCourse';
@@ -21,8 +21,9 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
-
+  // const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
+  const { data: user } = userAPI.useGetProfileQuery({});
+  console.log(user);
   const onBackClick = () => {
     navigate('/patients', { replace: true });
   };
@@ -31,9 +32,20 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
     navigate(`/patients/${params?.id}/${key}`, { replace: true });
     // navigate(`./../${key}`, { replace: true });
   };
+  // console.log(user);
 
   return (
     <>
+      <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
+        <Col>
+          <Typography.Title level={1} style={{ margin: 0 }}>
+            Личные данные
+          </Typography.Title>
+        </Col>
+        <Col>
+          <Button type="link">Редкатировать</Button>
+        </Col>
+      </Row>
       <Descriptions
         bordered
         size="middle"
@@ -43,7 +55,7 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           borderRight: '5px solid #e6f4ff',
           width: '150px',
         }}
-        title="Личные данные представителя"
+        // title="Личные данные представителя"
         column={1}
         // extra={
         //   <>
@@ -63,6 +75,36 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
         //   </>
         // }
       >
+        <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.surname}
+        </Descriptions.Item>
+        <Descriptions.Item label="Имя" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.name}
+        </Descriptions.Item>
+        <Descriptions.Item label="Отчество" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.patronymic}
+        </Descriptions.Item>
+        <Descriptions.Item label="Пол" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.gender}
+        </Descriptions.Item>
+        <Descriptions.Item label="Дата рождения" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {new Date(user?.dateOfBirth || '').toLocaleString('ru', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+          })}
+        </Descriptions.Item>
+        <Descriptions.Item label="Адрес" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.address}
+        </Descriptions.Item>
+        <Descriptions.Item label="Номера телефонов" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.phoneNumbers
+            .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
+            .join(', ')}
+        </Descriptions.Item>
+        <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          {user?.emails.join(', ')}
+        </Descriptions.Item>
         {/* <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
           {representative?.surname}
         </Descriptions.Item>
