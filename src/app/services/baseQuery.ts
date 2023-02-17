@@ -18,9 +18,11 @@ export default async (args: string | FetchArgs, api: BaseQueryApi, extraOptions:
       console.log('ERROR!');
       api.dispatch(authSlice.actions.setIsAuth(false));
       api.dispatch(authSlice.actions.setRoles([]));
+      api.dispatch(authSlice.actions.setName(''));
     } else {
       api.dispatch(authSlice.actions.setIsAuth(true));
       api.dispatch(authSlice.actions.setRoles(getTokenPayload()?.roles || []));
+      api.dispatch(authSlice.actions.setName(getTokenPayload()?.name || ''));
     }
 
     result = await baseQuery(args, api, extraOptions);

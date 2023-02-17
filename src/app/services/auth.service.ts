@@ -22,6 +22,14 @@ export const authAPI = createApi({
         credentials: 'include',
       }),
     }),
+    logout: build.mutation<unknown, any>({
+      query: () => ({
+        url: 'auth/logout',
+        method: 'POST',
+        // body: user,
+        credentials: 'include',
+      }),
+    }),
     test: build.mutation({
       query: () => ({
         method: 'POST',

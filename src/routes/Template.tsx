@@ -7,6 +7,7 @@ import AppBar from '../components/Header/Header';
 import classes from './style.module.scss';
 import { addClass } from '../app/common';
 import 'dayjs/locale/ru';
+// import { useAppSelector } from '../app/hooks';
 
 const { Header, Content } = Layout;
 
@@ -18,6 +19,7 @@ interface TemplateProps extends PropsWithChildren {
 }
 
 const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* defaultActiveKey */ }) => {
+  // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
   return (
     <ConfigProvider
       locale={ruRU}

@@ -27,6 +27,7 @@ import Specialists from './routes/Specialists';
 import AddSpecialist from './routes/AddSpecialist';
 import SpecialistPage from './routes/SpecialistPage';
 import ServicesPage from './routes/ServicesPage';
+import AboutPage from './routes/AboutPage';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -34,8 +35,20 @@ const root = createRoot(container);
 
 const router = createBrowserRouter([
   {
+    path: 'about',
+    element: (
+      <Template activeKey="about">
+        <AboutPage />
+      </Template>
+    ),
+  },
+  {
     path: 'auth/signin',
-    element: <SignIn />,
+    element: (
+      <Template activeKey="specialists">
+        <SignIn />
+      </Template>
+    ),
   },
   {
     children: [

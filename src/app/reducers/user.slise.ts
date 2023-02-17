@@ -2,19 +2,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // import { authAPI } from '../services';
 
-interface IAuthState {
+interface IUserState {
   isAuth: boolean;
-  name: string;
   roles: string[];
 }
 
-const initialState: IAuthState = {
+const initialState: IUserState = {
   isAuth: localStorage?.roles?.split(',') ? localStorage?.isAuth || false : false,
   roles: localStorage?.roles?.split(',') || [],
-  name: localStorage?.name || '',
 };
 
-export const authSlice = createSlice({
+export const userSlice = createSlice({
   name: 'authState',
   initialState,
   // : async () => {
@@ -23,22 +21,16 @@ export const authSlice = createSlice({
   //   return false;
   // },
   reducers: {
-    setIsAuth(state: IAuthState, action: PayloadAction<boolean>) {
+    setIsAuth(state: IUserState, action: PayloadAction<boolean>) {
       state.isAuth = action.payload;
       localStorage.isAuth = action.payload;
     },
-    setRoles(state: IAuthState, action: PayloadAction<string[]>) {
+    setRoles(state: IUserState, action: PayloadAction<string[]>) {
       state.roles = action.payload;
       if (action.payload.length === 0) localStorage.removeItem('roles');
       else localStorage.roles = action.payload;
     },
-    setName(state: IAuthState, action: PayloadAction<string>) {
-      state.name = action.payload;
-      localStorage.name = action.payload;
-      // if (action.payload.length === 0) localStorage.removeItem('roles');
-      // else localStorage.roles = action.payload;
-    },
   },
 });
 
-export const authReducer = authSlice.reducer;
+export const userReducer = userSlice.reducer;
