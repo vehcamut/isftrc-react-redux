@@ -1,16 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, Outlet, RouterProvider } from 'react-router-dom';
 import { store } from './app/store';
 // import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
 import SignIn from './routes/SignIn';
-import Auth from './routes/Auth';
+// import Auth from './routes/Auth';
 // import RolesAuthRoute from './app/RolesAuthRoute';
 // import RequireAuth from './components/RequireAuth';
-import Main from './routes/Main';
+// import Main from './routes/Main';
 import AuthGuard from './components/guards/authGuard';
 import RolesGuard from './components/guards/rolesGuard';
 import Patients from './routes/Patients';
@@ -28,11 +29,13 @@ import AddSpecialist from './routes/AddSpecialist';
 import SpecialistPage from './routes/SpecialistPage';
 import ServicesPage from './routes/ServicesPage';
 import AboutPage from './routes/AboutPage';
+import ProfilePage from './routes/ProfilePage';
+import Main from './routes/Main';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);
-
+// const location = useLocation();
 const router = createBrowserRouter([
   {
     path: 'about',
@@ -55,12 +58,34 @@ const router = createBrowserRouter([
       {
         children: [
           {
-            path: '/auth',
-            element: <Auth />,
+            path: '/profile',
+            element: (
+              <Template activeKey="profile">
+                <ProfilePage />
+              </Template>
+            ),
           },
         ],
         element: <RolesGuard requiredRoles={['registrator']} />,
       },
+      {
+        children: [
+          {
+            path: '/',
+            element: <Main />,
+          },
+        ],
+        element: <RolesGuard requiredRoles={['registrator']} />,
+      },
+      // {
+      //   children: [
+      //     {
+      //       path: '/auth',
+      //       element: <Auth />,
+      //     },
+      //   ],
+      //   element: <RolesGuard requiredRoles={['registrator']} />,
+      // },
       {
         children: [
           {
@@ -321,10 +346,10 @@ const router = createBrowserRouter([
         ],
         element: <RolesGuard requiredRoles={['registrator']} />,
       },
-      {
-        path: '/',
-        element: <Main />,
-      },
+      // {
+      //   path: '/',
+      //   element: <Patients />,
+      // },
     ],
     element: <AuthGuard />,
   },

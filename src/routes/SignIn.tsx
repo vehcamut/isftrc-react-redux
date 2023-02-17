@@ -30,7 +30,7 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
       dispatch(setRoles(getTokenPayload()?.roles || []));
       dispatch(setName(getTokenPayload()?.name || ''));
       // const payload = getTokenPayload()?.roles;
-      navigate('/auth');
+      navigate('/');
     } catch (e) {
       messageApi.open({
         type: 'error',

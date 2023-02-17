@@ -59,7 +59,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
       dispatch(setRoles([]));
       dispatch(setName(''));
       // const payload = getTokenPayload()?.roles;
-      navigate('/auth');
+      navigate('/');
     } catch (e) {
       // messageApi.open({
       //   type: 'error',
