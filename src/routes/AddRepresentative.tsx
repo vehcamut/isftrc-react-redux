@@ -48,6 +48,7 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { addPatientSlice, patientTableSlice } from '../app/reducers';
 import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
 import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepresentativeForm';
+import UserForm from '../components/UserForm/UserForm';
 
 const AddRepresentative = () => {
   const [isAdded, setIsAdded] = useState(false);
@@ -136,7 +137,8 @@ const AddRepresentative = () => {
           ]}
         />
       ) : (
-        <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" />
+        <UserForm onFinish={onFinish} onReset={onReset} userType="representative" />
+        // <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" />
       )}
     </>
   );

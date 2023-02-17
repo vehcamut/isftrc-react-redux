@@ -21,7 +21,7 @@ import MaskedInput from 'antd-mask-input';
 import { DeleteOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { dadataAPI, advertisingSourceAPI, specialistTypesAPI } from '../../app/services';
-import classes from './AddRepresentativeForm.module.scss';
+import classes from './UserForm.module.scss';
 import { IRepresentative, ISpecialist } from '../../models';
 
 const { TextArea } = Input;
