@@ -40,6 +40,7 @@ const isAuthTabs = [
   { label: 'Пациенты', key: 'patients' },
   { label: 'Представители', key: 'representatives' },
   { label: 'Специалисты', key: 'specialists' },
+  { label: 'Администраторы', key: 'admins' },
   { label: 'Справочники', key: 'handbooks' },
   { label: 'О компании', key: 'about' },
 ];

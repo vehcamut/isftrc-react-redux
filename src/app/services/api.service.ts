@@ -17,6 +17,7 @@ export const api = createApi({
     'serviceGroup',
     'serviceType',
     'user',
+    'admin',
   ],
   endpoints: () => ({}),
 });

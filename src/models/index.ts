@@ -10,3 +10,4 @@ export * from './IAppointment';
 export * from './IService';
 export * from './ICourse';
 export * from './IPayment';
+export * from './IAdmin';

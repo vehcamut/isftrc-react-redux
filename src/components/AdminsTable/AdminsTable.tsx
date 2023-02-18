@@ -1,13 +1,23 @@
-import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { Button } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+/* eslint-disable @typescript-eslint/indent */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
+import { Typography, Table, Row, Col, Button, Input } from 'antd';
+import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
+import { FilterValue, SorterResult } from 'antd/es/table/interface';
+import { useNavigate } from 'react-router-dom';
 import { DeleteRowOutlined, FilterFilled } from '@ant-design/icons';
-import classes from './SpecialistTable.module.scss';
-import { ISpecialist } from '../../models';
+import classes from './AdminsTable.module.scss';
+import { patientsAPI, representativesAPI } from '../../app/services';
+import { IPatient, IRepresentative } from '../../models';
 import { addClass } from '../../app/common';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { patientTableSlice } from '../../app/reducers';
+import CustomCell from '../CustomCell/CustomCell';
 import MyTable from '../MyTable/MyTable';
 
-interface SpecialistTableProps extends PropsWithChildren {
+const { Search } = Input;
+
+interface AdminsTableProps extends PropsWithChildren {
   onRowClick: (record: any) => void;
   dataSourseQuery: any;
   extraOptions?: any;
@@ -19,7 +29,7 @@ interface SpecialistTableProps extends PropsWithChildren {
   onRemove?: any;
 }
 
-const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
+const AdminsTable: FunctionComponent<AdminsTableProps> = ({
   onRowClick,
   extraOptions,
   dataSourseQuery,
@@ -29,9 +39,10 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
   slice,
   reduser,
   onRemove,
+  // columns,
 }) => {
   const isActive = slice && reduser ? reduser.isActive : tableState.isActive;
-  const columns: ColumnsType<ISpecialist> = [
+  const columns: ColumnsType<IRepresentative> = [
     {
       title: 'Логин',
       dataIndex: 'login',
@@ -94,18 +105,6 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
       width: '20%',
     },
     {
-      title: 'Тип',
-      dataIndex: 'types',
-      key: 'types',
-      width: '20%',
-      render: (emails: any[]) => {
-        return emails.reduce((p, c) => {
-          return `${p} ${c.name}`;
-        }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-      },
-    },
-    {
       title: 'Статус',
       dataIndex: 'isActive',
       key: 'isActive',
@@ -117,7 +116,7 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
-      defaultFilteredValue: [(+isActive).toString()],
+      defaultFilteredValue: [isActive],
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
       filters: [
@@ -132,7 +131,7 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
       ],
     },
   ];
-  if (onRemove) {
+  if (onRemove !== undefined) {
     columns.push({
       key: 'remove',
       render: (v, record) => {
@@ -140,13 +139,14 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
           <Button
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
-            type="primary"
+            type="link"
             // shape="circle"
             icon={<DeleteRowOutlined />}
+            disabled={!record.isActive || !onRemove}
             onClick={(e) => {
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               e.stopPropagation();
-              onRemove(record);
+              if (onRemove) onRemove(record);
             }}
           />
         );
@@ -169,7 +169,7 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
   );
 };
 
-SpecialistTable.defaultProps = {
+AdminsTable.defaultProps = {
   hasSearch: true,
   extraOptions: {},
   hasPagination: false,
@@ -185,4 +185,4 @@ SpecialistTable.defaultProps = {
   onRemove: undefined,
 };
 
-export default SpecialistTable;
+export default AdminsTable;

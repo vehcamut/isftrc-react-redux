@@ -11,10 +11,33 @@ import { patientsAPI, representativesAPI } from '../app/services';
 import { IPatient, IRepresentative } from '../models';
 import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { patientTableSlice, representativesTableSlice } from '../app/reducers';
+import { adminsTableSlice, patientTableSlice, representativesTableSlice } from '../app/reducers';
 import RepresentativesTable from '../components/RepresentativesTable/RepresentativesTable';
+import AdminsTable from '../components/AdminsTable/AdminsTable';
+import { adminsAPI } from '../app/services/admins.service';
 
-const Representatives = () => {
+const { Search } = Input;
+
+function CustomCell(props: any) {
+  console.log(props);
+  // eslint-disable-next-line react/destructuring-assignment
+  if (Array.isArray(props?.children)) {
+    // eslint-disable-next-line react/destructuring-assignment
+    console.log(props?.children[1]);
+    // eslint-disable-next-line react/destructuring-assignment
+    let title = props?.children[1];
+    if (typeof title?.props?.children === 'string') title = title?.props?.children;
+    if (typeof title === 'string')
+      return (
+        <Tooltip title={title} mouseLeaveDelay={0} mouseEnterDelay={0.5}>
+          <td {...props} />
+        </Tooltip>
+      );
+  }
+  return <td {...props} />;
+}
+
+const Admins = () => {
   const navigate = useNavigate();
   // const dispatch = useAppDispatch();
   // const { limit, page, filter, isActive } = useAppSelector((state) => state.representativesTableReducer);
@@ -110,8 +133,28 @@ const Representatives = () => {
   // ];
   // const { setPage, setLimit, setFilter, setIsActive } = representativesTableSlice.actions;
 
+  // const handleTableChange = (
+  //   pagination: TablePaginationConfig,
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //   filters: Record<string, FilterValue | null>,
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  //   sorter: SorterResult<IRepresentative> | SorterResult<IRepresentative>[],
+  // ) => {
+  //   if (filters?.isActive) {
+  //     if (filters?.isActive.length > 1) dispatch(setIsActive(undefined));
+  //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  //     else filters.isActive[0] ? dispatch(setIsActive(true)) : dispatch(setIsActive(false));
+  //   } else dispatch(setIsActive(undefined));
+  //   // console.log(pagination, filters, sorter);
+  //   dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
+  //   dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
+  // };
+  // const onSearch = (value: string) => {
+  //   dispatch(setPage(0));
+  //   dispatch(setFilter(value));
+  // };
   const onAddClick = () => {
-    navigate('/representatives/add', { replace: true });
+    navigate('/admins/add', { replace: true });
   };
 
   return (
@@ -119,20 +162,20 @@ const Representatives = () => {
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
         <Col>
           <Typography.Title level={1} style={{ margin: 0 }}>
-            Представители
+            Администраторы
           </Typography.Title>
         </Col>
         <Col>
           <Button type="link" onClick={onAddClick}>
-            Добавить представителя
+            Добавить администратора
           </Button>
         </Col>
       </Row>
-      <RepresentativesTable
-        onRowClick={(record: any) => navigate(`/representatives/${record._id}/info`)}
-        dataSourseQuery={representativesAPI.useGetRepresentativesQuery}
-        slice={representativesTableSlice}
-        reduser={useAppSelector((state) => state.representativesTableReducer)}
+      <AdminsTable
+        onRowClick={(record: any) => navigate(`/admins/${record._id}/info`)}
+        dataSourseQuery={adminsAPI.useGetAdminsQuery}
+        slice={adminsTableSlice}
+        reduser={useAppSelector((state) => state.adminsTableReducer)}
         hasPagination
       />
       {/* <Search
@@ -181,4 +224,4 @@ const Representatives = () => {
   );
 };
 
-export default Representatives;
+export default Admins;

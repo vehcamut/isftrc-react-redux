@@ -31,6 +31,9 @@ import ServicesPage from './routes/ServicesPage';
 import AboutPage from './routes/AboutPage';
 import ProfilePage from './routes/ProfilePage';
 import Main from './routes/Main';
+import Admins from './routes/Admins';
+import AdminPage from './routes/AdminPage';
+import AddAdmins from './routes/AddAdmins';
 // import { useAppSelector } from './app/hooks';
 
 const container = document.getElementById('root')!;
@@ -48,7 +51,7 @@ const router = createBrowserRouter([
     //     ),
     //   },
     // ],
-    // element: <RolesGuard requiredRoles={['registrator']} />,
+    // element: <RolesGuard requiredRoles={['admin']} />,
     path: 'notauth/about',
     element: (
       <Template activeKey="about">
@@ -83,6 +86,45 @@ const router = createBrowserRouter([
       {
         children: [
           {
+            path: '/admins',
+            element: (
+              <Template activeKey="admins">
+                <Admins />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['admin']} />,
+      },
+      {
+        children: [
+          {
+            path: '/admins/add',
+            element: (
+              <Template activeKey="admins">
+                <AddAdmins />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['admin']} />,
+      },
+      {
+        children: [
+          {
+            path: '/admins/:id/info',
+            element: (
+              <Template activeKey="admins">
+                <AdminPage activeKey="info" />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['admin']} />,
+      },
+      {
+        children: [
+          {
             path: '/profile',
             element: (
               <Template activeKey="profile">
@@ -91,7 +133,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -100,7 +142,7 @@ const router = createBrowserRouter([
             element: <Main />,
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       // {
       //   children: [
@@ -109,7 +151,7 @@ const router = createBrowserRouter([
       //       element: <Auth />,
       //     },
       //   ],
-      //   element: <RolesGuard requiredRoles={['registrator']} />,
+      //   element: <RolesGuard requiredRoles={['admin']} />,
       // },
       {
         children: [
@@ -122,7 +164,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -135,7 +177,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -148,7 +190,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -161,7 +203,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -174,7 +216,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -187,7 +229,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -200,7 +242,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -213,7 +255,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -226,7 +268,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -239,7 +281,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -252,7 +294,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -265,7 +307,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -278,7 +320,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -291,7 +333,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -304,7 +346,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -317,7 +359,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -330,7 +372,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -343,7 +385,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -356,7 +398,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -369,7 +411,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       {
         children: [
@@ -382,7 +424,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['registrator']} />,
+        element: <RolesGuard requiredRoles={['admin']} />,
       },
       // {
       //   path: '/',
@@ -399,7 +441,7 @@ const router = createBrowserRouter([
   //       element: <Auth />,
   //     },
   //   ],
-  //   element: <RequireAuth requiredRoles={['registrator']} />,
+  //   element: <RequireAuth requiredRoles={['admin']} />,
   // },
   // {
   //   children: [

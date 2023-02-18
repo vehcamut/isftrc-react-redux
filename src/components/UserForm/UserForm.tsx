@@ -22,18 +22,18 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { dadataAPI, advertisingSourceAPI, specialistTypesAPI } from '../../app/services';
 import classes from './UserForm.module.scss';
-import { IRepresentative, ISpecialist } from '../../models';
+import { IAdminWithId, IRepresentative, ISpecialist } from '../../models';
 
 const { TextArea } = Input;
 const { Title, Paragraph, Text, Link } = Typography;
 interface UserFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
-  userType: 'specialist' | 'representative' | 'registrator';
+  userType: 'specialist' | 'representative' | 'admin';
   reg?: boolean;
   // type: 'add' | 'reg';
   // eslint-disable-next-line react/require-default-props
-  initValue?: IRepresentative | ISpecialist;
+  initValue?: IRepresentative | ISpecialist | IAdminWithId;
 
   // advSourse?: boolean;
 }

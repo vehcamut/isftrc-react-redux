@@ -5,3 +5,4 @@ export * from './loginForm.slice';
 export * from './patientsTable.slice';
 export * from './patientForm.slise';
 export * from './representativesTable.slice';
+export * from './adminsTable.slice';

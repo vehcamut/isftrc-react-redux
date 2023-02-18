@@ -1,4 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
+import { adminsTableReducer } from './reducers/adminsTable.slice';
 import { specialistsReducer } from './reducers/specialists.slice';
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { addPatientReducer } from './reducers/patientForm.slise';
@@ -34,6 +35,7 @@ export const store = configureStore({
     specialistsReducer,
     authReducer,
     addPatientReducer,
+    adminsTableReducer,
     [api.reducerPath]: api.reducer,
     // [representativesAPI.reducerPath]: representativesAPI.reducer,
     // [advertisingSourceAPI.reducerPath]: advertisingSourceAPI.reducer,

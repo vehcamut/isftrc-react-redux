@@ -13,6 +13,7 @@ import { addClass } from '../../app/common';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { patientTableSlice } from '../../app/reducers';
 import CustomCell from '../CustomCell/CustomCell';
+import MyTable from '../MyTable/MyTable';
 
 const { Search } = Input;
 
@@ -26,7 +27,6 @@ interface RepresentativesTableProps extends PropsWithChildren {
   slice?: any;
   reduser?: any;
   onRemove?: any;
-  // columns: ColumnsType<IRepresentative>;
 }
 
 const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
@@ -41,36 +41,7 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
   onRemove,
   // columns,
 }) => {
-  const dispatch = useAppDispatch();
-
-  //   const [limit, setLimit] = useState(tableState.limit);
-  //   const [page, setPage] = useState(tableState.page);
-  //   const [filter, setFilter] = useState(tableState.filter);
-  //   const [isActive, setIsActive] = useState<boolean | undefined>(tableState.isActive);
-  //   const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
-
-  const [limit, setLimit] =
-    slice && reduser ? [reduser.limit, (v: number) => dispatch(slice.actions.setLimit(v))] : useState(tableState.limit);
-  const [page, setPage] =
-    slice && reduser ? [reduser.page, (v: number) => dispatch(slice.actions.setPage(v))] : useState(tableState.page);
-  const [filter, setFilter] =
-    slice && reduser
-      ? [reduser.filter, (v: string) => dispatch(slice.actions.setFilter(v))]
-      : useState(tableState.filter);
-  const [isActive, setIsActive] =
-    slice && reduser
-      ? [reduser.isActive, (v: boolean | undefined) => dispatch(slice.actions.setIsActive(v))]
-      : useState<boolean | undefined>(tableState.isActive);
-  const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
-
-  // columns[columns.findIndex((v) => v.key === 'isActive')].render = (flag: boolean) => {
-  //   return flag ? (
-  //     <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-  //   ) : (
-  //     <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-  //   );
-  // };
-  // if (isActive !== undefined) columns[columns.findIndex((v) => v.key === 'isActive')].defaultFilteredValue = [isActive];
+  const isActive = slice && reduser ? reduser.isActive : tableState.isActive;
   const columns: ColumnsType<IRepresentative> = [
     {
       title: 'Логин',
@@ -184,79 +155,17 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
     });
   }
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, FilterValue | null>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    sorter: SorterResult<IRepresentative> | SorterResult<IRepresentative>[],
-  ) => {
-    if (filters?.isActive) {
-      if (filters?.isActive.length > 1) setIsActive(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
-    } else setIsActive(undefined);
-    // console.log(pagination, filters, sorter);
-    setPage(pagination.current ? pagination.current - 1 : 0);
-    setLimit(pagination.pageSize ? pagination.pageSize : 0);
-  };
-
-  const onSearch = (value: string) => {
-    setPage(0);
-    setFilter(value);
-  };
-
   return (
-    <>
-      {hasSearch ? (
-        <Search
-          allowClear
-          placeholder="Введите текст поиска"
-          onSearch={onSearch}
-          enterButton
-          style={{ marginBottom: '15px' }}
-        />
-      ) : null}
-
-      <Table
-        components={{
-          body: {
-            cell: CustomCell,
-          },
-        }}
-        style={{ width: '100%' }}
-        tableLayout="fixed"
-        bordered
-        size="small"
-        columns={columns}
-        rowKey={(record) => record._id}
-        dataSource={data?.data}
-        pagination={
-          hasPagination
-            ? {
-                position: ['bottomCenter'],
-                current: page + 1,
-                pageSize: limit,
-                total: data?.count,
-                pageSizeOptions: [10, 20, 50, 100],
-                showSizeChanger: true,
-              }
-            : false
-        }
-        loading={isLoading}
-        onRow={(record) => {
-          return {
-            onClick: () => {
-              onRowClick(record);
-            },
-          };
-        }}
-        rowClassName={(record) =>
-          record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
-        }
-        className={addClass(classes, 'patients-table')}
-        onChange={handleTableChange}
-      />
-    </>
+    <MyTable
+      columns={columns}
+      dataSourseQuery={dataSourseQuery}
+      onRowClick={onRowClick}
+      extraOptions={extraOptions}
+      hasPagination={hasPagination}
+      hasSearch={hasSearch}
+      reduser={reduser}
+      slice={slice}
+    />
   );
 };
 

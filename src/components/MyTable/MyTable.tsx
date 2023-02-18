@@ -40,11 +40,6 @@ const MyTable: FunctionComponent<MyTableProps> = ({
   columns,
 }) => {
   const dispatch = useAppDispatch();
-  //   const [limit, setLimit] = useState(tableState.limit);
-  //   const [page, setPage] = useState(tableState.page);
-  //   const [filter, setFilter] = useState(tableState.filter);
-  //   const [isActive, setIsActive] = useState<boolean | undefined>(tableState.isActive);
-  //   const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
 
   const [limit, setLimit] =
     slice && reduser ? [reduser.limit, (v: number) => dispatch(slice.actions.setLimit(v))] : useState(tableState.limit);
@@ -180,6 +175,7 @@ const MyTable: FunctionComponent<MyTableProps> = ({
           onSearch={onSearch}
           enterButton
           style={{ marginBottom: '15px' }}
+          defaultValue={filter}
         />
       ) : null}
 
