@@ -133,6 +133,18 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
       width: '20%',
     },
     {
+      title: 'Тип',
+      dataIndex: 'types',
+      key: 'types',
+      width: '20%',
+      render: (emails: any[]) => {
+        return emails.reduce((p, c) => {
+          return `${p} ${c.name}`;
+        }, '');
+        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
+      },
+    },
+    {
       title: 'Статус',
       dataIndex: 'isActive',
       key: 'isActive',
@@ -212,6 +224,7 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
           onSearch={onSearch}
           enterButton
           style={{ marginBottom: '15px' }}
+          defaultValue={filter}
         />
       ) : null}
 
