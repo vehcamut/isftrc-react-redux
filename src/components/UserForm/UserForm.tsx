@@ -22,7 +22,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { dadataAPI, advertisingSourceAPI, specialistTypesAPI } from '../../app/services';
 import classes from './UserForm.module.scss';
-import { IAdminWithId, IRepresentative, ISpecialist } from '../../models';
+import { IAdminWithId, IRepresentative, ISpecialist, IUserInfo } from '../../models';
 
 const { TextArea } = Input;
 const { Title, Paragraph, Text, Link } = Typography;
@@ -33,7 +33,7 @@ interface UserFormProps extends PropsWithChildren {
   reg?: boolean;
   // type: 'add' | 'reg';
   // eslint-disable-next-line react/require-default-props
-  initValue?: IRepresentative | ISpecialist | IAdminWithId;
+  initValue?: IRepresentative | ISpecialist | IAdminWithId | IUserInfo;
 
   // advSourse?: boolean;
 }

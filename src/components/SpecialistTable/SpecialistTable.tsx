@@ -94,13 +94,13 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
       width: '20%',
     },
     {
-      title: 'Тип',
+      title: 'Специальности',
       dataIndex: 'types',
       key: 'types',
       width: '20%',
       render: (emails: any[]) => {
         return emails.reduce((p, c) => {
-          return `${p} ${c.name}`;
+          return `${p}${p ? ',' : ''} ${c.name}`;
         }, '');
         // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },

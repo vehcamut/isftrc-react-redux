@@ -94,7 +94,7 @@ export const specialistAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['specialists'],
+      invalidatesTags: ['specialists', 'user'],
     }),
 
     changeSpecialistStatus: build.mutation<any, ISpecialistChangeStatus>({

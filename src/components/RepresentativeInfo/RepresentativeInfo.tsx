@@ -27,6 +27,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         type: 'success',
         content: 'Данные представителя успешно обновлены',
       });
+      setOpen(false);
     } catch (e) {
       messageApi.open({
         type: 'error',

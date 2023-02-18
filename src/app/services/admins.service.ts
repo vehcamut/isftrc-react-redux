@@ -74,7 +74,7 @@ export const adminsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['admin'],
+      invalidatesTags: ['admin', 'user'],
     }),
   }),
 });

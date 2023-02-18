@@ -82,7 +82,7 @@ export const representativesAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['representative'],
+      invalidatesTags: ['representative', 'user'],
     }),
 
     getRepresentativePatientsById: build.query<IPatient[], IGetRepPatients>({

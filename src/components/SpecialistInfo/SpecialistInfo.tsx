@@ -29,6 +29,7 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         type: 'success',
         content: 'Данные специалиста успешно обновлены',
       });
+      setOpen(false);
     } catch (e) {
       messageApi.open({
         type: 'error',

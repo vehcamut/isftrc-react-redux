@@ -84,6 +84,9 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         <div className={addClass(classes, 'header-top__menu')}>
           {isAuth ? (
             <>
+              <Text key="0" strong>
+                {name}
+              </Text>
               <Button key="1" type="primary">
                 Справка
               </Button>
@@ -91,10 +94,6 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
               <Button key="2" type="primary" onClick={onLogout}>
                 Выйти
               </Button>
-
-              <Text key="0" strong>
-                {name}
-              </Text>
             </>
           ) : (
             <Button key="2" type="primary" onClick={() => navigate('/auth/signin')}>

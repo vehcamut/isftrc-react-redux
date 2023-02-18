@@ -1,13 +1,18 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { FunctionComponent, PropsWithChildren } from 'react';
-import { Typography, Row, Col, Button, Tabs, message, Spin, Descriptions, Divider } from 'antd';
+import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
+import { Typography, Row, Col, Button, Tabs, message, Spin, Descriptions, Divider, Modal } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
-import { authAPI, patientsAPI, userAPI } from '../app/services';
+import { authAPI, patientsAPI, representativesAPI, userAPI } from '../app/services';
 import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
 import PatinentCourse from '../components/PatinentCourse/PatinentCourse';
 import PatientShedule from '../components/PatientShedule/PatientShedule';
+import UserForm from '../components/UserForm/UserForm';
+import { useAppSelector } from '../app/hooks';
+import { adminsAPI } from '../app/services/admins.service';
+import { specialistAPI } from '../app/services/specialists.service';
 
 interface ProfilePageProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -16,26 +21,93 @@ interface ProfilePageProps extends PropsWithChildren {
 
 const { Title } = Typography;
 
+const getUpdate = (roles: string[]) => {
+  if (roles.find((r) => r === 'admin')) return adminsAPI.useUpdateAdminMutation();
+  if (roles.find((r) => r === 'specialist')) return specialistAPI.useUpdateSpecialistMutation();
+  return representativesAPI.useUpdateRepresentativeMutation();
+  // if (roles.find((r) => r === 'representative')) return representativesAPI.useUpdateRepresentativeMutation();
+  // return undefined;
+};
+const getUsetType = (roles: string[]) => {
+  if (roles.find((r) => r === 'admin')) return 'admin';
+  if (roles.find((r) => r === 'specialist')) return 'specialist';
+  return 'representative';
+  // if (roles.find((r) => r === 'representative')) return representativesAPI.useUpdateRepresentativeMutation();
+  // return undefined;
+};
+
 const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { roles } = useAppSelector((state) => state.authReducer);
   const [messageApi, contextHolder] = message.useMessage();
+
+  const [open, setOpen] = useState(false);
+  const { data: user } = userAPI.useGetProfileQuery({});
+  // console.log(user);
+  // eslint-disable-next-line no-nested-ternary
+  const [update] = getUpdate(roles);
+  // eslint-disable-next-line no-nested-ternary
+  // const [update] = roles.find((r) => r === 'admin')
+  //   ? adminsAPI.useUpdateAdminMutation()
+  //   : roles.find((r) => r === 'specialist')
+  //   ? specialistAPI.useUpdateSpecialistMutation()
+  //   : representativesAPI.useUpdateRepresentativeMutation();
+  const userType = getUsetType(roles);
+
+  const onFinish = async (values: any) => {
+    try {
+      await update({ ...user, ...values }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Данные пользователя успешно обновлены',
+      });
+      setOpen(false);
+    } catch (e) {
+      messageApi.open({
+        type: 'error',
+        content: 'Ошибка связи с сервером',
+      });
+    }
+  };
+  const onReset = () => {
+    setOpen(false);
+  };
+  const onEdit = () => {
+    setOpen(true);
+  };
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
   const params = useParams();
   // const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
-  const { data: user } = userAPI.useGetProfileQuery({});
-  console.log(user);
+
   const onBackClick = () => {
     navigate('/patients', { replace: true });
   };
 
-  const onChange = (key: string) => {
-    navigate(`/patients/${params?.id}/${key}`, { replace: true });
-    // navigate(`./../${key}`, { replace: true });
-  };
+  // const onChange = (key: string) => {
+  //   navigate(`/patients/${params?.id}/${key}`, { replace: true });
+  //   // navigate(`./../${key}`, { replace: true });
+  // };
   // console.log(user);
 
   return (
     <>
+      {contextHolder}
+      <Modal
+        destroyOnClose
+        open={open}
+        footer={null}
+        title={
+          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
+            Обновление данных представителя
+          </Typography.Title>
+        }
+        width="100%"
+        onCancel={onReset}
+      >
+        <UserForm onReset={onReset} onFinish={onFinish} initValue={user} userType={userType} />
+        {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
+        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
+      </Modal>
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
         <Col>
           <Typography.Title level={1} style={{ margin: 0 }}>
@@ -43,7 +115,9 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           </Typography.Title>
         </Col>
         <Col>
-          <Button type="link">Редкатировать</Button>
+          <Button type="link" onClick={onEdit}>
+            Редактировать
+          </Button>
         </Col>
       </Row>
       <Descriptions
