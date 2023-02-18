@@ -41,7 +41,7 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
-  const { data: user } = userAPI.useGetProfileQuery({});
+  const { data: user, isLoading } = userAPI.useGetProfileQuery({});
   // console.log(user);
   // eslint-disable-next-line no-nested-ternary
   const [update] = getUpdate(roles);
@@ -108,78 +108,79 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
-      <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
-        <Col>
-          <Typography.Title level={1} style={{ margin: 0 }}>
-            Личные данные
-          </Typography.Title>
-        </Col>
-        <Col>
-          <Button type="link" onClick={onEdit}>
-            Редактировать
-          </Button>
-        </Col>
-      </Row>
-      <Descriptions
-        bordered
-        size="middle"
-        contentStyle={{ backgroundColor: '#ffffff' }}
-        labelStyle={{
-          color: '#ffffff',
-          borderRight: '5px solid #e6f4ff',
-          width: '150px',
-        }}
-        // title="Личные данные представителя"
-        column={1}
-        // extra={
-        //   <>
-        //     {representative?.isActive ? (
-        //       <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
-        //         Деактивировать
-        //       </Button>
-        //     ) : (
-        //       <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
-        //         Активировать
-        //       </Button>
-        //     )}
+      <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>
+        <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
+          <Col>
+            <Typography.Title level={1} style={{ margin: 0 }}>
+              Личные данные
+            </Typography.Title>
+          </Col>
+          <Col>
+            <Button type="link" onClick={onEdit}>
+              Редактировать
+            </Button>
+          </Col>
+        </Row>
+        <Descriptions
+          bordered
+          size="middle"
+          contentStyle={{ backgroundColor: '#ffffff' }}
+          labelStyle={{
+            color: '#ffffff',
+            borderRight: '5px solid #e6f4ff',
+            width: '150px',
+          }}
+          // title="Личные данные представителя"
+          column={1}
+          // extra={
+          //   <>
+          //     {representative?.isActive ? (
+          //       <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
+          //         Деактивировать
+          //       </Button>
+          //     ) : (
+          //       <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
+          //         Активировать
+          //       </Button>
+          //     )}
 
-        //     <Button type="primary" onClick={onEdit} disabled={!representative?.isActive}>
-        //       Редактировать
-        //     </Button>
-        //   </>
-        // }
-      >
-        <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.surname}
-        </Descriptions.Item>
-        <Descriptions.Item label="Имя" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.name}
-        </Descriptions.Item>
-        <Descriptions.Item label="Отчество" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.patronymic}
-        </Descriptions.Item>
-        <Descriptions.Item label="Пол" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.gender}
-        </Descriptions.Item>
-        <Descriptions.Item label="Дата рождения" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {new Date(user?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
-        </Descriptions.Item>
-        <Descriptions.Item label="Адрес" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.address}
-        </Descriptions.Item>
-        <Descriptions.Item label="Номера телефонов" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.phoneNumbers
-            .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
-            .join(', ')}
-        </Descriptions.Item>
-        <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
-          {user?.emails.join(', ')}
-        </Descriptions.Item>
-        {/* <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
+          //     <Button type="primary" onClick={onEdit} disabled={!representative?.isActive}>
+          //       Редактировать
+          //     </Button>
+          //   </>
+          // }
+        >
+          <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.surname}
+          </Descriptions.Item>
+          <Descriptions.Item label="Имя" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.name}
+          </Descriptions.Item>
+          <Descriptions.Item label="Отчество" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.patronymic}
+          </Descriptions.Item>
+          <Descriptions.Item label="Пол" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.gender}
+          </Descriptions.Item>
+          <Descriptions.Item label="Дата рождения" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {new Date(user?.dateOfBirth || '').toLocaleString('ru', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+            })}
+          </Descriptions.Item>
+          <Descriptions.Item label="Адрес" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.address}
+          </Descriptions.Item>
+          <Descriptions.Item label="Номера телефонов" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.phoneNumbers
+              .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
+              .join(', ')}
+          </Descriptions.Item>
+          <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.emails.join(', ')}
+          </Descriptions.Item>
+          {/* <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
           {representative?.surname}
         </Descriptions.Item>
         <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
@@ -215,11 +216,12 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
         <Descriptions.Item label="Логин" className={addClass(classes, 'des-item')}>
           {representative?.login}
         </Descriptions.Item> */}
-        {/* <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
+          {/* <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
           {patient?.note}
         </Descriptions.Item> */}
-        {/* <Descriptions.Item label="Статус">{representative?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item> */}
-      </Descriptions>
+          {/* <Descriptions.Item label="Статус">{representative?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item> */}
+        </Descriptions>
+      </Spin>
       {/* <Title level={3}>Режим работы</Title>
       <Typography>Понедельник-Пятница с 08:00 - 18:00</Typography>
       <Typography>Выходные: суббота, воскресенье</Typography>

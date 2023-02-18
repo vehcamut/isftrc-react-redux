@@ -36,6 +36,7 @@ import AdminPage from './routes/AdminPage';
 import AddAdmins from './routes/AddAdmins';
 // import { useAppSelector } from './app/hooks';
 
+document.documentElement.lang = 'ru';
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 // const location = useLocation();

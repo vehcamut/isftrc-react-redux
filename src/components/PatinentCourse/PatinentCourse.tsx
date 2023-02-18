@@ -147,6 +147,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const { data: advSum, isLoading: isAdvSumLoading } = paymentAPI.useGetAdvanceQuery({ patient: patient?._id || '' });
   const { data: represToSelect, isLoading: isrepresToSelectLoading } = patientsAPI.useGetPatientRepresentativesQuery({
     id: patient?._id || '',
+    isActive: true,
   });
   // console.log(advSum);
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
