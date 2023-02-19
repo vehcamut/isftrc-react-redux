@@ -135,56 +135,52 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   const isAdmin = roles.find((r) => r === 'admin');
   const [messageApi, contextHolder] = message.useMessage();
   const [payment, setPayment] = useState<string>('');
-  const { data: paymentData, isLoading: isPaymentDataLoading } = paymentAPI.useGetPaymentByIdQuery({ id: payment });
+  const { data: paymentData, isLoading: isPaymentDataLoading } = paymentAPI.useGetPaymentByIdQuery(
+    { id: payment },
+    { skip: !payment },
+  );
   const [serv, setServ] = useState<string>('');
-  const { data: servData, isLoading: isServDataLoading } = servicesAPI.useGetServiseByIdQuery({ id: serv });
   const [openCourse] = patientsAPI.useOpenCourseMutation();
   const [newCourse] = patientsAPI.useNewCourseMutation();
   const [closeCourse] = patientsAPI.useCloseCourseMutation();
   const [addService] = patientsAPI.useAddServiceMutation();
-  const [closeService] = servicesAPI.useCloseServiceMutation();
-  const [removeService] = patientsAPI.useRemoveServiceMutation();
   const [addPayment] = paymentAPI.useAddPaymentMutation();
   const [removePayment] = paymentAPI.useRemovePaymentMutation();
-  const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' });
-  const { data: advSum, isLoading: isAdvSumLoading } = paymentAPI.useGetAdvanceQuery({ patient: patient?._id || '' });
-  const { data: represToSelect, isLoading: isrepresToSelectLoading } = patientsAPI.useGetPatientRepresentativesQuery({
-    id: patient?._id || '',
-    isActive: true,
-  });
+  const { data: coursesData, isLoading } = patientsAPI.useGetPatientCoursesQuery(
+    { patient: patient?._id || '' },
+    { skip: !patient?._id },
+  );
+  const { data: advSum, isLoading: isAdvSumLoading } = paymentAPI.useGetAdvanceQuery(
+    { patient: patient?._id || '' },
+    { skip: !isAdmin || !patient?._id },
+  );
+  const { data: represToSelect, isLoading: isrepresToSelectLoading } = patientsAPI.useGetPatientRepresentativesQuery(
+    {
+      id: patient?._id || '',
+      isActive: true,
+    },
+    { skip: !patient?._id },
+  );
   // console.log(advSum);
   const [isServInfoOpen, setIsServInfoOpen] = useState(false);
   const [isPayInfoOpen, setIsPayInfoOpen] = useState(false);
-  const [isAddAppToServOpen, setIsAddAppToServOpen] = useState(false);
   const [isAddServiceOpen, setIsAddServiceOpen] = useState(false);
-  const [isSetResultOpen, setIsSetResultOpen] = useState(false);
 
   const [isAddPaymentOpen, setIsAddPaymentOpen] = useState(false);
 
   const [currentGroup, setCurrentGroup] = useState<string | undefined>(undefined);
-  const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery({});
-  const { data: typeToSelect, isLoading: isLoadingTypeToSelect } = servicesAPI.useGetTypesQuery({
-    group: currentGroup || '',
-  });
+  const { data: groupToSelect, isLoading: isLoadingGroupToSelect } = servicesAPI.useGetGroupsQuery(
+    {},
+    { skip: !isAdmin },
+  );
+  const { data: typeToSelect, isLoading: isLoadingTypeToSelect } = servicesAPI.useGetTypesQuery(
+    {
+      group: currentGroup || '',
+    },
+    { skip: !isAdmin || !currentGroup },
+  );
   const [adv, setAdv] = useState<boolean>(false);
-  // const onFinish = async (values: any) => {
-  //   try {
-  //     await updatePatient({ ...patient, ...values }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Данные пациента успешно обновлены',
-  //     });
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
-  const onReset = () => {
-    setServ('');
-    setIsServInfoOpen(false);
-  };
+
   const onRowClick = (record: IServiceInCourse) => {
     if (record.kind === 'service') {
       setServ(record._id);
@@ -226,51 +222,6 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       });
     }
   };
-  const onRemoveService = () => {
-    const showConfirm = () => {
-      confirm({
-        title: 'Подтвердите удаление улсуги.',
-        icon: <ExclamationCircleFilled />,
-        content: 'Вы точно хотите удалить услугу?',
-        async onOk() {
-          try {
-            const result = await removeService({ id: serv }).unwrap();
-            messageApi.open({
-              type: 'success',
-              content: 'Услуга успешно удалена',
-            });
-            onReset();
-          } catch (e) {
-            messageApi.open({
-              type: 'error',
-              content: 'Ошибка связи с сервером',
-            });
-          }
-        },
-        onCancel() {
-          console.log('Cancel');
-        },
-      });
-    };
-    showConfirm();
-  };
-  const onSetResultFinish = async (values: any) => {
-    try {
-      const result = await closeService({ id: servData?.id || '', result: values.result }).unwrap();
-      messageApi.open({
-        type: 'success',
-        content: 'Услуга успешно закрыта',
-      });
-      setIsSetResultOpen(false);
-      // onAddServiceCancel();
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  };
-
   const onAddPaymentCancel = () => {
     // form.resetFields();
     // setCurrentGroup(undefined);
@@ -353,59 +304,13 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
   return (
     <>
       {contextHolder}
-      <ModalAddAppToServ serviceId={servData?.id} isOpen={isAddAppToServOpen} setIsOpen={setIsAddAppToServOpen} />
       <ModalServiceInfo
         patient={patient}
         isOpen={isServInfoOpen}
         setIsOpen={setIsServInfoOpen}
-        serviceId={servData?.id || ''}
+        serviceId={serv || ''}
         title="Информация об услуге"
       />
-      {/* <Modal
-        destroyOnClose
-        open={isSetResultOpen}
-        footer={null}
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Закрытие услуги
-          </Typography.Title>
-        }
-        width="750px"
-        onCancel={() => setIsSetResultOpen(false)}
-      >
-        <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onSetResultFinish}>
-          <Form.Item
-            initialValue={servData?.result ? servData.result : ''}
-            rules={[{ required: true, message: 'Поле "Результат" не должно быть пустым' }]}
-            label="Результат"
-            name="result"
-          >
-            <TextArea id="result" rows={4} placeholder="Результат оказания услуги" />
-          </Form.Item>
-
-          <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
-            <Row>
-              <Col span={24} style={{ textAlign: 'right' }}>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  style={{ marginRight: '10px' }}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Закрыть
-                </Button>
-                <Button
-                  htmlType="button"
-                  onClick={() => setIsSetResultOpen(false)}
-                  className={addClass(classes, 'form-button')}
-                >
-                  Отменить
-                </Button>
-              </Col>
-            </Row>
-          </Form.Item>
-        </Form>
-      </Modal> */}
 
       <Modal
         destroyOnClose
@@ -686,7 +591,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             <Spin tip="Загрузка..." />
           </div>
         ) : (
-          <Descriptions>
+          <Descriptions column={3}>
             <Descriptions.Item label="Тип оплаты" span={3}>
               {paymentData?.name}
             </Descriptions.Item>

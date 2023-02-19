@@ -19,6 +19,7 @@ import {
   Select,
   Result,
   Input,
+  Spin,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -35,6 +36,7 @@ import Shedule from '../Shedule/Shedule';
 import { patientsAPI, servicesAPI } from '../../app/services';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import ModalTextEnter from '../ModalTextEnter/ModalTextEnter';
+import { useAppSelector } from '../../app/hooks';
 
 const { confirm } = Modal;
 const { TextArea } = Input;
@@ -57,6 +59,8 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   // setAppointmentId,
   title,
 }) => {
+  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const isRepres = roles.find((r) => r === 'representative');
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -65,7 +69,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   // const [currentService, setCurrentService] = useState<IService | undefined>(undefined);
 
   // API
-  const { data: currentService } = servicesAPI.useGetAllInfoServiceQuery(
+  const { data: currentService, isFetching } = servicesAPI.useGetAllInfoServiceQuery(
     {
       id: serviceId || '',
     },
@@ -118,21 +122,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   };
 
   const [isAddResultOpen, setIsAddResultOpen] = useState(false);
-  // const onAddResult = async (note: string) => {
-  //   try {
-  //     await changeServNote({ id: currentAppointment?.service?._id || '', note }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Комментарий успешно изменен',
-  //     });
-  //     setIsChangeNoteOpen(false);
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
+
   const onCloseService = async (result: string) => {
     try {
       await closeService({ id: currentService?._id || '', result }).unwrap();
@@ -208,7 +198,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
         open={isOpen}
         footer={
           <>
-            {!currentService?.canBeRemoved && !currentService?.appointment ? (
+            {!currentService?.canBeRemoved && !currentService?.appointment && !isFetching ? (
               <Button
                 type="primary"
                 style={{ marginRight: '10px', backgroundColor: '#e60000' }}
@@ -219,7 +209,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                 Удалить
               </Button>
             ) : null}
-            {!currentService?.canBeRemoved && !currentService?.appointment ? (
+            {!currentService?.canBeRemoved && !currentService?.appointment && !isFetching ? (
               <Button
                 type="primary"
                 style={{ marginRight: '10px' }}
@@ -229,7 +219,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                 Записать
               </Button>
             ) : null}
-            {currentService?.canBeRemoved ? (
+            {currentService?.canBeRemoved && !isFetching ? (
               <>
                 {!currentService.status ? (
                   <Button
@@ -283,72 +273,200 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
         width="600px"
         onCancel={onReset}
       >
-        <Descriptions column={3}>
-          <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentService?.appointment?.begDate
-              ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })
-              : 'не указаны'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
-            {currentService?.appointment?.endDate
-              ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}`
-              : 'не указаны'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Статус" span={3} contentStyle={{ color: currentService?.status ? 'green' : 'red' }}>
-            {currentService?.status ? 'Оказана' : 'Неоказана'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Пациент" span={3}>
-            {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
-          </Descriptions.Item>
-          <Descriptions.Item label="Специалист" span={3}>
-            {currentService?.appointment ? (
-              <Button
-                type="link"
-                size="small"
-                onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
-              >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
-            ) : (
-              ' - '
-            )}
-          </Descriptions.Item>
-          <Descriptions.Item label="Курс" span={3}>
-            {currentService?.course?.number === 0
-              ? 'вне курса'
-              : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
-          </Descriptions.Item>
-          <Descriptions.Item label="Услуга" span={3}>
-            {currentService?.type.name}
-          </Descriptions.Item>
+        <Spin
+          tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>}
+          size="large"
+          spinning={isFetching}
+        >
+          {isFetching ? (
+            <Descriptions column={3}>
+              <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Статус" span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Пациент" span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Специалист" span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Курс" span={3}>
+                -
+              </Descriptions.Item>
+              <Descriptions.Item label="Услуга" span={3}>
+                -
+              </Descriptions.Item>
+              {!isRepres ? (
+                <Descriptions.Item label="Комментарий" span={3}>
+                  -
+                </Descriptions.Item>
+              ) : null}
 
-          <Descriptions.Item
-            label={
-              <>
-                Комментарий
-                {!currentService?.status && currentService?.canBeRemoved ? (
-                  <Button type="link" icon={<EditOutlined />} size="small" onClick={() => setIsChangeNoteOpen(true)} />
-                ) : null}
-              </>
-            }
-            span={3}
-          >
-            {currentService?.note ? `${currentService.note}` : ' - '}
-          </Descriptions.Item>
-          {currentService?.status ? (
-            <Descriptions.Item label="Результат" span={3}>
-              {currentService?.result ? `${currentService.result}` : ' - '}
+              {currentService?.status ? (
+                <Descriptions.Item label="Результат" span={3}>
+                  -
+                </Descriptions.Item>
+              ) : null}
+            </Descriptions>
+          ) : (
+            <Descriptions column={3}>
+              <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                {currentService?.appointment?.begDate
+                  ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : 'не указаны'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                {currentService?.appointment?.endDate
+                  ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}`
+                  : 'не указаны'}
+              </Descriptions.Item>
+              <Descriptions.Item
+                label="Статус"
+                span={3}
+                contentStyle={{ color: currentService?.status ? 'green' : 'red' }}
+              >
+                {currentService?.status ? 'Оказана' : 'Неоказана'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Пациент" span={3}>
+                {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
+              </Descriptions.Item>
+              <Descriptions.Item label="Специалист" span={3}>
+                {currentService?.appointment ? (
+                  <Button
+                    type="link"
+                    size="small"
+                    onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
+                  >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
+                ) : (
+                  ' - '
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="Курс" span={3}>
+                {currentService?.course?.number === 0
+                  ? 'вне курса'
+                  : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
+              </Descriptions.Item>
+              <Descriptions.Item label="Услуга" span={3}>
+                {currentService?.type.name}
+              </Descriptions.Item>
+              {!isRepres ? (
+                <Descriptions.Item
+                  label={
+                    <>
+                      Комментарий
+                      {!currentService?.status && currentService?.canBeRemoved ? (
+                        <Button
+                          type="link"
+                          icon={<EditOutlined />}
+                          size="small"
+                          onClick={() => setIsChangeNoteOpen(true)}
+                        />
+                      ) : null}
+                    </>
+                  }
+                  span={3}
+                >
+                  {currentService?.note ? `${currentService.note}` : ' - '}
+                </Descriptions.Item>
+              ) : null}
+
+              {currentService?.status ? (
+                <Descriptions.Item label="Результат" span={3}>
+                  {currentService?.result ? `${currentService.result}` : ' - '}
+                </Descriptions.Item>
+              ) : null}
+            </Descriptions>
+          )}
+          {/* <Descriptions column={3}>
+            <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+              {currentService?.appointment?.begDate
+                ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })
+                : 'не указаны'}
             </Descriptions.Item>
-          ) : null}
-        </Descriptions>
+            <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+              {currentService?.appointment?.endDate
+                ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}`
+                : 'не указаны'}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label="Статус"
+              span={3}
+              contentStyle={{ color: currentService?.status ? 'green' : 'red' }}
+            >
+              {currentService?.status ? 'Оказана' : 'Неоказана'}
+            </Descriptions.Item>
+            <Descriptions.Item label="Пациент" span={3}>
+              {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
+            </Descriptions.Item>
+            <Descriptions.Item label="Специалист" span={3}>
+              {currentService?.appointment ? (
+                <Button
+                  type="link"
+                  size="small"
+                  onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
+                >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
+              ) : (
+                ' - '
+              )}
+            </Descriptions.Item>
+            <Descriptions.Item label="Курс" span={3}>
+              {currentService?.course?.number === 0
+                ? 'вне курса'
+                : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
+            </Descriptions.Item>
+            <Descriptions.Item label="Услуга" span={3}>
+              {currentService?.type.name}
+            </Descriptions.Item>
+            <Descriptions.Item
+              label={
+                <>
+                  Комментарий
+                  {!currentService?.status && currentService?.canBeRemoved ? (
+                    <Button
+                      type="link"
+                      icon={<EditOutlined />}
+                      size="small"
+                      onClick={() => setIsChangeNoteOpen(true)}
+                    />
+                  ) : null}
+                </>
+              }
+              span={3}
+            >
+              {currentService?.note ? `${currentService.note}` : ' - '}
+            </Descriptions.Item>
+            {currentService?.status ? (
+              <Descriptions.Item label="Результат" span={3}>
+                {currentService?.result ? `${currentService.result}` : ' - '}
+              </Descriptions.Item>
+            ) : null}
+          </Descriptions> */}
+        </Spin>
       </Modal>
     </>
   );
