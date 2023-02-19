@@ -26,7 +26,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addClass } from '../../app/common';
+import { addClass, greaterThenNowDate } from '../../app/common';
 import classes from './ModalAppInfo.module.scss';
 import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
@@ -60,7 +60,9 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   title,
 }) => {
   const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
   const isRepres = roles.find((r) => r === 'representative');
+  const isSpec = roles.find((r) => r === 'specialist');
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -198,7 +200,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
         open={isOpen}
         footer={
           <>
-            {!currentService?.canBeRemoved && !currentService?.appointment && !isFetching ? (
+            {!currentService?.canBeRemoved && !currentService?.appointment && isAdmin && !isFetching ? (
               <Button
                 type="primary"
                 style={{ marginRight: '10px', backgroundColor: '#e60000' }}
@@ -221,7 +223,11 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
             ) : null}
             {currentService?.canBeRemoved && !isFetching ? (
               <>
-                {!currentService.status ? (
+                {!currentService.status &&
+                (isAdmin ||
+                  (isRepres &&
+                    currentService?.appointment?.begDate &&
+                    greaterThenNowDate(new Date(currentService.appointment.begDate)))) ? (
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -230,13 +236,12 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                   >
                     Перенести
                   </Button>
-                ) : (
-                  ''
-                )}
-
+                ) : null}
                 {!currentService.status &&
                 currentService.appointment &&
-                new Date(currentService.appointment.begDate) <= new Date() ? (
+                new Date(currentService.appointment.begDate) <= new Date() &&
+                (isAdmin || (isSpec && true)) ? (
+                  // todo проверка спец закрывать только в тоот же день
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -247,7 +252,8 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                   </Button>
                 ) : null}
 
-                {currentService.status ? (
+                {currentService.status && (isAdmin || (isSpec && true)) ? (
+                  // todo проверка спец закрывать только в тоот же день
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
