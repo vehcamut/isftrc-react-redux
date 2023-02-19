@@ -150,6 +150,9 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           //   </>
           // }
         >
+          <Descriptions.Item label="Логин" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            {user?.login}
+          </Descriptions.Item>
           <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid' }}>
             {user?.surname}
           </Descriptions.Item>
@@ -180,6 +183,12 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
             {user?.emails.join(', ')}
           </Descriptions.Item>
+          {user?.advertisingSources ? (
+            <Descriptions.Item label="Источники рекламы" style={{ borderBottom: '5px #e6f4ff solid' }}>
+              {user?.advertisingSources.map((v) => v.name).join(', ')}
+            </Descriptions.Item>
+          ) : null}
+
           {/* <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
           {representative?.surname}
         </Descriptions.Item>

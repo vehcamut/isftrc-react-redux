@@ -18,7 +18,7 @@ import MyTable from '../MyTable/MyTable';
 const { Search } = Input;
 
 interface RepresentativesTableProps extends PropsWithChildren {
-  onRowClick: (record: any) => void;
+  onRowClick?: (record: any) => void;
   dataSourseQuery: any;
   extraOptions?: any;
   tableState?: any;
@@ -183,6 +183,7 @@ RepresentativesTable.defaultProps = {
   slice: undefined,
   reduser: undefined,
   onRemove: undefined,
+  onRowClick: undefined,
 };
 
 export default RepresentativesTable;

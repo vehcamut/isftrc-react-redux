@@ -17,7 +17,7 @@ import CustomCell from '../CustomCell/CustomCell';
 const { Search } = Input;
 
 interface MyTableProps extends PropsWithChildren {
-  onRowClick: (record: any) => void;
+  onRowClick?: (record: any) => void;
   dataSourseQuery: any;
   extraOptions?: any;
   tableState?: any;
@@ -205,13 +205,17 @@ const MyTable: FunctionComponent<MyTableProps> = ({
             : false
         }
         loading={isLoading}
-        onRow={(record) => {
-          return {
-            onClick: () => {
-              onRowClick(record);
-            },
-          };
-        }}
+        onRow={
+          onRowClick
+            ? (record) => {
+                return {
+                  onClick: () => {
+                    onRowClick(record);
+                  },
+                };
+              }
+            : undefined
+        }
         rowClassName={(record) =>
           record.isActive === true ? 'my-table-row my-table-row__active' : 'my-table-row my-table-row__deactive'
         }
@@ -234,6 +238,7 @@ MyTable.defaultProps = {
   },
   slice: undefined,
   reduser: undefined,
+  onRowClick: undefined,
 };
 
 export default MyTable;

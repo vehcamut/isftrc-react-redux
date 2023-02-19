@@ -24,6 +24,43 @@ interface ConfirmDialogProps extends PropsWithChildren {
   activeKey: string;
 }
 
+const getTabs = (isAuth: boolean, roles: string[]) => {
+  if (!isAuth)
+    return [
+      // { label: 'Войти', key: 'login' },
+      { label: 'О компании', key: 'notauth/about' },
+    ];
+  if (roles.find((r) => r === 'admin'))
+    return [
+      { label: 'Личные данные', key: 'profile' },
+      { label: 'Пациенты', key: 'patients' },
+      { label: 'Представители', key: 'representatives' },
+      { label: 'Специалисты', key: 'specialists' },
+      { label: 'Администраторы', key: 'admins' },
+      { label: 'Справочники', key: 'handbooks' },
+      { label: 'О компании', key: 'about' },
+    ];
+  if (roles.find((r) => r === 'specialist'))
+    return [
+      { label: 'Личные данные', key: 'profile' },
+      { label: 'Расписание', key: 'patients' },
+      // { label: 'Представители', key: 'representatives' },
+      // { label: 'Специалисты', key: 'specialists' },
+      // { label: 'Администраторы', key: 'admins' },
+      // { label: 'Справочники', key: 'handbooks' },
+      { label: 'О компании', key: 'about' },
+    ];
+  return [
+    { label: 'Личные данные', key: 'profile' },
+    { label: 'Пациенты', key: 'patients' },
+    // { label: 'Представители', key: 'representatives' },
+    // { label: 'Специалисты', key: 'specialists' },
+    // { label: 'Администраторы', key: 'admins' },
+    // { label: 'Справочники', key: 'handbooks' },
+    { label: 'О компании', key: 'about' },
+  ];
+};
+
 // { label: 'Личные данные', key: 'profile' },
 // // { label: 'Расписание', key: 'shedules' },
 // { label: 'Пациенты', key: 'patients' },
@@ -31,27 +68,29 @@ interface ConfirmDialogProps extends PropsWithChildren {
 // { label: 'Специалисты', key: 'specialists' },
 // { label: 'Справочники', key: 'handbooks' },
 // // { label: 'Очтеты', key: 'reports' },
-const notAuthTabs = [
-  // { label: 'Войти', key: 'login' },
-  { label: 'О компании', key: 'notauth/about' },
-];
-const isAuthTabs = [
-  { label: 'Личные данные', key: 'profile' },
-  { label: 'Пациенты', key: 'patients' },
-  { label: 'Представители', key: 'representatives' },
-  { label: 'Специалисты', key: 'specialists' },
-  { label: 'Администраторы', key: 'admins' },
-  { label: 'Справочники', key: 'handbooks' },
-  { label: 'О компании', key: 'about' },
-];
 // isAuth
 const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, */ activeKey }) => {
+  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const tabs = getTabs(isAuth, roles);
+  // const notAuthTabs = [
+  //   // { label: 'Войти', key: 'login' },
+  //   { label: 'О компании', key: 'notauth/about' },
+  // ];
+  // const isAuthTabs = [
+  //   { label: 'Личные данные', key: 'profile' },
+  //   { label: 'Пациенты', key: 'patients' },
+  //   { label: 'Представители', key: 'representatives' },
+  //   { label: 'Специалисты', key: 'specialists' },
+  //   { label: 'Администраторы', key: 'admins' },
+  //   { label: 'Справочники', key: 'handbooks' },
+  //   { label: 'О компании', key: 'about' },
+  // ];
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   // const location = useLocation();
   const [logout] = authAPI.useLogoutMutation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+
   const { setIsAuth, setRoles, setName } = authSlice.actions;
   const onLogout = async () => {
     try {
@@ -108,7 +147,8 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         }}
         activeKey={activeKey}
         // defaultActiveKey={defaultActiveKey}
-        items={isAuth ? isAuthTabs : notAuthTabs}
+        // items={isAuth ? isAuthTabs : notAuthTabs}
+        items={tabs}
         // items={[
         //   { label: 'Личные данные', key: 'profile' },
         //   // { label: 'Расписание', key: 'shedules' },

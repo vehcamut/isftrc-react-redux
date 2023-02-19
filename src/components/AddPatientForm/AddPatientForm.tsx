@@ -6,6 +6,7 @@ import { addClass } from '../../app/common';
 import { dadataAPI } from '../../app/services';
 import classes from './AddPatientForm.module.scss';
 import { IPatient } from '../../models';
+import { useAppSelector } from '../../app/hooks';
 
 const { TextArea } = Input;
 interface FormDialogProps extends PropsWithChildren {
@@ -16,6 +17,8 @@ interface FormDialogProps extends PropsWithChildren {
 }
 
 const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset, initValue }) => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  const isRepres = roles.find((r) => r === 'representative');
   const [query, setQuery] = useState('');
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
 
@@ -88,9 +91,12 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
           onSearch={onSearchAC}
         />
       </Form.Item>
-      <Form.Item label="Примечание" name="note" initialValue={initValue?.note ? initValue.note : ''}>
-        <TextArea rows={4} id="note" />
-      </Form.Item>
+      {!isRepres ? (
+        <Form.Item label="Примечание" name="note" initialValue={initValue?.note ? initValue.note : ''}>
+          <TextArea rows={4} id="note" />
+        </Form.Item>
+      ) : null}
+
       <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>

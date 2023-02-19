@@ -1,3 +1,4 @@
+import { IAdvertisingSourceBase } from './IAdvertisingSource.interface';
 import { ISpecialistType } from './ISpecialistType';
 
 export interface IUser {
@@ -18,6 +19,7 @@ export interface IUserInfo {
   login: string;
   gender: string;
   address: string;
+  advertisingSources?: IAdvertisingSourceBase[];
 
   // _id: string;
   // name: string;

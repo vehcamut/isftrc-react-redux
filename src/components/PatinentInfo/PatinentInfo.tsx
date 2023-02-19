@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { addClass } from '../../app/common';
@@ -5,6 +6,7 @@ import { patientsAPI } from '../../app/services';
 import classes from './PatinentInfo.module.scss';
 import { IPatient } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
+import { useAppSelector } from '../../app/hooks';
 
 interface PatinentInfoProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
@@ -12,6 +14,9 @@ interface PatinentInfoProps extends PropsWithChildren {
 }
 
 const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
+  const isRepres = roles.find((r) => r === 'representative');
   const [messageApi, contextHolder] = message.useMessage();
   const [updatePatient] = patientsAPI.useUpdatePatientMutation();
   const [changeStatus] = patientsAPI.useChangePatientStatusMutation();
@@ -96,15 +101,22 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         column={1}
         extra={
           <>
-            {patient?.isActive ? (
-              <Button type="primary" onClick={onDeactivate} style={{ marginRight: '10px', backgroundColor: '#e60000' }}>
-                Деактивировать
-              </Button>
-            ) : (
-              <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
-                Активировать
-              </Button>
-            )}
+            {isAdmin ? (
+              patient?.isActive ? (
+                <Button
+                  type="primary"
+                  onClick={onDeactivate}
+                  style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+                >
+                  Деактивировать
+                </Button>
+              ) : (
+                <Button type="primary" onClick={onActivate} style={{ marginRight: '10px', backgroundColor: '#0c9500' }}>
+                  Активировать
+                </Button>
+              )
+            ) : null}
+
             <Button type="primary" onClick={onEdit} disabled={!patient?.isActive}>
               Редактировать
             </Button>
@@ -133,9 +145,12 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
           {patient?.address}
         </Descriptions.Item>
-        <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
-          {patient?.note}
-        </Descriptions.Item>
+        {!isRepres ? (
+          <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
+            {patient?.note}
+          </Descriptions.Item>
+        ) : null}
+
         <Descriptions.Item label="Статус">{patient?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
       </Descriptions>
     </>

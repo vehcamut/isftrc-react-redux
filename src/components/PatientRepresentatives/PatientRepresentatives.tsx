@@ -45,6 +45,8 @@ function CustomCell(props: any) {
 }
 
 const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = ({ patient }) => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
   const state1 = useAppSelector((state) => state.patientTableReducer);
   // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
@@ -161,7 +163,12 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
     });
     // alert(r._id);
   };
+  // const onRowMainTableClick = (record: any) => {
+  //   if ()
+  //     navigate(`/representatives/${record._id}/info`);
+  //   else
 
+  // }
   // const columns: ColumnsType<IRepresentative> = [
   //   {
   //     title: 'Логин',
@@ -443,8 +450,8 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
           <RepresentativesTable
             // columns={columnsA}
-            onRemove={patient?.isActive ? onRemove : false}
-            onRowClick={(record: any) => navigate(`/representatives/${record._id}/info`)}
+            onRemove={isAdmin && (patient?.isActive ? onRemove : false)}
+            onRowClick={isAdmin ? (record) => navigate(`/representatives/${record._id}/info`) : undefined}
             dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
             hasSearch={false}
             extraOptions={{ id: patient?._id }}
