@@ -35,6 +35,7 @@ import './antd.rewrite.scss';
 import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import { paymentAPI } from '../../app/services/payments.service';
 import ModalServiceInfo from '../ModalServiceInfo/ModalServiceInfo';
+import { useAppSelector } from '../../app/hooks';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -130,6 +131,8 @@ const columns = [
 ];
 
 const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => {
+  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
   const [messageApi, contextHolder] = message.useMessage();
   const [payment, setPayment] = useState<string>('');
   const { data: paymentData, isLoading: isPaymentDataLoading } = paymentAPI.useGetPaymentByIdQuery({ id: payment });
@@ -360,116 +363,6 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       />
       {/* <Modal
         destroyOnClose
-        open={isServInfoOpen}
-        footer={
-          <>
-            {servData?.canBeRemoved ? (
-              <>
-                <Button
-                  type="primary"
-                  style={{ marginRight: '0px', backgroundColor: '#e60000' }}
-                  onClick={onRemoveService}
-                  disabled={!patient?.isActive}
-                >
-                  Удалить услугу
-                </Button>
-
-                {servData?.date && new Date(servData.date) <= new Date() ? (
-                  <Button
-                    type="primary"
-                    style={{ marginRight: '0px' }}
-                    onClick={() => setIsSetResultOpen(true)}
-                    disabled={!patient?.isActive}
-                  >
-                    Закрыть услугу
-                  </Button>
-                ) : null}
-
-                {servData?.status ? null : servData?.date ? (
-                  <Button
-                    type="primary"
-                    style={{ marginRight: '0px' }}
-                    onClick={() => setIsAddAppToServOpen(true)}
-                    disabled={!patient?.isActive}
-                  >
-                    Изменить дату
-                  </Button>
-                ) : (
-                  <Button
-                    type="primary"
-                    style={{ marginRight: '0px' }}
-                    onClick={() => setIsAddAppToServOpen(true)}
-                    disabled={!patient?.isActive}
-                  >
-                    Выбрать дату
-                  </Button>
-                )}
-              </>
-            ) : null}
-
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onReset}>
-              Отмена
-            </Button>
-          </>
-        }
-        title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Информация об услуге
-          </Typography.Title>
-        }
-        width="550px"
-        onCancel={onReset}
-      >
-        {isServDataLoading ? (
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-            <Spin tip="Загрузка..." />
-          </div>
-        ) : (
-          <Descriptions>
-            <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }}>
-              {servData?.date
-                ? new Date(servData?.date).toLocaleString('ru-RU', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: '2-digit',
-                  })
-                : 'не указана'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Время" span={2} contentStyle={{ fontWeight: 'bold' }}>
-              {servData?.date
-                ? new Date(servData?.date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-                : 'не указано'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Сеанс" span={3}>
-              {servData?.number ? servData?.number : 'не указан'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Статус" span={3}>
-              {
-                // eslint-disable-next-line no-nested-ternary
-                servData?.status ? 'оказана' : servData?.date ? 'неоказана' : 'отсутствует запись'
-              }
-            </Descriptions.Item>
-            <Descriptions.Item label="Пациент" span={3}>
-              {servData?.patient}
-            </Descriptions.Item>
-            <Descriptions.Item label="Услуга" span={3}>
-              {servData?.type}
-            </Descriptions.Item>
-            <Descriptions.Item label="Специалист" span={3}>
-              {servData?.specialist ? servData?.specialist : 'не назначен'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Комментарий" span={3}>
-              {servData?.note ? servData?.note : 'отсутствует'}
-            </Descriptions.Item>
-            <Descriptions.Item label="Результат" span={3}>
-              {servData?.result ? servData?.result : 'отсутствует'}
-            </Descriptions.Item>
-          </Descriptions>
-        )}
-      </Modal> */}
-
-      <Modal
-        destroyOnClose
         open={isSetResultOpen}
         footer={null}
         title={
@@ -512,7 +405,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             </Row>
           </Form.Item>
         </Form>
-      </Modal>
+      </Modal> */}
 
       <Modal
         destroyOnClose
@@ -764,7 +657,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         open={isPayInfoOpen}
         footer={
           <>
-            {paymentData?.canRemove ? (
+            {paymentData?.canRemove && isAdmin ? (
               <Button
                 type="primary"
                 style={{ marginRight: '0px', backgroundColor: '#e60000' }}
@@ -775,8 +668,8 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
               </Button>
             ) : null}
 
-            <Button type="primary" style={{ marginRight: '0px' }} onClick={onPayInfoClose}>
-              Отмена
+            <Button type="default" style={{ marginRight: '0px' }} onClick={onPayInfoClose}>
+              Назад
             </Button>
           </>
         }
@@ -837,37 +730,39 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
             0,
           )}`}
           extra={
-            <>
-              {/* coursesData.courses[coursesData.courses.length - 1].number === 0 ||
+            isAdmin ? (
+              <>
+                {/* coursesData.courses[coursesData.courses.length - 1].number === 0 ||
               coursesData.courses[coursesData.courses.length - 1].status === false  */}
-              {coursesData.canBeNew ? (
-                <Button type="link" onClick={onNewCourse} disabled={!patient?.isActive}>
-                  Создать курс
-                </Button>
-              ) : null}
-              {coursesData.canBeOpen ? (
-                <Button type="link" onClick={onOpenCourse} disabled={!patient?.isActive}>
-                  Открыть курс
-                </Button>
-              ) : null}
-              {coursesData.canBeClose ? (
-                <Button type="link" onClick={onCloseCourse} disabled={!patient?.isActive}>
-                  Закрыть курс
-                </Button>
-              ) : null}
+                {coursesData.canBeNew ? (
+                  <Button type="link" onClick={onNewCourse} disabled={!patient?.isActive}>
+                    Создать курс
+                  </Button>
+                ) : null}
+                {coursesData.canBeOpen ? (
+                  <Button type="link" onClick={onOpenCourse} disabled={!patient?.isActive}>
+                    Открыть курс
+                  </Button>
+                ) : null}
+                {coursesData.canBeClose ? (
+                  <Button type="link" onClick={onCloseCourse} disabled={!patient?.isActive}>
+                    Закрыть курс
+                  </Button>
+                ) : null}
 
-              {/* : (
+                {/* : (
                 <Button type="link" style={{ marginRight: '0px' }}>
                   Закрыть курс
                 </Button>
               )} */}
-              <Button type="link" onClick={() => setIsAddServiceOpen(true)} disabled={!patient?.isActive}>
-                Добавить услугу
-              </Button>
-              <Button type="link" onClick={() => setIsAddPaymentOpen(true)} disabled={!patient?.isActive}>
-                Добавить оплату
-              </Button>
-            </>
+                <Button type="link" onClick={() => setIsAddServiceOpen(true)} disabled={!patient?.isActive}>
+                  Добавить услугу
+                </Button>
+                <Button type="link" onClick={() => setIsAddPaymentOpen(true)} disabled={!patient?.isActive}>
+                  Добавить оплату
+                </Button>
+              </>
+            ) : null
           }
         >
           <Descriptions.Item>
