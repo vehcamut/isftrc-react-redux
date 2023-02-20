@@ -20,6 +20,7 @@ export interface IUserInfo {
   gender: string;
   address: string;
   advertisingSources?: IAdvertisingSourceBase[];
+  types?: ISpecialistType[];
 
   // _id: string;
   // name: string;

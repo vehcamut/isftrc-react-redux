@@ -426,7 +426,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
               Сохранить
             </Button>
             <Button htmlType="button" onClick={onReset} className={addClass(classes, 'form-button')}>
-              Отменить
+              Назад
             </Button>
           </Col>
         </Row>

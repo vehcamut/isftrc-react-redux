@@ -2,44 +2,71 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import Container from '@mui/material/Container/Container';
 import Grid from '@mui/material/Grid/Grid';
-import React, { FunctionComponent, PropsWithChildren } from 'react';
+import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Button, Col, Divider, Form, Input, Row, Typography, message } from 'antd';
+import { Button, Col, Divider, Form, Input, Result, Row, Typography, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import LoginForm from '../components/LoginForm';
 import { authSlice } from '../app/reducers';
-import { authAPI } from '../app/services';
+import { authAPI, representativesAPI } from '../app/services';
 import getTokenPayload from '../app/tokenHendler';
+import UserForm from '../components/UserForm/UserForm';
 
 const { Title } = Typography;
-const SignIn: FunctionComponent<PropsWithChildren> = () => {
+const SignUp: FunctionComponent<PropsWithChildren> = () => {
+  const [isAdded, setIsAdded] = useState(false);
+  const [addRepresentative] = representativesAPI.useAddRepresentativeMutation();
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isAuth /* roles */ } = useAppSelector((state) => state.authReducer);
   const { setIsAuth, setRoles, setName } = authSlice.actions;
   const [signin] = authAPI.useSigninMutation();
+  // const onFinish = async (values: any) => {
+  //   const { login, password } = values;
+  //   // const password = values.password;
+  //   try {
+  //     // await signIN({ login, password }).unwrap();
+  //     await signin({ login, password }).unwrap();
+  //     dispatch(setIsAuth(true));
+  //     dispatch(setRoles(getTokenPayload()?.roles || []));
+  //     dispatch(setName(getTokenPayload()?.name || ''));
+  //     // const payload = getTokenPayload()?.roles;
+  //     navigate('/');
+  //   } catch (e) {
+  //     messageApi.open({
+  //       type: 'error',
+  //       content: 'Неправильный логин или пароль',
+  //     });
+  //     // console.log('ERROR!');
+  //     // dispatch(setLoginHelper('Неправильный логин или пароль'));
+  //   }
+  //   // console.log(values);
+  // };
+
   const onFinish = async (values: any) => {
-    const { login, password } = values;
-    // const password = values.password;
     try {
-      // await signIN({ login, password }).unwrap();
-      await signin({ login, password }).unwrap();
-      dispatch(setIsAuth(true));
-      dispatch(setRoles(getTokenPayload()?.roles || []));
-      dispatch(setName(getTokenPayload()?.name || ''));
-      // const payload = getTokenPayload()?.roles;
-      navigate('/');
-    } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Неправильный логин или пароль',
-      });
-      // console.log('ERROR!');
-      // dispatch(setLoginHelper('Неправильный логин или пароль'));
+      await addRepresentative(values).unwrap();
+      setIsAdded(true);
+    } catch (e: any) {
+      console.log(e?.data?.message);
+      if (e?.data?.message) {
+        messageApi.open({
+          type: 'error',
+          content: e?.data?.message,
+        });
+      } else {
+        messageApi.open({
+          type: 'error',
+          content: 'Ошибка связи с сервером',
+        });
+      }
     }
-    // console.log(values);
+  };
+
+  const onReset = () => {
+    navigate('/auth/signin', { replace: true });
   };
 
   // console.log(isAuth, isAuth);
@@ -50,7 +77,30 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
   ) : (
     <>
       {contextHolder}
-      <div style={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '20px' }}>
+        <Col>
+          <Typography.Title level={1} style={{ margin: 0 }}>
+            Регистрация
+          </Typography.Title>
+        </Col>
+      </Row>
+      {isAdded ? (
+        <Result
+          status="success"
+          title="Вы успешно зарегистрировались!"
+          subTitle="Для входа используйте введеные логин и пароль"
+          // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
+          extra={[
+            <Button type="primary" key="back" onClick={onReset} style={{ width: '200px' }}>
+              ОК
+            </Button>,
+          ]}
+        />
+      ) : (
+        <UserForm onFinish={onFinish} onReset={onReset} userType="representative" reg />
+        // <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" />
+      )}
+      {/* <div style={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Form
           // title="dfd"
           name="normal_login"
@@ -69,32 +119,15 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
           <Form.Item name="password" rules={[{ required: true, message: 'Введите пароль!' }]}>
             <Input prefix={<LockOutlined className="site-form-item-icon" />} type="password" placeholder="Пароль" />
           </Form.Item>
-          {/* <Form.Item>
-        <Form.Item name="remember" valuePropName="checked" noStyle>
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
-
-        <a className="login-form-forgot" href="">
-          Forgot password
-        </a>
-      </Form.Item> */}
 
           <Form.Item>
             <Button type="primary" htmlType="submit" className="login-form-button">
               Войти
             </Button>
-            Или{' '}
-            <Button
-              type="link"
-              style={{ margin: 0, padding: 0 }}
-              onClick={() => navigate('/auth/signup', { replace: true })}
-            >
-              зарегистрируйтесь
-            </Button>
-            !{/* <a href="./">!</a> */}
+            Или <a href="./">зарегистрируйтесь!</a>
           </Form.Item>
         </Form>
-      </div>
+      </div> */}
     </>
 
     // <Form labelWrap labelCol={{ span: 5 }} wrapperCol={{ span: 17 }} colon={false} /* onFinish={onBeforeFinish} */>
@@ -134,4 +167,4 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;

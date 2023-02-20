@@ -34,6 +34,7 @@ import Main from './routes/Main';
 import Admins from './routes/Admins';
 import AdminPage from './routes/AdminPage';
 import AddAdmins from './routes/AddAdmins';
+import SignUp from './routes/SignUp';
 // import { useAppSelector } from './app/hooks';
 
 document.documentElement.lang = 'ru';
@@ -71,8 +72,17 @@ const router = createBrowserRouter([
   {
     path: 'auth/signin',
     element: (
-      <Template activeKey="specialists">
+      <Template activeKey="">
         <SignIn />
+      </Template>
+    ),
+  },
+
+  {
+    path: 'auth/signup',
+    element: (
+      <Template activeKey="">
+        <SignUp />
       </Template>
     ),
   },

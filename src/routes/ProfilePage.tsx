@@ -38,6 +38,9 @@ const getUsetType = (roles: string[]) => {
 
 const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
   const { roles } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
+  const isRepres = roles.find((r) => r === 'representative');
+  const isSpec = roles.find((r) => r === 'specialist');
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
@@ -183,9 +186,14 @@ const ProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
             {user?.emails.join(', ')}
           </Descriptions.Item>
-          {user?.advertisingSources ? (
+          {user?.advertisingSources && isRepres ? (
             <Descriptions.Item label="Источники рекламы" style={{ borderBottom: '5px #e6f4ff solid' }}>
               {user?.advertisingSources.map((v) => v.name).join(', ')}
+            </Descriptions.Item>
+          ) : null}
+          {user?.types && isSpec ? (
+            <Descriptions.Item label="Специальности" style={{ borderBottom: '5px #e6f4ff solid' }}>
+              {user?.types.map((v) => v.name).join(', ')}
             </Descriptions.Item>
           ) : null}
 

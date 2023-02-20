@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
@@ -20,6 +21,8 @@ import {
   Result,
   Input,
   Spin,
+  Divider,
+  Card,
 } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
@@ -40,6 +43,7 @@ import { useAppSelector } from '../../app/hooks';
 
 const { confirm } = Modal;
 const { TextArea } = Input;
+const { Text, Paragraph } = Typography;
 
 interface ModalServiceInfoProps extends PropsWithChildren {
   // serviceId: string | undefined;
@@ -320,83 +324,101 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
               ) : null}
             </Descriptions>
           ) : (
-            <Descriptions column={3}>
-              <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
-                {currentService?.appointment?.begDate
-                  ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                    })
-                  : 'не указаны'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
-                {currentService?.appointment?.endDate
-                  ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                    })}`
-                  : 'не указаны'}
-              </Descriptions.Item>
-              <Descriptions.Item
-                label="Статус"
-                span={3}
-                contentStyle={{ color: currentService?.status ? 'green' : 'red' }}
-              >
-                {currentService?.status ? 'Оказана' : 'Неоказана'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Пациент" span={3}>
-                {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
-              </Descriptions.Item>
-              <Descriptions.Item label="Специалист" span={3}>
-                {currentService?.appointment ? (
-                  <Button
-                    type="link"
-                    size="small"
-                    onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
-                  >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
-                ) : (
-                  ' - '
-                )}
-              </Descriptions.Item>
-              <Descriptions.Item label="Курс" span={3}>
-                {currentService?.course?.number === 0
-                  ? 'вне курса'
-                  : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
-              </Descriptions.Item>
-              <Descriptions.Item label="Услуга" span={3}>
-                {currentService?.type.name}
-              </Descriptions.Item>
-              {!isRepres ? (
+            <>
+              {!currentService?.status &&
+              isRepres &&
+              currentService?.appointment?.begDate &&
+              !greaterThenNowDate(new Date(currentService.appointment.begDate)) ? (
+                <Card style={{ width: '100%', textAlign: 'center', marginBottom: '10px', backgroundColor: '#e6f4ff' }}>
+                  <Paragraph strong>
+                    {/* В день оказания или позже услугу можно отменить или перенести только связавшись с администратором. */}
+                    Отменить или перенести запись в данный момент невозможно.
+                  </Paragraph>
+                  <Paragraph strong>Свяжитесь с администратором.</Paragraph>
+                </Card>
+              ) : null}
+              <Descriptions column={3}>
+                <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                  {currentService?.appointment?.begDate
+                    ? new Date(currentService?.appointment?.begDate).toLocaleString('ru-RU', {
+                        day: '2-digit',
+                        month: 'long',
+                        year: 'numeric',
+                      })
+                    : 'не указаны'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Время" contentStyle={{ fontWeight: 'bold' }} span={3}>
+                  {currentService?.appointment?.endDate
+                    ? `${new Date(currentService?.appointment?.begDate).toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })} - ${new Date(currentService?.appointment?.endDate).toLocaleTimeString('ru-RU', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}`
+                    : 'не указаны'}
+                </Descriptions.Item>
                 <Descriptions.Item
-                  label={
-                    <>
-                      Комментарий
-                      {!currentService?.status && currentService?.canBeRemoved ? (
-                        <Button
-                          type="link"
-                          icon={<EditOutlined />}
-                          size="small"
-                          onClick={() => setIsChangeNoteOpen(true)}
-                        />
-                      ) : null}
-                    </>
-                  }
+                  label="Статус"
                   span={3}
+                  contentStyle={{ color: currentService?.status ? 'green' : 'red' }}
                 >
-                  {currentService?.note ? `${currentService.note}` : ' - '}
+                  {currentService?.status ? 'Оказана' : 'Неоказана'}
                 </Descriptions.Item>
-              ) : null}
+                <Descriptions.Item label="Пациент" span={3}>
+                  {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
+                </Descriptions.Item>
+                <Descriptions.Item label="Специалист" span={3}>
+                  {currentService?.appointment ? (
+                    isAdmin ? (
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
+                      >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
+                    ) : (
+                      currentService?.appointment?.specialist?.name
+                    )
+                  ) : (
+                    ' - '
+                  )}
+                </Descriptions.Item>
+                <Descriptions.Item label="Курс" span={3}>
+                  {currentService?.course?.number === 0
+                    ? 'вне курса'
+                    : `№${currentService?.course?.number}${currentService?.course?.status ? '' : ' (ЗАКРЫТ)'}`}
+                </Descriptions.Item>
+                <Descriptions.Item label="Услуга" span={3}>
+                  {currentService?.type.name}
+                </Descriptions.Item>
+                {!isRepres ? (
+                  <Descriptions.Item
+                    label={
+                      <>
+                        Комментарий
+                        {!currentService?.status && currentService?.canBeRemoved ? (
+                          <Button
+                            type="link"
+                            icon={<EditOutlined />}
+                            size="small"
+                            onClick={() => setIsChangeNoteOpen(true)}
+                          />
+                        ) : null}
+                      </>
+                    }
+                    span={3}
+                  >
+                    {currentService?.note ? `${currentService.note}` : ' - '}
+                  </Descriptions.Item>
+                ) : null}
 
-              {currentService?.status ? (
-                <Descriptions.Item label="Результат" span={3}>
-                  {currentService?.result ? `${currentService.result}` : ' - '}
-                </Descriptions.Item>
-              ) : null}
-            </Descriptions>
+                {currentService?.status ? (
+                  <Descriptions.Item label="Результат" span={3}>
+                    {currentService?.result ? `${currentService.result}` : ' - '}
+                  </Descriptions.Item>
+                ) : null}
+              </Descriptions>
+            </>
           )}
           {/* <Descriptions column={3}>
             <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
