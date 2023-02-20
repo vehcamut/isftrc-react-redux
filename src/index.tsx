@@ -35,6 +35,7 @@ import Admins from './routes/Admins';
 import AdminPage from './routes/AdminPage';
 import AddAdmins from './routes/AddAdmins';
 import SignUp from './routes/SignUp';
+import SpecShedulePage from './routes/SpecShedulePage';
 // import { useAppSelector } from './app/hooks';
 
 document.documentElement.lang = 'ru';
@@ -61,14 +62,6 @@ const router = createBrowserRouter([
       </Template>
     ),
   },
-  // {
-  //   path: '/about',
-  //   element: (
-  //     <Template activeKey="about">
-  //       <AboutPage />
-  //     </Template>
-  //   ),
-  // },
   {
     path: 'auth/signin',
     element: (
@@ -94,6 +87,45 @@ const router = createBrowserRouter([
 
   {
     children: [
+      {
+        children: [
+          {
+            path: '/shedule',
+            element: (
+              <Template activeKey="shedule">
+                <SpecShedulePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['specialist']} />,
+      },
+      {
+        children: [
+          {
+            path: '/shedule',
+            element: (
+              <Template activeKey="shedule">
+                <SpecShedulePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['specialist']} />,
+      },
+      {
+        children: [
+          {
+            path: '/shedule/:date',
+            element: (
+              <Template activeKey="shedule">
+                <SpecShedulePage />
+              </Template>
+            ),
+          },
+        ],
+        element: <RolesGuard requiredRoles={['specialist']} />,
+      },
       {
         children: [
           {
@@ -305,7 +337,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [
@@ -331,7 +363,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [
@@ -344,7 +376,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [
@@ -357,7 +389,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [
@@ -370,7 +402,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [
@@ -383,7 +415,7 @@ const router = createBrowserRouter([
             ),
           },
         ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
       },
       {
         children: [

@@ -6,12 +6,14 @@ interface IAuthState {
   isAuth: boolean;
   name: string;
   roles: string[];
+  id: string;
 }
 
 const initialState: IAuthState = {
   isAuth: localStorage?.roles?.split(',') ? localStorage?.isAuth || false : false,
   roles: localStorage?.roles?.split(',') || [],
   name: localStorage?.name || '',
+  id: localStorage?.id || '',
 };
 
 export const authSlice = createSlice({
@@ -37,6 +39,11 @@ export const authSlice = createSlice({
       localStorage.name = action.payload;
       // if (action.payload.length === 0) localStorage.removeItem('roles');
       // else localStorage.roles = action.payload;
+    },
+    setId(state: IAuthState, action: PayloadAction<string>) {
+      state.id = action.payload;
+      if (action.payload.length === 0) localStorage.removeItem('id');
+      else localStorage.id = action.payload;
     },
   },
 });

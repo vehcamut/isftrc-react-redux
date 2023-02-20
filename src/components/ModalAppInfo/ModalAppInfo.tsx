@@ -28,7 +28,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addClass, greaterThenNowDate } from '../../app/common';
+import { addClass, equalThenNowDate, greaterThenNowDate } from '../../app/common';
 import classes from './ModalAppInfo.module.scss';
 import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
@@ -46,11 +46,14 @@ const { Text, Paragraph } = Typography;
 
 interface ModalAppInfoProps extends PropsWithChildren {
   // serviceId: string | undefined;
+
   title: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   appointmentId: string;
   setAppointmentId?: React.Dispatch<React.SetStateAction<string>>;
+  isPatientLink?: boolean;
+  isSpecialistLink?: boolean;
 }
 
 const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
@@ -59,8 +62,10 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
   appointmentId,
   setAppointmentId,
   title,
+  isPatientLink,
+  isSpecialistLink,
 }) => {
-  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
   const isRepres = roles.find((r) => r === 'representative');
   const isSpec = roles.find((r) => r === 'specialist');
@@ -248,8 +253,10 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                 !currentAppointment.service.status &&
                 currentAppointment?.begDate &&
                 new Date(currentAppointment?.begDate) <= new Date() &&
-                (isAdmin || (isSpec && true)) ? (
-                  // todo проверка спец закрывать только в тоот же день
+                (isAdmin ||
+                  (isSpec &&
+                    currentAppointment?.specialist._id === id &&
+                    equalThenNowDate(new Date(currentAppointment?.begDate)))) ? (
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -260,8 +267,12 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                   </Button>
                 ) : null}
 
-                {currentAppointment?.service && currentAppointment.service.status && (isAdmin || (isSpec && true)) ? (
-                  // todo проверка спец закрывать только в тоот же день
+                {currentAppointment?.service &&
+                currentAppointment.service.status &&
+                (isAdmin ||
+                  (isSpec &&
+                    currentAppointment?.specialist._id === id &&
+                    equalThenNowDate(new Date(currentAppointment?.begDate)))) ? (
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -374,13 +385,26 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                   {/* {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'} */}
                 </Descriptions.Item>
                 <Descriptions.Item label="Пациент" span={3}>
-                  {currentAppointment?.service
+                  {currentAppointment?.service ? (
+                    isPatientLink ? (
+                      <Button
+                        type="link"
+                        size="small"
+                        onClick={(e) => navigate(`/patients/${currentAppointment.service?.patient?._id}/info`)}
+                      >{`${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`}</Button>
+                    ) : (
+                      `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
+                    )
+                  ) : (
+                    ' - '
+                  )}
+                  {/* {currentAppointment?.service
                     ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
-                    : ' - '}
+                    : ' - '} */}
                 </Descriptions.Item>
                 <Descriptions.Item label="Специалист" span={3}>
                   {currentAppointment?.service ? (
-                    isAdmin ? (
+                    isSpecialistLink ? (
                       <Button
                         type="link"
                         size="small"
@@ -463,6 +487,8 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
 
 ModalAppInfo.defaultProps = {
   setAppointmentId: undefined,
+  isPatientLink: false,
+  isSpecialistLink: false,
 };
 
 export default ModalAppInfo;

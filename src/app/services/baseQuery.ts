@@ -19,10 +19,12 @@ export default async (args: string | FetchArgs, api: BaseQueryApi, extraOptions:
       api.dispatch(authSlice.actions.setIsAuth(false));
       api.dispatch(authSlice.actions.setRoles([]));
       api.dispatch(authSlice.actions.setName(''));
+      api.dispatch(authSlice.actions.setId(''));
     } else {
       api.dispatch(authSlice.actions.setIsAuth(true));
       api.dispatch(authSlice.actions.setRoles(getTokenPayload()?.roles || []));
       api.dispatch(authSlice.actions.setName(getTokenPayload()?.name || ''));
+      api.dispatch(authSlice.actions.setId(getTokenPayload()?.sub || ''));
     }
 
     result = await baseQuery(args, api, extraOptions);

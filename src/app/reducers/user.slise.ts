@@ -5,11 +5,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 interface IUserState {
   isAuth: boolean;
   roles: string[];
+  id: string;
 }
 
 const initialState: IUserState = {
   isAuth: localStorage?.roles?.split(',') ? localStorage?.isAuth || false : false,
   roles: localStorage?.roles?.split(',') || [],
+  id: localStorage?.id || '',
 };
 
 export const userSlice = createSlice({
@@ -29,6 +31,11 @@ export const userSlice = createSlice({
       state.roles = action.payload;
       if (action.payload.length === 0) localStorage.removeItem('roles');
       else localStorage.roles = action.payload;
+    },
+    setId(state: IUserState, action: PayloadAction<string>) {
+      state.id = action.payload;
+      if (action.payload.length === 0) localStorage.removeItem('id');
+      else localStorage.id = action.payload;
     },
   },
 });

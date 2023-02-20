@@ -34,6 +34,7 @@ import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
 import ModalAppInfo from '../ModalAppInfo/ModalAppInfo';
+import { useAppSelector } from '../../app/hooks';
 
 const { confirm } = Modal;
 
@@ -43,6 +44,10 @@ interface PatientSheduleProps extends PropsWithChildren {
 }
 
 const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => {
+  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
+  const isRepres = roles.find((r) => r === 'representative');
+  const isSpec = roles.find((r) => r === 'specialist');
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
   // modals
@@ -158,6 +163,7 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
         setIsOpen={setIsAppInfoOpen}
         appointmentId={curAppId}
         setAppointmentId={setCurAppId}
+        isSpecialistLink={!!isAdmin}
       />
 
       <Shedule

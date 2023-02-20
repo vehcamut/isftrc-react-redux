@@ -29,7 +29,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
 import { useNavigate, useParams } from 'react-router-dom';
-import { addClass, greaterThenNowDate } from '../../app/common';
+import { addClass, equalThenNowDate, greaterThenNowDate } from '../../app/common';
 import classes from './ModalAppInfo.module.scss';
 import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
@@ -63,7 +63,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
   // setAppointmentId,
   title,
 }) => {
-  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
   const isRepres = roles.find((r) => r === 'representative');
   const isSpec = roles.find((r) => r === 'specialist');
@@ -244,8 +244,10 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                 {!currentService.status &&
                 currentService.appointment &&
                 new Date(currentService.appointment.begDate) <= new Date() &&
-                (isAdmin || (isSpec && true)) ? (
-                  // todo проверка спец закрывать только в тоот же день
+                (isAdmin ||
+                  (isSpec &&
+                    currentService.appointment.specialist._id === id &&
+                    equalThenNowDate(new Date(currentService.appointment.begDate)))) ? (
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -256,8 +258,11 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                   </Button>
                 ) : null}
 
-                {currentService.status && (isAdmin || (isSpec && true)) ? (
-                  // todo проверка спец закрывать только в тоот же день
+                {currentService.status &&
+                (isAdmin ||
+                  (isSpec &&
+                    currentService?.appointment?.specialist._id === id &&
+                    equalThenNowDate(new Date(currentService.appointment.begDate)))) ? (
                   <Button
                     type="primary"
                     style={{ marginRight: '10px' }}
@@ -337,6 +342,21 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                   <Paragraph strong>Свяжитесь с администратором.</Paragraph>
                 </Card>
               ) : null}
+              {!currentService?.status &&
+              isSpec &&
+              currentService?.appointment?.specialist._id === id &&
+              !equalThenNowDate(new Date(currentService.appointment.begDate)) ? (
+                // isRepres &&
+                // currentService?.appointment?.begDate &&
+                // !greaterThenNowDate(new Date(currentService.appointment.begDate))
+                <Card style={{ width: '100%', textAlign: 'center', marginBottom: '10px', backgroundColor: '#e6f4ff' }}>
+                  <Paragraph strong>
+                    {/* В день оказания или позже услугу можно отменить или перенести только связавшись с администратором. */}
+                    Закрыть запись в данный момент невозможно.
+                  </Paragraph>
+                  <Paragraph strong>Свяжитесь с администратором.</Paragraph>
+                </Card>
+              ) : null}
               <Descriptions column={3}>
                 <Descriptions.Item label="Дата" contentStyle={{ fontWeight: 'bold' }} span={3}>
                   {currentService?.appointment?.begDate
@@ -369,15 +389,15 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                   {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}
                 </Descriptions.Item>
                 <Descriptions.Item label="Специалист" span={3}>
-                  {currentService?.appointment ? (
+                  {currentService?.appointment && currentService?.appointment?.specialist?.patronymic ? (
                     isAdmin ? (
                       <Button
                         type="link"
                         size="small"
                         onClick={(e) => navigate(`/specialists/${currentService?.appointment?.specialist._id}/info`)}
-                      >{`${currentService?.appointment?.specialist.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}</Button>
+                      >{`${currentService?.appointment?.specialist.surname} ${currentService?.appointment?.specialist?.name[0]}.${currentService?.appointment?.specialist?.patronymic[0]}.`}</Button>
                     ) : (
-                      currentService?.appointment?.specialist?.name
+                      `${currentService?.appointment?.specialist?.surname} ${currentService?.appointment?.specialist?.name[0]}.${currentService?.appointment?.specialist?.patronymic[0]}.`
                     )
                   ) : (
                     ' - '
@@ -396,7 +416,9 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
                     label={
                       <>
                         Комментарий
-                        {!currentService?.status && currentService?.canBeRemoved ? (
+                        {!currentService?.status &&
+                        currentService?.canBeRemoved &&
+                        (isAdmin || (isSpec && currentService?.appointment?.specialist._id === id)) ? (
                           <Button
                             type="link"
                             icon={<EditOutlined />}

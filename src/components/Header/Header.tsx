@@ -43,20 +43,13 @@ const getTabs = (isAuth: boolean, roles: string[]) => {
   if (roles.find((r) => r === 'specialist'))
     return [
       { label: 'Личные данные', key: 'profile' },
-      { label: 'Расписание', key: 'patients' },
-      // { label: 'Представители', key: 'representatives' },
-      // { label: 'Специалисты', key: 'specialists' },
-      // { label: 'Администраторы', key: 'admins' },
-      // { label: 'Справочники', key: 'handbooks' },
+      { label: 'Пациенты', key: 'patients' },
+      { label: 'Расписание', key: 'shedule' },
       { label: 'О компании', key: 'about' },
     ];
   return [
     { label: 'Личные данные', key: 'profile' },
     { label: 'Пациенты', key: 'patients' },
-    // { label: 'Представители', key: 'representatives' },
-    // { label: 'Специалисты', key: 'specialists' },
-    // { label: 'Администраторы', key: 'admins' },
-    // { label: 'Справочники', key: 'handbooks' },
     { label: 'О компании', key: 'about' },
   ];
 };
