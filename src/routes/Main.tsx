@@ -5,11 +5,11 @@ import { useAppSelector } from '../app/hooks';
 import { authAPI } from '../app/services';
 
 const Main = () => {
-  const [test] = authAPI.useTestMutation();
-  useEffect(() => {
-    test({});
-  }, []);
-  const location = useLocation();
+  // const [test] = authAPI.useTestMutation();
+  // useEffect(() => {
+  //   test({});
+  // }, []);
+  // const location = useLocation();
   // console.log(<Outlet />);
   return <Navigate to="/profile" replace />;
   // // authAPI.useTestMutation();

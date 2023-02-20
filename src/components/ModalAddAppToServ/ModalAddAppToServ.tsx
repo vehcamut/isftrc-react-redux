@@ -32,6 +32,7 @@ import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
+import { useAppSelector } from '../../app/hooks';
 
 const { confirm } = Modal;
 
@@ -44,6 +45,10 @@ interface ModalAddAppToServProps extends PropsWithChildren {
 }
 
 const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
+  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
+  const isRepres = roles.find((r) => r === 'representative');
+  const isSpec = roles.find((r) => r === 'specialist');
   const [isSuccess, setIsSuccess] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
   // API
@@ -55,7 +60,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
       id: serviceId || '',
     },
     {
-      skip: !serviceId,
+      skip: !serviceId || !!isSpec,
     },
   );
   const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery(
@@ -63,7 +68,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
       type: currentService?.type._id || '',
     },
     {
-      skip: !currentService?.type._id,
+      skip: !currentService?.type._id || !!isSpec,
     },
   );
 

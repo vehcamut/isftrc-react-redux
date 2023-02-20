@@ -69,9 +69,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
 
   const [currentPatient, setCurrentPatient] = useState<IService | undefined>(undefined);
   const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
-  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery({
-    type: currentPatient?.type._id || '',
-  });
 
   const onAddUpdateReset = () => {
     form.resetFields();

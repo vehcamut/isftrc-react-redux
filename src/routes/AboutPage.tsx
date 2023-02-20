@@ -21,16 +21,6 @@ const AboutPage: FunctionComponent<AboutPageProps> = ({ activeKey }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
-
-  const onBackClick = () => {
-    navigate('/patients', { replace: true });
-  };
-
-  const onChange = (key: string) => {
-    navigate(`/patients/${params?.id}/${key}`, { replace: true });
-    // navigate(`./../${key}`, { replace: true });
-  };
 
   return (
     <>

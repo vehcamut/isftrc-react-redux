@@ -71,7 +71,9 @@ const Shedule: FunctionComponent<SheduleProps> = ({
       ...extraOptions,
     },
     {
-      skip: 'patientId' in extraOptions ? !extraOptions.patientId : false,
+      skip:
+        ('patientId' in extraOptions ? !extraOptions.patientId : false) ||
+        ('specialistId' in extraOptions ? !extraOptions.specialistId : false),
     },
   );
 

@@ -120,9 +120,9 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
               <Text key="0" strong>
                 {name}
               </Text>
-              <Button key="1" type="primary">
+              {/* <Button key="1" type="primary">
                 Справка
-              </Button>
+              </Button> */}
 
               <Button key="2" type="primary" onClick={onLogout}>
                 Выйти
