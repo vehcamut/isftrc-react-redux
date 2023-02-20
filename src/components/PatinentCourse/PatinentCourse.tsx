@@ -133,6 +133,7 @@ const columns = [
 const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => {
   const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
+  const isSpec = roles.find((r) => r === 'specialist');
   const [messageApi, contextHolder] = message.useMessage();
   const [payment, setPayment] = useState<string>('');
   const { data: paymentData, isLoading: isPaymentDataLoading } = paymentAPI.useGetPaymentByIdQuery(
@@ -630,10 +631,9 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       ) : coursesData?.courses ? (
         <Descriptions
           size="middle"
-          title={`Курсы пациента. Общий баланс: ${coursesData.courses.reduce(
-            (accum, current) => accum + current.total,
-            0,
-          )}`}
+          title={`Курсы пациента.${
+            isSpec ? '' : `Общий баланс: ${coursesData.courses.reduce((accum, current) => accum + current.total, 0)}`
+          }`}
           extra={
             isAdmin ? (
               <>
@@ -693,7 +693,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                           course.number
                             ? `Курс лечения №${course.number}${!course.status ? ' | ЗАКРЫТ' : ''}`
                             : 'Услуги и оплаты вне курсов'
-                        } | Баланс: ${course.total}`}
+                        }${isSpec ? '' : ` | Баланс: ${course.total}`}`}
                       </Title>
                     }
                     key={course._id}
@@ -713,7 +713,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
                               // header={group.name}
                               header={
                                 <Title style={{ margin: 0, fontVariant: 'small-caps' }} level={5}>
-                                  {`${group.name}. Баланс: ${group.total}`}
+                                  {`${group.name}.${isSpec ? '' : ` Баланс: ${group.total}`}`}
                                 </Title>
                               }
                               key={group._id}

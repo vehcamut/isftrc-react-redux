@@ -18,7 +18,7 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isAuth /* roles */ } = useAppSelector((state) => state.authReducer);
-  const { setIsAuth, setRoles, setName } = authSlice.actions;
+  const { setIsAuth, setRoles, setName, setId } = authSlice.actions;
   const [signin] = authAPI.useSigninMutation();
   const onFinish = async (values: any) => {
     const { login, password } = values;
@@ -29,6 +29,7 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
       dispatch(setIsAuth(true));
       dispatch(setRoles(getTokenPayload()?.roles || []));
       dispatch(setName(getTokenPayload()?.name || ''));
+      dispatch(setId(getTokenPayload()?.sub || ''));
       // const payload = getTokenPayload()?.roles;
       navigate('/');
     } catch (e) {

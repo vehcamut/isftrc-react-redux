@@ -84,7 +84,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
   const [logout] = authAPI.useLogoutMutation();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
-  const { setIsAuth, setRoles, setName } = authSlice.actions;
+  const { setIsAuth, setRoles, setName, setId } = authSlice.actions;
   const onLogout = async () => {
     try {
       // await signIN({ login, password }).unwrap();
@@ -92,6 +92,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
       dispatch(setIsAuth(false));
       dispatch(setRoles([]));
       dispatch(setName(''));
+      dispatch(setId(''));
       // eslint-disable-next-line no-restricted-globals
       // location.reload();
       // const payload = getTokenPayload()?.roles;

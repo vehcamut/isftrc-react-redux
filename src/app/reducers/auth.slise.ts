@@ -36,7 +36,9 @@ export const authSlice = createSlice({
     },
     setName(state: IAuthState, action: PayloadAction<string>) {
       state.name = action.payload;
-      localStorage.name = action.payload;
+      // localStorage.name = action.payload;
+      if (action.payload.length === 0) localStorage.removeItem('name');
+      else localStorage.name = action.payload;
       // if (action.payload.length === 0) localStorage.removeItem('roles');
       // else localStorage.roles = action.payload;
     },
