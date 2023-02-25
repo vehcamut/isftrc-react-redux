@@ -24,12 +24,19 @@
 }
 .page-layout {
   // margin-bottom: 40px;
+  // display: flex;
+  // flex-direction: column;
   min-height: 100vh;
+  // min-height: -webkit-fill-available;
+  // min-height: 100vh;
+
+  // min-height: calc(var(--vh, 1vh) * 100);
   .header {
     background-color: #ffffff;
     height: 100%;
   }
   .content {
+    flex-grow: 3;
     min-height: 100%;
     background: #e6f4ff;
     padding-left: 50px;

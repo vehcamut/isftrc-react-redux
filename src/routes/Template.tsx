@@ -20,6 +20,9 @@ interface TemplateProps extends PropsWithChildren {
 }
 
 const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* defaultActiveKey */ }) => {
+  //  const vh = window.innerHeight * 0.01;
+  // Then we set the value in the --vh custom property to the root of the document
+  // document.documentElement.style.setProperty('--vh', `${vh}px`);
   // const { isMobile } = useAppSelector((state) => state.authReducer);
   // const { isMobile } = localStorage;
   // console.log(localStorage);
@@ -70,7 +73,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
         },
       }}
     >
-      <Layout className={addClass(classes, 'page-layout')}>
+      <Layout className={addClass(classes, 'page-layout')} /* style={{ minHeight: `calc(var(${vh}, 1vh) * 100)` }} */>
         <Header className={addClass(classes, 'header')}>
           <AppBar activeKey={activeKey} /* defaultActiveKey={defaultActiveKey} */ />
         </Header>

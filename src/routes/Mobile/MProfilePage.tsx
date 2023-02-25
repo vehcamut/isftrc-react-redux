@@ -119,8 +119,8 @@ const MProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
       </Modal>
       <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>
         <Row justify="center" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
-          <Col span={24} style={{ alignItems: 'center', textAlign: 'center' }}>
-            <Typography.Title level={3} style={{ margin: 0 }}>
+          <Col span={24} style={{ textAlign: 'center' }}>
+            <Typography.Title level={2} style={{ margin: 0 }}>
               Личные данные
             </Typography.Title>
           </Col>
@@ -133,10 +133,14 @@ const MProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
         <Descriptions
           layout="vertical"
           bordered
-          size="middle"
-          // contentStyle={{ backgroundColor: '#ffffff' }}
+          size="small"
+          contentStyle={{ backgroundColor: '#ffffff', width: '100%', display: 'block', padding: '12px 24px' }}
           labelStyle={{
             color: '#ffffff',
+            width: '100%',
+            display: 'block',
+            padding: '12px 24px',
+            backgroundColor: '#1677FF',
             // borderRight: '5px solid #e6f4ff',
             // width: '150px',
           }}
@@ -160,50 +164,50 @@ const MProfilePage: FunctionComponent<ProfilePageProps> = ({ activeKey }) => {
           //   </>
           // }
         >
-          <Descriptions.Item label="Логин" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Логин" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.login}
           </Descriptions.Item>
-          <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Фамилия" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.surname}
           </Descriptions.Item>
-          <Descriptions.Item label="Имя" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Имя" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Отчество" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Отчество" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.patronymic}
           </Descriptions.Item>
-          <Descriptions.Item label="Пол" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Пол" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.gender}
           </Descriptions.Item>
-          <Descriptions.Item label="Дата рождения" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Дата рождения" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {new Date(user?.dateOfBirth || '').toLocaleString('ru', {
               year: 'numeric',
               month: 'numeric',
               day: 'numeric',
             })}
           </Descriptions.Item>
-          <Descriptions.Item label="Адрес" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Адрес" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.address}
           </Descriptions.Item>
-          <Descriptions.Item label="Номера телефонов" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Номера телефонов" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.phoneNumbers.map((c) => (
               <div key={c}>{`+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`}</div>
             ))}
           </Descriptions.Item>
-          <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid' }}>
+          <Descriptions.Item label="Электронные почты" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
             {user?.emails.map((e) => (
               <div key={e}>{e}</div>
             ))}
           </Descriptions.Item>
           {user?.advertisingSources && isRepres ? (
-            <Descriptions.Item label="Источники рекламы" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            <Descriptions.Item label="Источники рекламы" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
               {user?.advertisingSources.map((v) => (
                 <div key={v._id}>{v.name}</div>
               ))}
             </Descriptions.Item>
           ) : null}
           {user?.types && isSpec ? (
-            <Descriptions.Item label="Специальности" style={{ borderBottom: '5px #e6f4ff solid' }}>
+            <Descriptions.Item label="Специальности" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
               {user?.types.map((v) => v.name).join(', ')}
             </Descriptions.Item>
           ) : null}

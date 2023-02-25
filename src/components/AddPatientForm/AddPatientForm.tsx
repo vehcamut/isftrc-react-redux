@@ -17,7 +17,7 @@ interface FormDialogProps extends PropsWithChildren {
 }
 
 const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset, initValue }) => {
-  const { roles } = useAppSelector((state) => state.authReducer);
+  const { roles, isMobile } = useAppSelector((state) => state.authReducer);
   const isRepres = roles.find((r) => r === 'representative');
   const [query, setQuery] = useState('');
   const { data: options, isLoading: addressIsLoading } = dadataAPI.useGetAddressQuery(query);
@@ -27,7 +27,13 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
   }, 800);
 
   return (
-    <Form labelWrap labelCol={{ span: 3 }} wrapperCol={{ span: 21 }} onFinish={onFinish}>
+    <Form
+      labelWrap
+      labelCol={{ span: isMobile ? 24 : 3 }}
+      wrapperCol={{ span: isMobile ? 24 : 21 }}
+      onFinish={onFinish}
+      layout={isMobile ? 'vertical' : undefined}
+    >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}
@@ -74,7 +80,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
         name="dateOfBirth"
         initialValue={initValue?.dateOfBirth ? dayjs(initValue.dateOfBirth) : undefined}
       >
-        <DatePicker defaultValue={undefined} format="DD.MM.YYYY" id="dateOfBirth" />
+        <DatePicker defaultValue={undefined} format="DD.MM.YYYY" id="dateOfBirth" inputReadOnly={isMobile} />
       </Form.Item>
       <Form.Item
         rules={[{ required: true, message: 'Поле "Адрес" не должно быть пустым' }]}
@@ -97,7 +103,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
         </Form.Item>
       ) : null}
 
-      <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+      <Form.Item wrapperCol={{ offset: 0, span: isMobile ? 24 : 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button

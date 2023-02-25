@@ -42,6 +42,8 @@ import { authSlice } from './app/reducers';
 import MProfilePage from './routes/Mobile/MProfilePage';
 import MTemplate from './routes/Mobile/MTemplate';
 import MPatients from './routes/Mobile/MPatients';
+import MAddPatient from './routes/Mobile/MAddPatients';
+import MPatientPage from './routes/Mobile/MPatientPage';
 // import { useAppSelector } from './app/hooks';
 
 let isMobile = false;
@@ -393,11 +395,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/add',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MAddPatient />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <AddPatient />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <AddPatient />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative']} />,
@@ -406,11 +417,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/:id/info',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MPatientPage activeKey="info" />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <PatientPage activeKey="info" />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <PatientPage activeKey="info" />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
@@ -419,11 +439,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/:id/representatives',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MPatientPage activeKey="representatives" />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <PatientPage activeKey="representatives" />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <PatientPage activeKey="representatives" />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,

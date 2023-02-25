@@ -99,6 +99,9 @@ const Patients = () => {
     // console.log(pagination, filters, sorter);
     dispatch(setPage(pagination.current ? pagination.current - 1 : 0));
     dispatch(setLimit(pagination.pageSize ? pagination.pageSize : -1));
+    // TODO скрол везде
+    // eslint-disable-next-line no-restricted-globals
+    scroll(0, 0);
   };
   const onSearch = (value: string) => {
     dispatch(setPage(0));

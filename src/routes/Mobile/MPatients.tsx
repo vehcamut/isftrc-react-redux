@@ -1,9 +1,11 @@
-import React from 'react';
-import { Typography, Table, Row, Col, Button, Input } from 'antd';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React, { createRef } from 'react';
+import { Typography, Table, Row, Col, Button, Input, Card, Empty, Descriptions, InputRef, Pagination } from 'antd';
+import type { PaginationProps } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
-import { FilterFilled } from '@ant-design/icons';
+import { FilterFilled, SelectOutlined } from '@ant-design/icons';
 import classes from '../style.module.scss';
 import { patientsAPI } from '../../app/services';
 import { IPatient } from '../../models';
@@ -14,6 +16,8 @@ import { patientTableSlice } from '../../app/reducers';
 const { Search } = Input;
 
 const MPatients = () => {
+  const remoteInput = createRef<InputRef>();
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
@@ -84,6 +88,12 @@ const MPatients = () => {
   ];
   const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
+  const onChange: PaginationProps['onChange'] = (page1: number, pageSize: number) => {
+    dispatch(setPage(page1 ? page1 - 1 : 0));
+    // eslint-disable-next-line no-restricted-globals
+    scroll(0, 0);
+  };
+
   const handleTableChange = (
     pagination: TablePaginationConfig,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -103,6 +113,15 @@ const MPatients = () => {
   const onSearch = (value: string) => {
     dispatch(setPage(0));
     dispatch(setFilter(value));
+    remoteInput.current?.blur();
+    // const input = this?.input?.current;
+    // input?.blur();
+
+    // if ('virtualKeyboard' in navigator) {
+    //   const x: any = navigator.virtualKeyboard;
+    //   x.hide();
+    // }
+    // VirtualKeyboard.hide();
   };
   const onAddClick = () => {
     navigate('/patients/add', { replace: true });
@@ -111,25 +130,104 @@ const MPatients = () => {
   return (
     <>
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
-        <Col>
-          <Typography.Title level={1} style={{ margin: 0 }}>
+        <Col span={24} style={{ alignItems: 'center', textAlign: 'center' }}>
+          <Typography.Title level={2} style={{ margin: 0 }}>
             Пациенты
           </Typography.Title>
         </Col>
-        <Col>
+        <Col span={24} style={{ alignItems: 'center', textAlign: 'center' }}>
           <Button type="link" onClick={onAddClick}>
             Добавить пациента
           </Button>
         </Col>
       </Row>
+      {/* <Input /> */}
       <Search
+        onPressEnter={(e: any) => onSearch(e.target?.defaultValue)}
+        ref={remoteInput}
         allowClear
         placeholder="Введите текст поиска"
         onSearch={onSearch}
         enterButton
         style={{ marginBottom: '15px' }}
       />
-      <Table
+      {data?.count !== 0 ? (
+        data?.data.map((patient) => (
+          // eslint-disable-next-line jsx-a11y/anchor-is-valid
+          <Card
+            key={patient._id}
+            size="small"
+            title={`${patient.number} ${patient.surname} ${patient.name} ${patient.patronymic}`}
+            extra={
+              <Button
+                type="link"
+                icon={<SelectOutlined />}
+                onClick={() => {
+                  navigate(`/patients/${patient._id}/info`);
+                }}
+              />
+            }
+            style={{ width: '100%', marginBottom: '5px' }}
+            // headStyle={patient.isActive ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
+          >
+            <Descriptions column={3}>
+              <Descriptions.Item label="Дата рождения" span={3}>
+                {new Date(patient.dateOfBirth).toLocaleString('ru', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                })}
+              </Descriptions.Item>
+              <Descriptions.Item label="Пол" span={3}>
+                {patient.gender}
+              </Descriptions.Item>
+              <Descriptions.Item label="Адрес" span={3}>
+                {patient.address}
+              </Descriptions.Item>
+              <Descriptions.Item label="Статус" span={3}>
+                {patient.isActive ? (
+                  <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+                ) : (
+                  <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+                )}
+              </Descriptions.Item>
+            </Descriptions>
+          </Card>
+        ))
+      ) : (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="Пациенты не найдены"
+          style={{ backgroundColor: 'white', margin: 0, padding: '40px', borderRadius: '5px' }}
+        />
+      )}
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <Pagination
+          current={page + 1}
+          pageSize={limit}
+          total={data?.count}
+          size="small"
+          onChange={onChange}
+          hideOnSinglePage
+          showSizeChanger
+        />
+      </div>
+      {/* <Pagination
+        // pageSizeOptions={}
+        defaultCurrent={1}
+        current={page + 1}
+        pageSize={limit}
+        total={data?.count}
+        size="small"
+        pageSizeOptions={[10, 20, 50, 100]}
+        showSizeChanger
+        showQuickJumper
+        hideOnSinglePage
+        onShowSizeChange={(current, pageSize) => console.log(current)}
+        onChange={(page1: any) => console.log(page1)}
+      /> */}
+
+      {/* <Table
         style={{ width: '100%' }}
         tableLayout="fixed"
         bordered
@@ -158,7 +256,7 @@ const MPatients = () => {
         }
         className={addClass(classes, 'patients-table')}
         onChange={handleTableChange}
-      />
+      /> */}
     </>
   );
 };
