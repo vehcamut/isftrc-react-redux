@@ -201,7 +201,7 @@ const MPatients = () => {
           style={{ backgroundColor: 'white', margin: 0, padding: '40px', borderRadius: '5px' }}
         />
       )}
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '10px' }}>
         <Pagination
           current={page + 1}
           pageSize={limit}

@@ -39,6 +39,7 @@ export interface IServiceInCourse {
   name: string;
   price: number;
   specialist: string;
+  payer?: string;
   number?: number;
   // type: IServiceTypeWithoutGroup;
   status: boolean;

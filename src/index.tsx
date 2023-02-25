@@ -461,11 +461,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/:id/course',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MPatientPage activeKey="course" />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <PatientPage activeKey="course" />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <PatientPage activeKey="course" />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,

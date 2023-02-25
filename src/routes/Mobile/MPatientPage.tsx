@@ -10,6 +10,8 @@ import PatientRepresentatives from '../../components/PatientRepresentatives/Pati
 import PatinentCourse from '../../components/PatinentCourse/PatinentCourse';
 import PatientShedule from '../../components/PatientShedule/PatientShedule';
 import MPatinentInfo from '../../components/PatinentInfo/MPatinentInfo';
+import MPatientRepresentatives from '../../components/PatientRepresentatives/MPatientRepresentatives';
+import MPatinentCourse from '../../components/PatinentCourse/MPatinentCourse';
 
 interface MPatientPageProps extends PropsWithChildren {
   activeKey: 'info' | 'representatives' | 'course' | 'shedule';
@@ -108,7 +110,8 @@ const MPatientPage: FunctionComponent<MPatientPageProps> = ({ activeKey }) => {
           </Col>
         </Row>
         {activeKey === 'info' ? <MPatinentInfo patient={patient} /> : null}
-        {activeKey === 'representatives' ? <PatientRepresentatives patient={patient} /> : null}
+        {activeKey === 'representatives' ? <MPatientRepresentatives patient={patient} /> : null}
+        {activeKey === 'course' ? <MPatinentCourse patient={patient} /> : null}
         {/* <Radio.Group>
           <Radio.Button value="top">Данные</Radio.Button>
           <Radio.Button value="bottom">Представители</Radio.Button>

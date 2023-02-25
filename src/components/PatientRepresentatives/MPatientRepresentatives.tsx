@@ -1,10 +1,16 @@
 /* eslint-disable react/jsx-props-no-spreading */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // TODO: ПРОВЕРИТЬ ДОБАВЛЕНИЕ
-import { Button, Modal, Typography, Descriptions, message, Input, Table, Tooltip } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Input, Table, Tooltip, Card, Empty } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { DeleteOutlined, DeleteRowOutlined, ExclamationCircleFilled, FilterFilled } from '@ant-design/icons';
+import {
+  DeleteOutlined,
+  DeleteRowOutlined,
+  ExclamationCircleFilled,
+  FilterFilled,
+  SelectOutlined,
+} from '@ant-design/icons';
 import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
 import { addClass } from '../../app/common';
@@ -19,14 +25,14 @@ import PatientsTable from '../PatientsTable/PatientsTable';
 import RepresentativesTable from '../RepresentativesTable/RepresentativesTable';
 import UserForm from '../UserForm/UserForm';
 
-interface PatientRepresentativesProps extends PropsWithChildren {
+interface MPatientRepresentativesProps extends PropsWithChildren {
   // eslint-disable-next-line react/require-default-props
   patient?: IPatient;
 }
 const { Search } = Input;
 const { confirm } = Modal;
 
-const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = ({ patient }) => {
+const MPatientRepresentatives: FunctionComponent<MPatientRepresentativesProps> = ({ patient }) => {
   const { roles } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
   const state1 = useAppSelector((state) => state.patientTableReducer);
@@ -46,10 +52,13 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
 
   const [isActive, setIsActive] = useState<boolean | undefined>(true);
   // const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
-  // const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
-  //   id: patient?._id || '',
-  //   isActive,
-  // });
+  const { data, isLoading } = patientsAPI.useGetPatientRepresentativesQuery(
+    {
+      id: patient?._id || '',
+      isActive,
+    },
+    { skip: patient?._id === '' },
+  );
 
   const onRemove = (representativeRecord: any) => {
     const showConfirm = () => {
@@ -187,6 +196,7 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
       </Modal>
       <Descriptions
         size="middle"
+        contentStyle={{ whiteSpace: 'pre-line' }}
         // column={1}
         title="Представители пациента"
         extra={
@@ -226,28 +236,80 @@ const PatientRepresentatives: FunctionComponent<PatientRepresentativesProps> = (
           />
         </Descriptions.Item> */}
         <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
-          <RepresentativesTable
-            // columns={columnsA}
-            onRemove={isAdmin && (patient?.isActive ? onRemove : false)}
-            onRowClick={isAdmin ? (record) => navigate(`/representatives/${record._id}/info`) : undefined}
-            dataSourseQuery={patientsAPI.useGetPatientRepresentativesQuery}
-            hasSearch={false}
-            extraOptions={{ id: patient?._id }}
-            // tableState={state1}
-            // slice={patientTableSlice}
-            // reduser={useAppSelector((state) => state.patientTableReducer)}
-          />
-          {/* <Search
-            allowClear
-            placeholder="Введите текст поиска"
-            onSearch={onSearch}
-            enterButton
-            style={{ marginBottom: '15px' }}
-          /> */}
+          {data?.count !== 0 ? (
+            data?.data.map((repres) => (
+              // eslint-disable-next-line jsx-a11y/anchor-is-valid
+              <Card
+                key={repres._id}
+                size="small"
+                title={`${repres.surname} ${repres.name} ${repres.patronymic}`}
+                // extra={
+                //   <Button
+                //     type="link"
+                //     icon={<SelectOutlined />}
+                //     onClick={() => {
+                //       navigate(`/patients/${repres._id}/info`);
+                //     }}
+                //   />
+                // }
+                style={{ width: '100%', marginBottom: '5px' }}
+                // headStyle={patient.isActive ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
+              >
+                <Descriptions column={3}>
+                  <Descriptions.Item label="Телефоны" span={3}>
+                    {/* {repres.phoneNumbers.map((c) => {
+                      const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+                      return (
+                        <div key={pn}>
+                          {`${pn}`}
+                          <br />
+                        </div>
+                      );
+                    })} */}
+                    {repres.phoneNumbers.reduce((p, c) => {
+                      const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
+                      return `${p}${p ? '\n' : ''}${pn}`;
+                    }, '')}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Emails" span={3}>
+                    {repres.emails.reduce((p, c) => {
+                      return `${p}${p ? '\n' : ''}${c}`;
+                    }, '')}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Дата рождения" span={3}>
+                    {new Date(repres.dateOfBirth).toLocaleString('ru', {
+                      year: 'numeric',
+                      month: 'numeric',
+                      day: 'numeric',
+                    })}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Пол" span={3}>
+                    {repres.gender}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Адрес" span={3}>
+                    {repres.address}
+                  </Descriptions.Item>
+                  <Descriptions.Item label="Статус" span={3}>
+                    {repres.isActive ? (
+                      <div className={addClass(classes, 'active-table-item__active')}>активен</div>
+                    ) : (
+                      <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
+                    )}
+                  </Descriptions.Item>
+                </Descriptions>
+              </Card>
+            ))
+          ) : (
+            <Empty
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              description="Пациенты не найдены"
+              style={{ backgroundColor: 'white', margin: 0, padding: '40px', borderRadius: '5px' }}
+            />
+          )}
         </Descriptions.Item>
       </Descriptions>
     </>
   );
 };
 
-export default PatientRepresentatives;
+export default MPatientRepresentatives;
