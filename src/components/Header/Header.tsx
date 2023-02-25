@@ -63,7 +63,7 @@ const getTabs = (isAuth: boolean, roles: string[]) => {
 // // { label: 'Очтеты', key: 'reports' },
 // isAuth
 const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, */ activeKey }) => {
-  const { isAuth, roles, name } = useAppSelector((state) => state.authReducer);
+  const { isAuth, roles, name, isMobile } = useAppSelector((state) => state.authReducer);
   const tabs = getTabs(isAuth, roles);
   // const notAuthTabs = [
   //   // { label: 'Войти', key: 'login' },
@@ -112,9 +112,12 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
     //   {/* <AppBar defaultActiveKey="patients" /> */}
     // </Header>
     <>
-      <div className={addClass(classes, 'header-top')}>
+      <div className={addClass(classes, 'header-top')} style={isMobile ? { flexDirection: 'column' } : undefined}>
         <img alt="Реацентр Астрахань" src={logo} />
-        <div className={addClass(classes, 'header-top__menu')}>
+        <div
+          className={addClass(classes, 'header-top__menu')}
+          style={isMobile ? { justifyContent: 'space-between', width: '100%' } : undefined}
+        >
           {isAuth ? (
             <>
               <Text key="0" strong>

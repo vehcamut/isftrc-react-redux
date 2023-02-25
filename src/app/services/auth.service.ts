@@ -21,7 +21,7 @@ export const authAPI = api.injectEndpoints({
         credentials: 'include',
       }),
     }),
-    refreshToken: build.query({
+    refreshToken: build.mutation({
       query: () => ({
         url: 'auth/refresh',
         method: 'PATCH',

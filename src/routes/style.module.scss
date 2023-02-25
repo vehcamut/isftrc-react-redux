@@ -32,9 +32,13 @@
   .content {
     min-height: 100%;
     background: #e6f4ff;
-    // padding-left: 50px;
-    // padding-right: 50px;
+    padding-left: 50px;
+    padding-right: 50px;
     padding-bottom: 40px;
+  }
+  .mobile-content {
+    padding-left: 10px;
+    padding-right: 10px;
   }
 }
 .patients {

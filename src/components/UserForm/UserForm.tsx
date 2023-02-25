@@ -34,6 +34,7 @@ interface UserFormProps extends PropsWithChildren {
   // type: 'add' | 'reg';
   // eslint-disable-next-line react/require-default-props
   initValue?: IRepresentative | ISpecialist | IAdminWithId | IUserInfo;
+  mobile?: boolean;
 
   // advSourse?: boolean;
 }
@@ -46,7 +47,7 @@ function* infinite() {
 }
 const generator = infinite();
 
-const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initValue, userType, reg }) => {
+const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initValue, userType, reg, mobile }) => {
   const [query, setQuery] = useState('');
   const [phoneNumbers, setPhoneNumbers] = useState(
     initValue?.phoneNumbers
@@ -122,11 +123,12 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
   return (
     <Form
       labelWrap
-      labelCol={{ span: 4 }}
-      wrapperCol={{ span: 21 }}
+      labelCol={{ span: mobile ? 24 : 4 }}
+      wrapperCol={{ span: mobile ? 24 : 21 }}
       colon={false}
       onFinish={onBeforeFinish}
-      // layout="vertical"
+      layout={mobile ? 'vertical' : undefined}
+      // style={{ width: '100%' }}
     >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
@@ -421,7 +423,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
         <Input.Password />
       </Form.Item>
 
-      <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+      <Form.Item wrapperCol={{ offset: 0, span: mobile ? 24 : 22 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
@@ -444,6 +446,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
 
 UserForm.defaultProps = {
   reg: false,
+  mobile: false,
 };
 
 export default UserForm;
