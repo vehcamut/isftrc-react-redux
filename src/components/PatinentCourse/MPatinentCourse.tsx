@@ -26,7 +26,7 @@ import {
 } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { ExclamationCircleFilled, RightOutlined, SelectOutlined } from '@ant-design/icons';
+import { ExclamationCircleFilled, RightOutlined, SelectOutlined, UserOutlined } from '@ant-design/icons';
 import { addClass } from '../../app/common';
 import { patientsAPI, servicesAPI } from '../../app/services';
 import classes from './PatinentCourse.module.scss';
@@ -633,7 +633,7 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
         <Descriptions
           size="middle"
           title={`Курсы пациента.${
-            isSpec ? '' : `Общий баланс: ${coursesData.courses.reduce((accum, current) => accum + current.total, 0)}`
+            isSpec ? '' : ` Общий баланс: ${coursesData.courses.reduce((accum, current) => accum + current.total, 0)}`
           }`}
           extra={
             isAdmin ? (
@@ -675,13 +675,13 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
             <Collapse
               size="small"
               defaultActiveKey={coursesData?.courses.map((c) => c._id)}
-              style={{ width: '100%', backgroundColor: 'green' }}
+              style={{ width: '100%' }}
               bordered={false}
               expandIconPosition="start"
               // eslint-disable-next-line react/no-unstable-nested-components
               expandIcon={({ isActive }) => (
                 <RightOutlined
-                  style={{ paddingTop: '7px', color: 'white', fontSize: '16px' }}
+                  style={{ paddingTop: '6px', color: 'white', fontSize: '16px' }}
                   rotate={isActive ? 90 : 0}
                 />
               )}
@@ -692,10 +692,8 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                     header={
                       <Title style={{ margin: 0, color: 'white' }} level={4}>
                         {`${
-                          course.number
-                            ? `Курс лечения №${course.number}${!course.status ? ' | ЗАКРЫТ' : ''}`
-                            : 'Услуги и оплаты вне курсов'
-                        }${isSpec ? '' : ` | Баланс: ${course.total}`}`}
+                          course.number ? `Курс №${course.number}${!course.status ? ' | ЗАКРЫТ' : ''}` : 'Вне курсов'
+                        }${isSpec ? '' : ` | ${course.total}`}`}
                       </Title>
                     }
                     key={course._id}
@@ -704,6 +702,7 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                   >
                     {course.serviceGroups.length ? (
                       <Collapse
+                        size="small"
                         defaultActiveKey={course.serviceGroups.map((c) => c._id)}
                         expandIcon={({ isActive }) => (
                           <RightOutlined style={{ paddingTop: '4px', fontSize: '12px' }} rotate={isActive ? 90 : 0} />
@@ -714,8 +713,8 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                             <Panel
                               // header={group.name}
                               header={
-                                <Title style={{ margin: 0, fontVariant: 'small-caps' }} level={5}>
-                                  {`${group.name}.${isSpec ? '' : ` Баланс: ${group.total}`}`}
+                                <Title style={{ margin: 0 }} level={5}>
+                                  {`${group.name}${isSpec ? '' : ` | ${group.total}`}`}
                                 </Title>
                               }
                               key={group._id}
@@ -726,51 +725,103 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                                 group.services.map((service) => (
                                   // eslint-disable-next-line jsx-a11y/anchor-is-valid
                                   <Card
+                                    onClick={(e) => onRowClick(service)}
+                                    bodyStyle={{
+                                      padding: '5px',
+                                      borderRadius: 0,
+                                      ...(service.kind === 'service'
+                                        ? service.status === true
+                                          ? { background: '#b4e7bb' }
+                                          : !service.date || new Date(service.date) > new Date()
+                                          ? { background: '#fdf291' }
+                                          : { background: '#fdc591' }
+                                        : { background: '#aad2ff' }),
+                                    }}
                                     key={service._id}
                                     size="small"
                                     title={service.name}
-                                    extra={
-                                      <Button
-                                        type="link"
-                                        icon={<SelectOutlined />}
-                                        onClick={() => {
-                                          onRowClick(service);
-                                        }}
-                                      />
-                                    }
-                                    style={{ width: '100%', marginBottom: '5px' }}
+                                    // extra={
+                                    //   <Button
+                                    //     type="link"
+                                    //     icon={<SelectOutlined />}
+                                    //     onClick={() => {
+                                    //       onRowClick(service);
+                                    //     }}
+                                    //   />
+                                    // }
+                                    headStyle={{
+                                      borderRadius: 0,
+                                      ...(service.kind === 'service'
+                                        ? service.status === true
+                                          ? { background: '#b4e7bb' }
+                                          : !service.date || new Date(service.date) > new Date()
+                                          ? { background: '#fdf291' }
+                                          : { background: '#fdc591' }
+                                        : { background: '#aad2ff' }),
+                                    }}
+                                    // bodyStyle={{ padding: '5px' }}
+                                    style={{ width: '100%', marginBottom: '0px', borderRadius: 0 }}
                                     // headStyle={patient.isActive ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
                                   >
                                     <Descriptions
-                                      column={3}
-                                      layout="vertical"
-                                      labelStyle={{ fontWeight: 'bold', paddingBottom: '0px' }}
+                                      size="small"
+                                      column={4}
+                                      // style={{ color: 'black' }}
+                                      // layout="vertical"
+                                      contentStyle={{ color: 'black' }}
+                                      labelStyle={{ fontWeight: 'bold', paddingBottom: '0px', color: 'black' }}
                                     >
-                                      <Descriptions.Item label="Дата" span={3} style={{ paddingBottom: '0px' }}>
+                                      <Descriptions.Item label="Дата" span={2} style={{ paddingBottom: '0px' }}>
                                         {service.date
                                           ? new Date(service.date).toLocaleString('ru-RU', {
                                               day: '2-digit',
                                               month: '2-digit',
                                               year: '2-digit',
-                                              hour: 'numeric',
-                                              minute: 'numeric',
+                                              // hour: 'numeric',
+                                              // minute: 'numeric',
                                             })
                                           : ''}
                                       </Descriptions.Item>
-                                      <Descriptions.Item label="Статус" span={3}>
-                                        {service.kind === 'payment' ? (
-                                          ''
-                                        ) : service.status ? (
-                                          <div className={addClass(classes, 'active-table-item__active')}>Оказана</div>
-                                        ) : (
-                                          <div className={addClass(classes, 'active-table-item__not-active')}>
-                                            Неоказана
-                                          </div>
-                                        )}
+                                      <Descriptions.Item label="Время" span={2} style={{ paddingBottom: '0px' }}>
+                                        {service.date
+                                          ? new Date(service.date).toLocaleTimeString('ru-RU', {
+                                              hour: '2-digit',
+                                              minute: '2-digit',
+                                            })
+                                          : ''}
                                       </Descriptions.Item>
-                                      <Descriptions.Item label="Специалист / Плательщик" span={3}>
-                                        {service.specialist || service.payer}
-                                      </Descriptions.Item>
+                                      {service.kind === 'service' ? (
+                                        <Descriptions.Item label="Статус" style={{ paddingBottom: '0px' }} span={4}>
+                                          {service.status ? (
+                                            <div className={addClass(classes, 'active-table-item__active')}>
+                                              Оказана
+                                            </div>
+                                          ) : (
+                                            <div className={addClass(classes, 'active-table-item__not-active')}>
+                                              Неоказана
+                                            </div>
+                                          )}
+                                        </Descriptions.Item>
+                                      ) : null}
+                                      {service.specialist || service.payer ? (
+                                        <Descriptions.Item
+                                          style={{ paddingBottom: '0px' }}
+                                          label={<UserOutlined />}
+                                          span={4}
+                                        >
+                                          {service.specialist || service.payer}
+                                        </Descriptions.Item>
+                                      ) : null}
+                                      {service.price ? (
+                                        <Descriptions.Item style={{ paddingBottom: '0px' }} label="Расход" span={4}>
+                                          {service.price}
+                                        </Descriptions.Item>
+                                      ) : null}
+                                      {service.cost ? (
+                                        <Descriptions.Item style={{ paddingBottom: '0px' }} label="Приход" span={4}>
+                                          {service.cost}
+                                        </Descriptions.Item>
+                                      ) : null}
                                     </Descriptions>
                                   </Card>
                                 ))

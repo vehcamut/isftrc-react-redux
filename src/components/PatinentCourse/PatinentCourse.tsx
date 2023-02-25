@@ -632,7 +632,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
         <Descriptions
           size="middle"
           title={`Курсы пациента.${
-            isSpec ? '' : `Общий баланс: ${coursesData.courses.reduce((accum, current) => accum + current.total, 0)}`
+            isSpec ? '' : ` Общий баланс: ${coursesData.courses.reduce((accum, current) => accum + current.total, 0)}`
           }`}
           extra={
             isAdmin ? (

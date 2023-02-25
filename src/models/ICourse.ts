@@ -1,4 +1,5 @@
 // import { IAppointment } from './IAppointment';
+// eslint-disable-next-line import/no-cycle
 import { IServiceGroupWithId } from './IService';
 
 export interface ICourse {
@@ -38,6 +39,7 @@ export interface IServiceInCourse {
   _id: string;
   name: string;
   price: number;
+  cost?: number;
   specialist: string;
   payer?: string;
   number?: number;
