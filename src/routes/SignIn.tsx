@@ -26,12 +26,31 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
     try {
       // await signIN({ login, password }).unwrap();
       await signin({ login, password }).unwrap();
-      dispatch(setIsAuth(true));
-      dispatch(setRoles(getTokenPayload()?.roles || []));
-      dispatch(setName(getTokenPayload()?.name || ''));
-      dispatch(setId(getTokenPayload()?.sub || ''));
+      const getCookie = (name: string) => {
+        const matches = document.cookie.match(
+          // eslint-disable-next-line no-useless-escape
+          new RegExp(`(?:^|; )${name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1')}=([^;]*)`),
+        );
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+      };
+      // setTimeout(() => {
+      //   console.log(getCookie('accessToken')?.split('.')[1]);
+      // }, 2000);
+
+      if (getTokenPayload()) {
+        localStorage.isAuth = true;
+        localStorage.name = getTokenPayload()?.name;
+        localStorage.roles = getTokenPayload()?.roles;
+        localStorage.id = getTokenPayload()?.sub;
+        navigate(0);
+      }
+
+      // dispatch(setRoles(getTokenPayload()?.roles || []));
+      // dispatch(setName(getTokenPayload()?.name || ''));
+      // dispatch(setId(getTokenPayload()?.sub || ''));
+      // dispatch(setIsAuth(true));
       // const payload = getTokenPayload()?.roles;
-      navigate('/');
+      // navigate('/');
     } catch (e) {
       messageApi.open({
         type: 'error',

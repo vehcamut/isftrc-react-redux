@@ -120,7 +120,14 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
   );
 
   return (
-    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 21 }} colon={false} onFinish={onBeforeFinish}>
+    <Form
+      labelWrap
+      labelCol={{ span: 4 }}
+      wrapperCol={{ span: 21 }}
+      colon={false}
+      onFinish={onBeforeFinish}
+      // layout="vertical"
+    >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
         rules={[{ required: true, message: 'Поле "Фамилия" не должно быть пустым' }]}

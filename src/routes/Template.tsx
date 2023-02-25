@@ -7,6 +7,7 @@ import AppBar from '../components/Header/Header';
 import classes from './style.module.scss';
 import { addClass } from '../app/common';
 import 'dayjs/locale/ru';
+import { useAppSelector } from '../app/hooks';
 // import { useAppSelector } from '../app/hooks';
 
 const { Header, Content } = Layout;
@@ -19,6 +20,10 @@ interface TemplateProps extends PropsWithChildren {
 }
 
 const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* defaultActiveKey */ }) => {
+  const { isMobile } = useAppSelector((state) => state.authReducer);
+  // const { isMobile } = localStorage;
+  // console.log(localStorage);
+  // console.log(isMobile);
   // const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
   return (
     <ConfigProvider
@@ -69,7 +74,14 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
         <Header className={addClass(classes, 'header')}>
           <AppBar activeKey={activeKey} /* defaultActiveKey={defaultActiveKey} */ />
         </Header>
-        <Content className={addClass(classes, 'content')}>{children}</Content>
+        <Content
+          className={addClass(classes, 'content')}
+          style={
+            isMobile ? { paddingLeft: '10px', paddingRight: '10px' } : { paddingLeft: '50px', paddingRight: '50px' }
+          }
+        >
+          {children}
+        </Content>
       </Layout>
     </ConfigProvider>
     // <RolesAuthRoute roles={['admin', 'user']}>

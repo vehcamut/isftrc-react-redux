@@ -6,12 +6,14 @@ interface IUserState {
   isAuth: boolean;
   roles: string[];
   id: string;
+  isMobile: boolean;
 }
 
 const initialState: IUserState = {
   isAuth: localStorage?.roles?.split(',') ? localStorage?.isAuth || false : false,
   roles: localStorage?.roles?.split(',') || [],
   id: localStorage?.id || '',
+  isMobile: false,
 };
 
 export const userSlice = createSlice({
@@ -36,6 +38,11 @@ export const userSlice = createSlice({
       state.id = action.payload;
       if (action.payload.length === 0) localStorage.removeItem('id');
       else localStorage.id = action.payload;
+    },
+    setMobile(state: IUserState, action: PayloadAction<boolean>) {
+      state.isMobile = action.payload;
+      // if (action.payload.length === 0) localStorage.removeItem('id');
+      // else localStorage.id = action.payload;
     },
   },
 });
