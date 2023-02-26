@@ -1,9 +1,9 @@
 /* eslint-disable no-nested-ternary */
-import { Button, Modal, Typography, Descriptions, message } from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Card } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { addClass } from '../../app/common';
+// import { addClass } from '../../app/common';
 import { patientsAPI } from '../../app/services';
-import classes from './PatinentInfo.module.scss';
+// import classes from './PatinentInfo.module.scss';
 import { IPatient } from '../../models';
 import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import { useAppSelector } from '../../app/hooks';
@@ -88,22 +88,9 @@ const MPatinentInfo: FunctionComponent<MPatinentInfoProps> = ({ patient }) => {
       >
         <AddPatientForm onFinish={onFinish} onReset={onReset} initValue={patient} />
       </Modal>
-      <Descriptions
-        layout="vertical"
-        bordered
-        size="small"
-        contentStyle={{ backgroundColor: '#ffffff', width: '100%', display: 'block', padding: '8px 16px' }}
-        labelStyle={{
-          color: '#ffffff',
-          width: '100%',
-          display: 'block',
-          padding: '8px 16px',
-          backgroundColor: '#1677FF',
-          // borderRight: '5px solid #e6f4ff',
-          // width: '150px',
-        }}
+      <Card
+        size="default"
         title="Личные данные"
-        column={1}
         extra={
           <>
             {isAdmin ? (
@@ -128,66 +115,113 @@ const MPatinentInfo: FunctionComponent<MPatinentInfoProps> = ({ patient }) => {
           </>
         }
       >
-        <Descriptions.Item
-          label="Фамилия"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {patient?.surname}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label="Имя"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {patient?.name}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label="Отчество"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {patient?.patronymic}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label="Пол"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {patient?.gender}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label="Дата рождения"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
-        </Descriptions.Item>
-        <Descriptions.Item
-          label="Адрес"
-          className={addClass(classes, 'des-item')}
-          style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-        >
-          {patient?.address}
-        </Descriptions.Item>
-        {!isRepres ? (
-          <Descriptions.Item
-            label="Примечание"
-            className={addClass(classes, 'des-item')}
-            style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
-          >
-            {patient?.note}
-          </Descriptions.Item>
-        ) : null}
+        <Descriptions
+          labelStyle={{ fontWeight: 'bold', color: 'black' }}
+          contentStyle={{ whiteSpace: 'pre-line' }}
+          layout="horizontal"
+          // bordered
+          size="small"
+          // contentStyle={{ backgroundColor: '#ffffff', width: '100%', display: 'block', padding: '8px 16px' }}
+          // labelStyle={{
+          //   color: '#ffffff',
+          //   width: '100%',
+          //   display: 'block',
+          //   padding: '8px 16px',
+          //   backgroundColor: '#1677FF',
+          //   // borderRight: '5px solid #e6f4ff',
+          //   // width: '150px',
+          // }}
+          // title="Личные данные"
+          column={1}
+          // extra={
+          //   <>
+          //     {isAdmin ? (
+          //       patient?.isActive ? (
+          //         <Button
+          //           type="primary"
+          //           onClick={onDeactivate}
+          //           style={{ marginRight: '10px', backgroundColor: '#e60000' }}
+          //         >
+          //           Деактивировать
+          //         </Button>
+          //       ) : (
+          //         <Button
+          //           type="primary"
+          //           onClick={onActivate}
+          //           style={{ marginRight: '10px', backgroundColor: '#0c9500' }}
+          //         >
+          //           Активировать
+          //         </Button>
+          //       )
+          //     ) : null}
 
-        <Descriptions.Item label="Статус" style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}>
-          {patient?.isActive ? 'активен' : 'неактивен'}
-        </Descriptions.Item>
-      </Descriptions>
+          //     <Button type="link" onClick={onEdit} disabled={!patient?.isActive}>
+          //       Редактировать
+          //     </Button>
+          //   </>
+          // }
+        >
+          <Descriptions.Item
+            label="Фамилия"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {patient?.surname}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Имя"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {patient?.name}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Отчество"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {patient?.patronymic}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Пол"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {patient?.gender}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Дата рождения"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+              year: 'numeric',
+              month: 'numeric',
+              day: 'numeric',
+            })}
+          </Descriptions.Item>
+          <Descriptions.Item
+            label="Адрес"
+            // className={addClass(classes, 'des-item')}
+            // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+          >
+            {patient?.address}
+          </Descriptions.Item>
+          {!isRepres ? (
+            <Descriptions.Item
+              label="Примечание"
+              // className={addClass(classes, 'des-item')}
+              // style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }}
+            >
+              {patient?.note}
+            </Descriptions.Item>
+          ) : null}
+
+          <Descriptions.Item label="Статус" /* style={{ borderBottom: '5px #e6f4ff solid', padding: 0 }} */>
+            {patient?.isActive ? 'активен' : 'неактивен'}
+          </Descriptions.Item>
+        </Descriptions>
+      </Card>
     </>
   );
 };

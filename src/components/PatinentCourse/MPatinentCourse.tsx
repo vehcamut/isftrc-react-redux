@@ -702,6 +702,7 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                   >
                     {course.serviceGroups.length ? (
                       <Collapse
+                        style={{ borderRadius: 0 }}
                         size="small"
                         defaultActiveKey={course.serviceGroups.map((c) => c._id)}
                         expandIcon={({ isActive }) => (
@@ -718,7 +719,7 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                                 </Title>
                               }
                               key={group._id}
-                              style={{ backgroundColor: '#f0f0f0' }}
+                              style={{ backgroundColor: '#f0f0f0', borderRadius: 0 }}
                               className="inner-panel"
                             >
                               {group.services.length !== 0 ? (
@@ -760,7 +761,13 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                                         : { background: '#aad2ff' }),
                                     }}
                                     // bodyStyle={{ padding: '5px' }}
-                                    style={{ width: '100%', marginBottom: '0px', borderRadius: 0 }}
+                                    style={{
+                                      width: '100%',
+                                      marginBottom: '0px',
+                                      borderRadius: 0,
+                                      border: 'none',
+                                      borderBottom: '1px solid #9f9f9f',
+                                    }}
                                     // headStyle={patient.isActive ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
                                   >
                                     <Descriptions
@@ -771,25 +778,30 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
                                       contentStyle={{ color: 'black' }}
                                       labelStyle={{ fontWeight: 'bold', paddingBottom: '0px', color: 'black' }}
                                     >
-                                      <Descriptions.Item label="Дата" span={2} style={{ paddingBottom: '0px' }}>
-                                        {service.date
-                                          ? new Date(service.date).toLocaleString('ru-RU', {
-                                              day: '2-digit',
-                                              month: '2-digit',
-                                              year: '2-digit',
-                                              // hour: 'numeric',
-                                              // minute: 'numeric',
-                                            })
-                                          : ''}
-                                      </Descriptions.Item>
-                                      <Descriptions.Item label="Время" span={2} style={{ paddingBottom: '0px' }}>
-                                        {service.date
-                                          ? new Date(service.date).toLocaleTimeString('ru-RU', {
-                                              hour: '2-digit',
-                                              minute: '2-digit',
-                                            })
-                                          : ''}
-                                      </Descriptions.Item>
+                                      {service.date ? (
+                                        <Descriptions.Item label="Дата" span={2} style={{ paddingBottom: '0px' }}>
+                                          {service.date
+                                            ? new Date(service.date).toLocaleString('ru-RU', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: '2-digit',
+                                                // hour: 'numeric',
+                                                // minute: 'numeric',
+                                              })
+                                            : ''}
+                                        </Descriptions.Item>
+                                      ) : null}
+                                      {service.date ? (
+                                        <Descriptions.Item label="Время" span={2} style={{ paddingBottom: '0px' }}>
+                                          {service.date
+                                            ? new Date(service.date).toLocaleTimeString('ru-RU', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                              })
+                                            : ''}
+                                        </Descriptions.Item>
+                                      ) : null}
+
                                       {service.kind === 'service' ? (
                                         <Descriptions.Item label="Статус" style={{ paddingBottom: '0px' }} span={4}>
                                           {service.status ? (

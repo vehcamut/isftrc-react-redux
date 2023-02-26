@@ -158,15 +158,18 @@ const MPatients = () => {
             key={patient._id}
             size="small"
             title={`${patient.number} ${patient.surname} ${patient.name} ${patient.patronymic}`}
-            extra={
-              <Button
-                type="link"
-                icon={<SelectOutlined />}
-                onClick={() => {
-                  navigate(`/patients/${patient._id}/info`);
-                }}
-              />
-            }
+            // extra={
+            //   <Button
+            //     type="link"
+            //     icon={<SelectOutlined />}
+            //     onClick={() => {
+            //       navigate(`/patients/${patient._id}/info`);
+            //     }}
+            //   />
+            // }
+            onClick={() => {
+              navigate(`/patients/${patient._id}/info`);
+            }}
             style={{ width: '100%', marginBottom: '5px' }}
             // headStyle={patient.isActive ? { backgroundColor: 'green' } : { backgroundColor: 'red' }}
           >
