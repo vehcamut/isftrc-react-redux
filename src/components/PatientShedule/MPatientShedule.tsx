@@ -36,6 +36,7 @@ import { servicesAPI } from '../../app/services';
 import ModalAppInfo from '../ModalAppInfo/ModalAppInfo';
 import { useAppSelector } from '../../app/hooks';
 import MShedule from '../Shedule/MShedule';
+import MModalAppInfo from '../ModalAppInfo/MModalAppInfo';
 
 const { confirm } = Modal;
 
@@ -158,7 +159,7 @@ const MPatientShedule: FunctionComponent<MPatientSheduleProps> = ({ patient }) =
         <div>Вы можете также презаписать пациента на другое время.</div>
       </Modal> */}
 
-      <ModalAppInfo
+      <MModalAppInfo
         title="Информация о записи"
         isOpen={isAppInfoOpen}
         setIsOpen={setIsAppInfoOpen}

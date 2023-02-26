@@ -14,6 +14,9 @@ import { patientTableSlice } from '../app/reducers';
 const { Search } = Input;
 
 const Patients = () => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  // const isAdmin = roles.find((r) => r === 'admin');
+  const isSpec = roles.find((r) => r === 'specialist');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
@@ -119,11 +122,13 @@ const Patients = () => {
             Пациенты
           </Typography.Title>
         </Col>
-        <Col>
-          <Button type="link" onClick={onAddClick}>
-            Добавить пациента
-          </Button>
-        </Col>
+        {!isSpec ? (
+          <Col>
+            <Button type="link" onClick={onAddClick}>
+              Добавить пациента
+            </Button>
+          </Col>
+        ) : null}
       </Row>
       <Search
         allowClear

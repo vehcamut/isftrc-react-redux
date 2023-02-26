@@ -40,15 +40,15 @@
   border: none;
 }
 
-.ant-table-tbody > tr.ant-table-row:hover > td {
-  &.my-table-row__active {
-    background: green !important;
-  }
-  &.my-table-row__deactive {
-    background: red !important;
-  }
-  background: blue !important;
-}
+// .ant-table-tbody > tr.ant-table-row:hover > td {
+//   &.my-table-row__active {
+//     background: green !important;
+//   }
+//   &.my-table-row__deactive {
+//     background: red !important;
+//   }
+//   background: blue !important;
+// }
 
 // .ant-table-tbody > tr.ant-table-row {
 //   &.shedule-table-row {

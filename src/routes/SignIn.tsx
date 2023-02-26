@@ -17,7 +17,7 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isAuth /* roles */ } = useAppSelector((state) => state.authReducer);
+  const { isAuth, isMobile /* roles */ } = useAppSelector((state) => state.authReducer);
   const { setIsAuth, setRoles, setName, setId } = authSlice.actions;
   const [signin] = authAPI.useSigninMutation();
   const onFinish = async (values: any) => {
@@ -70,7 +70,14 @@ const SignIn: FunctionComponent<PropsWithChildren> = () => {
   ) : (
     <>
       {contextHolder}
-      <div style={{ height: '600px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <div
+        style={{
+          height: isMobile ? '500px' : '600px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
         <Form
           // title="dfd"
           name="normal_login"

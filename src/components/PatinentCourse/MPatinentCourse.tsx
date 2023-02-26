@@ -37,6 +37,7 @@ import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
 import { paymentAPI } from '../../app/services/payments.service';
 import ModalServiceInfo from '../ModalServiceInfo/ModalServiceInfo';
 import { useAppSelector } from '../../app/hooks';
+import MModalServiceInfo from '../ModalServiceInfo/MModalServiceInfo';
 
 const { Panel } = Collapse;
 const { Title } = Typography;
@@ -306,7 +307,7 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
   return (
     <>
       {contextHolder}
-      <ModalServiceInfo
+      <MModalServiceInfo
         patient={patient}
         isOpen={isServInfoOpen}
         setIsOpen={setIsServInfoOpen}

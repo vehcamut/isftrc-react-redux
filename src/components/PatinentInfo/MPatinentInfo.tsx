@@ -108,10 +108,14 @@ const MPatinentInfo: FunctionComponent<MPatinentInfoProps> = ({ patient }) => {
                 </Button>
               )
             ) : null}
-
-            <Button type="link" onClick={onEdit} disabled={!patient?.isActive}>
+            {isAdmin || isRepres ? (
+              <Button type="primary" onClick={onEdit} disabled={!patient?.isActive}>
+                Редактировать
+              </Button>
+            ) : null}
+            {/* <Button type="link" onClick={onEdit} disabled={!patient?.isActive}>
               Редактировать
-            </Button>
+            </Button> */}
           </>
         }
       >

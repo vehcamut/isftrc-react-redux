@@ -33,10 +33,11 @@ import './antd.rewrite.scss';
 import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
 import { useAppSelector } from '../../app/hooks';
+import MShedule from '../Shedule/MShedule';
 
 const { confirm } = Modal;
 
-interface ModalAddAppToServProps extends PropsWithChildren {
+interface MModalAddAppToServProps extends PropsWithChildren {
   serviceId: string | undefined;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -44,7 +45,7 @@ interface ModalAddAppToServProps extends PropsWithChildren {
   setAppId?: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
+const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
   const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
   const isRepres = roles.find((r) => r === 'representative');
@@ -176,8 +177,8 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
           ) : null
         }
         title={
-          <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            Изменение записи пациента
+          <Typography.Title level={4} style={{ margin: 0, marginBottom: '20px' }}>
+            Изменение записи
           </Typography.Title>
         }
         width="100%"
@@ -186,7 +187,11 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
         {isSuccess ? (
           <Result
             status="success"
-            title={isSuccess > 0 ? 'Пациент успешно записан на прием к специалисту' : 'Запись пациента отменена'}
+            title={
+              <Typography.Title level={5}>
+                {isSuccess > 0 ? 'Пациент успешно записан на прием к специалисту' : 'Запись пациента отменена'}
+              </Typography.Title>
+            }
             // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
             extra={[
               <Button type="primary" key="ok" onClick={onReset} style={{ width: '160px' }}>
@@ -206,8 +211,8 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
               loading={isLoading}
             />
             {currentSpecialist ? (
-              <Shedule
-                dataAPI={appointmentsAPI.useGetForRecordQuery}
+              <MShedule
+                dataAPI={appointmentsAPI.useGetForRecordOnCurrentDateQuery}
                 title="Расписание специалиста"
                 extraOptions={{
                   specialistId: currentSpecialist,
@@ -228,4 +233,4 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({ serviceI
   );
 };
 
-export default ModalAddAppToServ;
+export default MModalAddAppToServ;

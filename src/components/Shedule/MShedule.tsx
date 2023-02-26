@@ -33,7 +33,7 @@ import './antd.rewrite.scss';
 interface MSheduleProps extends PropsWithChildren {
   extraOptions?: any;
   // person?: ISpecialist;
-  title: string;
+  title?: string;
   extra?: ReactNode;
   onAppointmentClick: (appointment: IAppointment) => void;
   onDateChange?: (firstDate: string, secondDate: string) => void;
@@ -116,6 +116,7 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
       size="middle"
       title={title}
       extra={extra}
+      column={1}
     >
       <Descriptions.Item>
         <DatePicker
@@ -198,7 +199,11 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
                       );
                     })
                   ) : (
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="Нет данных" />
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description="Нет данных"
+                      style={{ paddingTop: '30px' }}
+                    />
                   )}
                 </ul>
               </div>
@@ -215,6 +220,7 @@ MShedule.defaultProps = {
   extra: undefined,
   extraOptions: undefined,
   onDateChange: undefined,
+  title: undefined,
 };
 
 export default MShedule;

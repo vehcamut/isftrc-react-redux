@@ -16,6 +16,8 @@ import { patientTableSlice } from '../../app/reducers';
 const { Search } = Input;
 
 const MPatients = () => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  const isSpec = roles.find((r) => r === 'specialist');
   const remoteInput = createRef<InputRef>();
 
   const navigate = useNavigate();
@@ -135,11 +137,13 @@ const MPatients = () => {
             Пациенты
           </Typography.Title>
         </Col>
-        <Col span={24} style={{ alignItems: 'center', textAlign: 'center' }}>
-          <Button type="link" onClick={onAddClick}>
-            Добавить пациента
-          </Button>
-        </Col>
+        {!isSpec ? (
+          <Col span={24} style={{ alignItems: 'center', textAlign: 'center' }}>
+            <Button type="link" onClick={onAddClick}>
+              Добавить пациента
+            </Button>
+          </Col>
+        ) : null}
       </Row>
       {/* <Input /> */}
       <Search

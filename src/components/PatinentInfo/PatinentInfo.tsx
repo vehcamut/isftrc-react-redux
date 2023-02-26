@@ -116,10 +116,11 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
                 </Button>
               )
             ) : null}
-
-            <Button type="primary" onClick={onEdit} disabled={!patient?.isActive}>
-              Редактировать
-            </Button>
+            {isAdmin || isRepres ? (
+              <Button type="primary" onClick={onEdit} disabled={!patient?.isActive}>
+                Редактировать
+              </Button>
+            ) : null}
           </>
         }
       >

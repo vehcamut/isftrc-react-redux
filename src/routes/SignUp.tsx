@@ -20,7 +20,7 @@ const SignUp: FunctionComponent<PropsWithChildren> = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { isAuth /* roles */ } = useAppSelector((state) => state.authReducer);
+  const { isAuth, isMobile /* roles */ } = useAppSelector((state) => state.authReducer);
   const { setIsAuth, setRoles, setName } = authSlice.actions;
   const [signin] = authAPI.useSigninMutation();
   // const onFinish = async (values: any) => {
@@ -78,8 +78,8 @@ const SignUp: FunctionComponent<PropsWithChildren> = () => {
     <>
       {contextHolder}
       <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '20px' }}>
-        <Col>
-          <Typography.Title level={1} style={{ margin: 0 }}>
+        <Col style={isMobile ? { textAlign: 'center', width: '100%' } : undefined}>
+          <Typography.Title level={isMobile ? 2 : 1} style={{ margin: 0 }}>
             Регистрация
           </Typography.Title>
         </Col>

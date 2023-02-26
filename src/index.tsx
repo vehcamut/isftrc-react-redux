@@ -44,6 +44,9 @@ import MTemplate from './routes/Mobile/MTemplate';
 import MPatients from './routes/Mobile/MPatients';
 import MAddPatient from './routes/Mobile/MAddPatients';
 import MPatientPage from './routes/Mobile/MPatientPage';
+import MSpecShedulePage from './routes/Mobile/MSpecShedulePage';
+import MAboutPage from './routes/Mobile/MAboutPage';
+import MErrorPage from './routes/Mobile/MErrorPage';
 // import { useAppSelector } from './app/hooks';
 
 let isMobile = false;
@@ -85,40 +88,56 @@ const root = createRoot(container);
 // const location = useLocation();
 const router = createBrowserRouter([
   {
-    // children: [
-    //   {
-    //     path: '/about',
-    //     element: (
-    //       <Template activeKey="about">
-    //         <AboutPage />
-    //       </Template>
-    //     ),
-    //   },
-    // ],
-    // element: <RolesGuard requiredRoles={['admin']} />,
     path: 'notauth/about',
-    element: (
+    element: isMobile ? (
+      <MTemplate activeKey="about">
+        <MAboutPage />
+      </MTemplate>
+    ) : (
       <Template activeKey="about">
         <AboutPage />
       </Template>
     ),
+    // element: (
+    //   <Template activeKey="about">
+    //     <AboutPage />
+    //   </Template>
+    // ),
   },
   {
     path: 'auth/signin',
-    element: (
+    element: isMobile ? (
+      <MTemplate activeKey="">
+        <SignIn />
+      </MTemplate>
+    ) : (
       <Template activeKey="">
         <SignIn />
       </Template>
     ),
+    // element: (
+    //   <Template activeKey="">
+    //     <SignIn />
+    //   </Template>
+    // ),
   },
 
   {
     path: 'auth/signup',
-    element: (
+    element: isMobile ? (
+      <MTemplate activeKey="">
+        <SignUp />
+      </MTemplate>
+    ) : (
       <Template activeKey="">
         <SignUp />
       </Template>
     ),
+    // element: (
+    // <Template activeKey="">
+    //   <SignUp />
+    // </Template>
+    // ),
   },
 
   {
@@ -128,28 +147,37 @@ const router = createBrowserRouter([
 
   {
     children: [
+      // {
+      //   children: [
+      //     {
+      //       path: '/shedule',
+      //       element: (
+      //         <Template activeKey="shedule">
+      //           <SpecShedulePage />
+      //         </Template>
+      //       ),
+      //     },
+      //   ],
+      //   element: <RolesGuard requiredRoles={['specialist']} />,
+      // },
       {
         children: [
           {
             path: '/shedule',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="shedule">
+                <MSpecShedulePage />
+              </MTemplate>
+            ) : (
               <Template activeKey="shedule">
                 <SpecShedulePage />
               </Template>
             ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['specialist']} />,
-      },
-      {
-        children: [
-          {
-            path: '/shedule',
-            element: (
-              <Template activeKey="shedule">
-                <SpecShedulePage />
-              </Template>
-            ),
+            // element: (
+            // <Template activeKey="shedule">
+            //   <SpecShedulePage />
+            // </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['specialist']} />,
@@ -158,7 +186,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/shedule/:date',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="shedule">
+                <MSpecShedulePage />
+              </MTemplate>
+            ) : (
               <Template activeKey="shedule">
                 <SpecShedulePage />
               </Template>
@@ -241,15 +273,46 @@ const router = createBrowserRouter([
       //   ],
       //   element: <RolesGuard requiredRoles={['admin']} />,
       // },
+      // {
+      //   children: [
+      //     {
+      //       path: '/admin/error',
+      //       element: isMobile ? (
+      //         <MTemplate activeKey="">
+      //           <MErrorPage />
+      //         </MTemplate>
+      //       ) : (
+      //         <Template activeKey="about">
+      //           <AboutPage />
+      //         </Template>
+      //       ),
+      //       // element: (
+      //       //   <Template activeKey="about">
+      //       //     <AboutPage />
+      //       //   </Template>
+      //       // ),
+      //     },
+      //   ],
+      //   element: <RolesGuard requiredRoles={['admin']} />,
+      // },
       {
         children: [
           {
             path: '/about',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="about">
+                <MAboutPage />
+              </MTemplate>
+            ) : (
               <Template activeKey="about">
                 <AboutPage />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="about">
+            //     <AboutPage />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,

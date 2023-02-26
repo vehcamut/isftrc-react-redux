@@ -143,6 +143,14 @@ export const appointmentsAPI = api.injectEndpoints({
       }),
       providesTags: ['appointments', 'specialists'],
     }),
+    getForRecordOnCurrentDate: build.query<IAppointment[], IGetFreeAppointmetns>({
+      query: (params) => ({
+        url: 'appointments/getForRecord',
+        params,
+        credentials: 'include',
+      }),
+      providesTags: ['appointments', 'specialists'],
+    }),
     addAppointments: build.mutation<IAddAppointmentResult, IAddAppointment>({
       query: (body) => ({
         url: 'appointments/add',
