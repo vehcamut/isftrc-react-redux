@@ -41,14 +41,10 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
   onRemove,
   // columns,
 }) => {
+  const { roles } = useAppSelector((state) => state.authReducer);
+  const isAdmin = roles.find((r) => r === 'admin');
   const isActive = slice && reduser ? reduser.isActive : tableState.isActive;
   const columns: ColumnsType<IRepresentative> = [
-    {
-      title: 'Логин',
-      dataIndex: 'login',
-      key: 'login',
-      width: '10%',
-    },
     {
       title: 'ФИО',
       dataIndex: 'name',
@@ -131,6 +127,13 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
       ],
     },
   ];
+  if (isAdmin)
+    columns.unshift({
+      title: 'Логин',
+      dataIndex: 'login',
+      key: 'login',
+      width: '10%',
+    });
   if (onRemove !== undefined) {
     columns.push({
       key: 'remove',

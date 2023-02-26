@@ -475,7 +475,7 @@ const MModalServiceInfo: FunctionComponent<MModalServiceInfoProps> = ({
               span={3}
               contentStyle={{ color: currentService?.status ? 'green' : 'red' }}
             >
-              {currentService?.status ? 'Оказана' : 'Неоказана'}
+              {currentService?.status ? 'Оказана' : 'Не оказана'}
             </Descriptions.Item>
             <Descriptions.Item label="Пациент" span={3}>
               {`${currentService?.patient?.number} ${currentService?.patient?.surname} ${currentService?.patient?.name[0]}.${currentService?.patient?.patronymic[0]}.`}

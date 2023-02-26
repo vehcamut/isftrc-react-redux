@@ -97,7 +97,7 @@ const columns = [
       return flag ? (
         <div className={addClass(classes, 'active-table-item__active')}>Оказана</div>
       ) : (
-        <div className={addClass(classes, 'active-table-item__not-active')}>Неоказана</div>
+        <div className={addClass(classes, 'active-table-item__not-active')}>Не оказана</div>
       );
     },
   },
@@ -124,7 +124,7 @@ const columns = [
       // return IServiceInCourse. ? (
       //   <div className={addClass(classes, 'active-table-item__active')}>Оказана</div>
       // ) : (
-      //   <div className={addClass(classes, 'active-table-item__not-active')}>Неоказана</div>
+      //   <div className={addClass(classes, 'active-table-item__not-active')}>Не оказана</div>
       // );
     },
   },

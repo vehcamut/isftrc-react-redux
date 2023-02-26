@@ -31,10 +31,10 @@
   },
   "scripts": {
     "start1": "craco start",
-    "build1": "craco build",
     "test1": "craco test",
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "build_to_server": "set BUILD_PATH=../nestjs-jwt/build&& react-scripts build",
     "test": "react-scripts test",
     "eject1": "react-scripts eject"
   },

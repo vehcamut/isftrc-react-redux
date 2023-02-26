@@ -5,7 +5,7 @@ import getTokenPayload from '../tokenHendler';
 
 const baseQuery = fetchBaseQuery({
   // baseUrl: 'http://localhost:3333',
-  baseUrl: 'http://192.168.1.49:3333',
+  baseUrl: process.env.REACT_APP_API_URL, // 'http://192.168.1.49:3333',
 
   credentials: 'include',
 });

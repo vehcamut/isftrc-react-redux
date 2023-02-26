@@ -387,10 +387,10 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
                       currentAppointment?.service
                         ? currentAppointment?.service?.status
                           ? 'Оказана'
-                          : 'Неоказана'
+                          : 'Не оказана'
                         : '-'
                     }
-                    {/* {currentAppointment?.service?.status ? 'Оказана' : 'Неоказана'} */}
+                    {/* {currentAppointment?.service?.status ? 'Оказана' : 'Не оказана'} */}
                   </Descriptions.Item>
                   <Descriptions.Item label="Пациент" span={3}>
                     {currentAppointment?.service ? (

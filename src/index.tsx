@@ -664,7 +664,9 @@ const router = createBrowserRouter([
   //   ],
   // },
 ]);
+console.log(process.env.REACT_APP_API_URL);
 // const { isMobile } = useAppSelector((state) => state.authReducer);
+// require('dotenv').config();
 
 root.render(
   <React.StrictMode>
