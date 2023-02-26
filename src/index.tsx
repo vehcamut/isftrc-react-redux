@@ -483,11 +483,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/:id/shedule',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MPatientPage activeKey="shedule" />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <PatientPage activeKey="shedule" />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <PatientPage activeKey="shedule" />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
@@ -496,11 +505,20 @@ const router = createBrowserRouter([
         children: [
           {
             path: '/patients/:id/shedule/:date',
-            element: (
+            element: isMobile ? (
+              <MTemplate activeKey="patients">
+                <MPatientPage activeKey="shedule" />
+              </MTemplate>
+            ) : (
               <Template activeKey="patients">
                 <PatientPage activeKey="shedule" />
               </Template>
             ),
+            // element: (
+            //   <Template activeKey="patients">
+            //     <PatientPage activeKey="shedule" />
+            //   </Template>
+            // ),
           },
         ],
         element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
