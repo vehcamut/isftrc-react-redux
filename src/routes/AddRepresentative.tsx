@@ -45,7 +45,7 @@ import { dadataAPI, patientsAPI, representativesAPI } from '../app/services';
 import { IPatient } from '../models';
 import { addClass } from '../app/common';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { addPatientSlice, patientTableSlice } from '../app/reducers';
+// import { addPatientSlice, patientTableSlice } from '../app/reducers';
 import AddPatientForm from '../components/AddPatientForm/AddPatientForm';
 // import AddRepresentativeForm from '../components/AddRepresentativeForm/AddRepresentativeForm';
 import UserForm from '../components/UserForm/UserForm';

@@ -7,7 +7,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { Button, Col, Divider, Form, Input, Result, Row, Typography, message } from 'antd';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
-import LoginForm from '../components/LoginForm';
+// import LoginForm from '../components/LoginForm';
 import { authSlice } from '../app/reducers';
 import { authAPI, representativesAPI } from '../app/services';
 import getTokenPayload from '../app/tokenHendler';
