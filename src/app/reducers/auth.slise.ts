@@ -26,6 +26,7 @@ interface IAuthState {
   roles: string[];
   id: string;
   isMobile: boolean;
+  serverError?: boolean;
 }
 
 const initialState: IAuthState = {
@@ -45,6 +46,9 @@ export const authSlice = createSlice({
   //   return false;
   // },
   reducers: {
+    setServerError(state: IAuthState, action: PayloadAction<boolean | undefined>) {
+      state.serverError = action.payload;
+    },
     setIsAuth(state: IAuthState, action: PayloadAction<boolean>) {
       state.isAuth = action.payload;
       localStorage.isAuth = action.payload;

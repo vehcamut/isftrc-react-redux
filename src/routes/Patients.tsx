@@ -72,7 +72,7 @@ const Patients = () => {
         );
       },
       // todo я здесь менял
-      defaultFilteredValue: isActive ? [(+isActive).toString()] : [],
+      defaultFilteredValue: isActive !== undefined ? [(+isActive).toString()] : undefined,
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
       filters: [
@@ -87,7 +87,7 @@ const Patients = () => {
       ],
     },
   ];
-  // console.log((isActive ? +isActive : 0).toString());
+  // console.log(isActive);
   const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
   const handleTableChange = (

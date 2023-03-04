@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseQueryApi } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { FetchArgs, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { useNavigate } from 'react-router-dom';
 import { authSlice } from '../reducers/auth.slise';
 import getTokenPayload from '../tokenHendler';
 
@@ -31,6 +33,11 @@ export default async (args: string | FetchArgs, api: BaseQueryApi, extraOptions:
 
     result = await baseQuery(args, api, extraOptions);
   }
+  if (result.error?.status === 'FETCH_ERROR') {
+    api.dispatch(authSlice.actions.setServerError(true));
+    return result;
+  }
+  api.dispatch(authSlice.actions.setServerError(undefined));
   if (result?.error?.status === 403) {
     api.dispatch(authSlice.actions.setRoles(getTokenPayload()?.roles || []));
   }

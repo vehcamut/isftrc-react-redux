@@ -47,6 +47,7 @@ import MPatientPage from './routes/Mobile/MPatientPage';
 import MSpecShedulePage from './routes/Mobile/MSpecShedulePage';
 import MAboutPage from './routes/Mobile/MAboutPage';
 import MErrorPage from './routes/Mobile/MErrorPage';
+import ErrorGuard from './components/guards/errorGuard';
 // import { useAppSelector } from './app/hooks';
 
 let isMobile = false;
@@ -88,562 +89,539 @@ const root = createRoot(container);
 // const location = useLocation();
 const router = createBrowserRouter([
   {
-    path: 'notauth/about',
-    element: isMobile ? (
-      <MTemplate activeKey="about">
-        <MAboutPage />
-      </MTemplate>
-    ) : (
-      <Template activeKey="about">
-        <AboutPage />
-      </Template>
-    ),
-    // element: (
-    //   <Template activeKey="about">
-    //     <AboutPage />
-    //   </Template>
-    // ),
-  },
-  {
-    path: 'auth/signin',
-    element: isMobile ? (
-      <MTemplate activeKey="">
-        <SignIn />
-      </MTemplate>
-    ) : (
-      <Template activeKey="">
-        <SignIn />
-      </Template>
-    ),
-    // element: (
-    //   <Template activeKey="">
-    //     <SignIn />
-    //   </Template>
-    // ),
-  },
-
-  {
-    path: 'auth/signup',
-    element: isMobile ? (
-      <MTemplate activeKey="">
-        <SignUp />
-      </MTemplate>
-    ) : (
-      <Template activeKey="">
-        <SignUp />
-      </Template>
-    ),
-    // element: (
-    // <Template activeKey="">
-    //   <SignUp />
-    // </Template>
-    // ),
-  },
-
-  {
-    path: '*',
-    element: <Navigate to="./" />,
-  },
-
-  {
     children: [
-      // {
-      //   children: [
-      //     {
-      //       path: '/shedule',
-      //       element: (
-      //         <Template activeKey="shedule">
-      //           <SpecShedulePage />
-      //         </Template>
-      //       ),
-      //     },
-      //   ],
-      //   element: <RolesGuard requiredRoles={['specialist']} />,
-      // },
       {
-        children: [
-          {
-            path: '/shedule',
-            element: isMobile ? (
-              <MTemplate activeKey="shedule">
-                <MSpecShedulePage />
-              </MTemplate>
-            ) : (
-              <Template activeKey="shedule">
-                <SpecShedulePage />
-              </Template>
-            ),
-            // element: (
-            // <Template activeKey="shedule">
-            //   <SpecShedulePage />
-            // </Template>
-            // ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['specialist']} />,
+        path: 'notauth/about',
+        element: isMobile ? (
+          <MTemplate activeKey="about">
+            <MAboutPage />
+          </MTemplate>
+        ) : (
+          <Template activeKey="about">
+            <AboutPage />
+          </Template>
+        ),
+        // element: (
+        //   <Template activeKey="about">
+        //     <AboutPage />
+        //   </Template>
+        // ),
       },
       {
-        children: [
-          {
-            path: '/shedule/:date',
-            element: isMobile ? (
-              <MTemplate activeKey="shedule">
-                <MSpecShedulePage />
-              </MTemplate>
-            ) : (
-              <Template activeKey="shedule">
-                <SpecShedulePage />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['specialist']} />,
+        path: 'auth/signin',
+        element: isMobile ? (
+          <MTemplate activeKey="">
+            <SignIn />
+          </MTemplate>
+        ) : (
+          <Template activeKey="">
+            <SignIn />
+          </Template>
+        ),
       },
-      {
-        children: [
-          {
-            path: '/admins',
-            element: (
-              <Template activeKey="admins">
-                <Admins />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/admins/add',
-            element: (
-              <Template activeKey="admins">
-                <AddAdmins />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/admins/:id/info',
-            element: (
-              <Template activeKey="admins">
-                <AdminPage activeKey="info" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/profile',
-            element: isMobile ? (
-              <MTemplate activeKey="profile">
-                <MProfilePage />
-              </MTemplate>
-            ) : (
-              <Template activeKey="profile">
-                <ProfilePage />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
-      },
-      {
-        children: [
-          {
-            path: '/',
-            element: <Main />,
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
-      },
-      // {
-      //   children: [
-      //     {
-      //       path: '/auth',
-      //       element: <Auth />,
-      //     },
-      //   ],
-      //   element: <RolesGuard requiredRoles={['admin']} />,
-      // },
-      // {
-      //   children: [
-      //     {
-      //       path: '/admin/error',
-      //       element: isMobile ? (
-      //         <MTemplate activeKey="">
-      //           <MErrorPage />
-      //         </MTemplate>
-      //       ) : (
-      //         <Template activeKey="about">
-      //           <AboutPage />
-      //         </Template>
-      //       ),
-      //       // element: (
-      //       //   <Template activeKey="about">
-      //       //     <AboutPage />
-      //       //   </Template>
-      //       // ),
-      //     },
-      //   ],
-      //   element: <RolesGuard requiredRoles={['admin']} />,
-      // },
-      {
-        children: [
-          {
-            path: '/about',
-            element: isMobile ? (
-              <MTemplate activeKey="about">
-                <MAboutPage />
-              </MTemplate>
-            ) : (
-              <Template activeKey="about">
-                <AboutPage />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="about">
-            //     <AboutPage />
-            //   </Template>
-            // ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
-      },
-      {
-        children: [
-          {
-            path: '/specialists',
-            element: (
-              <Template activeKey="specialists">
-                <Specialists />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/specialists/add',
-            element: (
-              <Template activeKey="specialists">
-                <AddSpecialist />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/specialists/:id/info',
-            element: (
-              <Template activeKey="specialists">
-                <SpecialistPage activeKey="info" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/specialists/:id/shedule/:date',
-            element: (
-              <Template activeKey="specialists">
-                <SpecialistPage activeKey="shedule" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/specialists/:id/shedule',
-            element: (
-              <Template activeKey="specialists">
-                <SpecialistPage activeKey="shedule" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/representatives',
-            element: (
-              <Template activeKey="representatives">
-                <Representatives />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/representatives/add',
-            element: (
-              <Template activeKey="representatives">
-                <AddRepresentative />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/representatives/:id/info',
-            element: (
-              <Template activeKey="representatives">
-                <RepresentativePage activeKey="info" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/representatives/:id/patients',
-            element: (
-              <Template activeKey="representatives">
-                <RepresentativePage activeKey="patients" />
-              </Template>
-            ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
-          {
-            path: '/patients',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatients />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <Patients />
-              </Template>
-            ),
-            // element: (
 
-            // ),
-          },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+      {
+        path: 'auth/signup',
+        element: isMobile ? (
+          <MTemplate activeKey="">
+            <SignUp />
+          </MTemplate>
+        ) : (
+          <Template activeKey="">
+            <SignUp />
+          </Template>
+        ),
       },
+
+      {
+        path: '*',
+        element: <Navigate to="./" />,
+      },
+
       {
         children: [
           {
-            path: '/patients/add',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MAddPatient />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <AddPatient />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <AddPatient />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/shedule',
+                element: isMobile ? (
+                  <MTemplate activeKey="shedule">
+                    <MSpecShedulePage />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="shedule">
+                    <SpecShedulePage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['specialist']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative']} />,
-      },
-      {
-        children: [
           {
-            path: '/patients/:id/info',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatientPage activeKey="info" />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <PatientPage activeKey="info" />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <PatientPage activeKey="info" />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/shedule/:date',
+                element: isMobile ? (
+                  <MTemplate activeKey="shedule">
+                    <MSpecShedulePage />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="shedule">
+                    <SpecShedulePage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['specialist']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
-      },
-      {
-        children: [
           {
-            path: '/patients/:id/representatives',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatientPage activeKey="representatives" />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <PatientPage activeKey="representatives" />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <PatientPage activeKey="representatives" />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/admins',
+                element: (
+                  <Template activeKey="admins">
+                    <Admins />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
-      },
-      {
-        children: [
           {
-            path: '/patients/:id/course',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatientPage activeKey="course" />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <PatientPage activeKey="course" />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <PatientPage activeKey="course" />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/admins/add',
+                element: (
+                  <Template activeKey="admins">
+                    <AddAdmins />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
-      },
-      {
-        children: [
           {
-            path: '/patients/:id/shedule',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatientPage activeKey="shedule" />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <PatientPage activeKey="shedule" />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <PatientPage activeKey="shedule" />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/admins/:id/info',
+                element: (
+                  <Template activeKey="admins">
+                    <AdminPage activeKey="info" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
-      },
-      {
-        children: [
           {
-            path: '/patients/:id/shedule/:date',
-            element: isMobile ? (
-              <MTemplate activeKey="patients">
-                <MPatientPage activeKey="shedule" />
-              </MTemplate>
-            ) : (
-              <Template activeKey="patients">
-                <PatientPage activeKey="shedule" />
-              </Template>
-            ),
-            // element: (
-            //   <Template activeKey="patients">
-            //     <PatientPage activeKey="shedule" />
-            //   </Template>
-            // ),
+            children: [
+              {
+                path: '/profile',
+                element: isMobile ? (
+                  <MTemplate activeKey="profile">
+                    <MProfilePage />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="profile">
+                    <ProfilePage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
-      },
-      {
-        children: [
           {
-            path: '/handbooks',
-            element: (
-              <Template activeKey="handbooks">
-                <HandbooksPage />
-              </Template>
-            ),
+            children: [
+              {
+                path: '/',
+                element: <Main />,
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
+          // {
+          //   children: [
+          //     {
+          //       path: '/auth',
+          //       element: <Auth />,
+          //     },
+          //   ],
+          //   element: <RolesGuard requiredRoles={['admin']} />,
+          // },
+          // {
+          //   children: [
+          //     {
+          //       path: '/admin/error',
+          //       element: isMobile ? (
+          //         <MTemplate activeKey="">
+          //           <MErrorPage />
+          //         </MTemplate>
+          //       ) : (
+          //         <Template activeKey="about">
+          //           <AboutPage />
+          //         </Template>
+          //       ),
+          //       // element: (
+          //       //   <Template activeKey="about">
+          //       //     <AboutPage />
+          //       //   </Template>
+          //       // ),
+          //     },
+          //   ],
+          //   element: <RolesGuard requiredRoles={['admin']} />,
+          // },
           {
-            path: '/handbooks/advertisingSource',
-            element: (
-              <Template activeKey="handbooks">
-                <AdvertisingSourcePage />
-              </Template>
-            ),
+            children: [
+              {
+                path: '/about',
+                element: isMobile ? (
+                  <MTemplate activeKey="about">
+                    <MAboutPage />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="about">
+                    <AboutPage />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="about">
+                //     <AboutPage />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'specialist', 'representative']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
           {
-            path: '/handbooks/specialistType',
-            element: (
-              <Template activeKey="handbooks">
-                <SpecialistTypePage />
-              </Template>
-            ),
+            children: [
+              {
+                path: '/specialists',
+                element: (
+                  <Template activeKey="specialists">
+                    <Specialists />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
           },
-        ],
-        element: <RolesGuard requiredRoles={['admin']} />,
-      },
-      {
-        children: [
           {
-            path: '/handbooks/services',
-            element: (
-              <Template activeKey="handbooks">
-                <ServicesPage />
-              </Template>
-            ),
+            children: [
+              {
+                path: '/specialists/add',
+                element: (
+                  <Template activeKey="specialists">
+                    <AddSpecialist />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
           },
+          {
+            children: [
+              {
+                path: '/specialists/:id/info',
+                element: (
+                  <Template activeKey="specialists">
+                    <SpecialistPage activeKey="info" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/specialists/:id/shedule/:date',
+                element: (
+                  <Template activeKey="specialists">
+                    <SpecialistPage activeKey="shedule" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/specialists/:id/shedule',
+                element: (
+                  <Template activeKey="specialists">
+                    <SpecialistPage activeKey="shedule" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/representatives',
+                element: (
+                  <Template activeKey="representatives">
+                    <Representatives />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/representatives/add',
+                element: (
+                  <Template activeKey="representatives">
+                    <AddRepresentative />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/representatives/:id/info',
+                element: (
+                  <Template activeKey="representatives">
+                    <RepresentativePage activeKey="info" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/representatives/:id/patients',
+                element: (
+                  <Template activeKey="representatives">
+                    <RepresentativePage activeKey="patients" />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatients />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <Patients />
+                  </Template>
+                ),
+                // element: (
+
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/add',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MAddPatient />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <AddPatient />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <AddPatient />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/:id/info',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatientPage activeKey="info" />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <PatientPage activeKey="info" />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <PatientPage activeKey="info" />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/:id/representatives',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatientPage activeKey="representatives" />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <PatientPage activeKey="representatives" />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <PatientPage activeKey="representatives" />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/:id/course',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatientPage activeKey="course" />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <PatientPage activeKey="course" />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <PatientPage activeKey="course" />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/:id/shedule',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatientPage activeKey="shedule" />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <PatientPage activeKey="shedule" />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <PatientPage activeKey="shedule" />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/patients/:id/shedule/:date',
+                element: isMobile ? (
+                  <MTemplate activeKey="patients">
+                    <MPatientPage activeKey="shedule" />
+                  </MTemplate>
+                ) : (
+                  <Template activeKey="patients">
+                    <PatientPage activeKey="shedule" />
+                  </Template>
+                ),
+                // element: (
+                //   <Template activeKey="patients">
+                //     <PatientPage activeKey="shedule" />
+                //   </Template>
+                // ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin', 'representative', 'specialist']} />,
+          },
+          {
+            children: [
+              {
+                path: '/handbooks',
+                element: (
+                  <Template activeKey="handbooks">
+                    <HandbooksPage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/handbooks/advertisingSource',
+                element: (
+                  <Template activeKey="handbooks">
+                    <AdvertisingSourcePage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/handbooks/specialistType',
+                element: (
+                  <Template activeKey="handbooks">
+                    <SpecialistTypePage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          {
+            children: [
+              {
+                path: '/handbooks/services',
+                element: (
+                  <Template activeKey="handbooks">
+                    <ServicesPage />
+                  </Template>
+                ),
+              },
+            ],
+            element: <RolesGuard requiredRoles={['admin']} />,
+          },
+          // {
+          //   path: '/',
+          //   element: <Patients />,
+          // },
         ],
-        element: <RolesGuard requiredRoles={['admin']} />,
+        element: <AuthGuard />,
       },
-      // {
-      //   path: '/',
-      //   element: <Patients />,
-      // },
     ],
-    element: <AuthGuard />,
+    element: <ErrorGuard />,
   },
 
   // {
