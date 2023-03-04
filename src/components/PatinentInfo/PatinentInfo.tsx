@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable no-nested-ternary */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
@@ -125,34 +126,38 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         }
       >
         <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
-          {patient?.surname}
+          {patient ? patient.surname : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
-          {patient?.name}
+          {patient ? patient.name : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Отчество" className={addClass(classes, 'des-item')}>
-          {patient?.patronymic}
+          {patient ? patient.patronymic : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Пол" className={addClass(classes, 'des-item')}>
-          {patient?.gender}
+          {patient ? patient.gender : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Дата рождения" className={addClass(classes, 'des-item')}>
-          {new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
+          {patient
+            ? new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              })
+            : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
-          {patient?.address}
+          {patient ? patient?.address : ''}
         </Descriptions.Item>
         {!isRepres ? (
           <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
-            {patient?.note}
+            {patient ? patient?.note : ''}
           </Descriptions.Item>
         ) : null}
 
-        <Descriptions.Item label="Статус">{patient?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
+        <Descriptions.Item label="Статус">
+          {patient ? (patient.isActive ? 'активен' : 'неактивен') : ''}
+        </Descriptions.Item>
       </Descriptions>
     </>
   );

@@ -50,6 +50,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
             colorTextHeading: '#FFFFFF',
           },
           Input: {
+            fontSize: 16,
             colorBorder: '#9f9f9f',
           },
           // Descriptions: {

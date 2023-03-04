@@ -17,7 +17,9 @@ const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
+  const { data: patient, isLoading, isError } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
+
+  if (isError) navigate('/patients', { replace: true });
 
   const onBackClick = () => {
     navigate('/patients', { replace: true });
