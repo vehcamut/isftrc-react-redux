@@ -34,6 +34,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
       theme={{
         algorithm: [theme.defaultAlgorithm],
         token: {
+          fontSize: 16,
           colorFillAlter: '#1677FF', // '#25ab25', // '#a5cdff',
           colorPrimary: '#1677FF',
           colorBorder: '#9f9f9f',
@@ -42,6 +43,9 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey /* def
           // colorTextHeading: '#FFFFFF',
         },
         components: {
+          // Tabs: {
+          //   fontSize: 10,
+          // },
           Table: {
             colorTextHeading: '#FFFFFF',
           },

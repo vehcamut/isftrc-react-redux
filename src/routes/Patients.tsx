@@ -71,6 +71,8 @@ const Patients = () => {
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
+      // todo я здесь менял
+      defaultFilteredValue: isActive ? [(+isActive).toString()] : [],
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
       filters: [
@@ -85,6 +87,7 @@ const Patients = () => {
       ],
     },
   ];
+  // console.log((isActive ? +isActive : 0).toString());
   const { setPage, setLimit, setFilter, setIsActive } = patientTableSlice.actions;
 
   const handleTableChange = (

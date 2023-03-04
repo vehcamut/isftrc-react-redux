@@ -121,7 +121,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         >
           {isAuth ? (
             <>
-              <Text key="0" strong>
+              <Text key="0" strong style={{ fontSize: '16px' }}>
                 {name}
               </Text>
               {/* <Button key="1" type="primary">
@@ -147,6 +147,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         // defaultActiveKey={defaultActiveKey}
         // items={isAuth ? isAuthTabs : notAuthTabs}
         items={tabs}
+        // style={{ fontSize: '16px' }}
         // items={[
         //   { label: 'Личные данные', key: 'profile' },
         //   // { label: 'Расписание', key: 'shedules' },
@@ -156,7 +157,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
         //   { label: 'Справочники', key: 'handbooks' },
         //   // { label: 'Очтеты', key: 'reports' },
         // ]}
-        size="small"
+        size="large"
         tabBarStyle={{ marginBottom: '0px' }}
       />
     </>

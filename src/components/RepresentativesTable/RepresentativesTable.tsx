@@ -112,7 +112,7 @@ const RepresentativesTable: FunctionComponent<RepresentativesTableProps> = ({
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
-      defaultFilteredValue: [isActive],
+      defaultFilteredValue: [(+isActive).toString()],
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
       filters: [
