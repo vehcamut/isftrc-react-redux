@@ -7,13 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { equalThenNowDate, greaterThenNowDate, mutationErrorHandler } from '../../app/common';
 import { IService } from '../../models';
 import { appointmentsAPI } from '../../app/services/appointments.service';
-import './antd.rewrite.scss';
 import { servicesAPI } from '../../app/services';
 import { useAppSelector } from '../../app/hooks';
 import MModalAddAppToServ from '../ModalAddAppToServ/MModalAddAppToServ';
 import MModalTextEnter from '../ModalTextEnter/MModalTextEnter';
 import ErrorResult from '../ErrorResult/ErrorResult';
-// import ErrorResult from '../ErrorResult/ErrorResult';
 
 const { confirm } = Modal;
 const { Paragraph } = Typography;

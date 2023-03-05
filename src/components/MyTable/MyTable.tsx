@@ -13,6 +13,7 @@ import { addClass } from '../../app/common';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { patientTableSlice } from '../../app/reducers';
 import CustomCell from '../CustomCell/CustomCell';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 const { Search } = Input;
 
@@ -53,110 +54,19 @@ const MyTable: FunctionComponent<MyTableProps> = ({
     slice && reduser
       ? [reduser.isActive, (v: boolean | undefined) => dispatch(slice.actions.setIsActive(v))]
       : useState<boolean | undefined>(tableState.isActive);
-  const { data, isLoading } = dataSourseQuery({ limit, page, filter, isActive, ...extraOptions });
+  const { data, isLoading, isError } = dataSourseQuery(
+    { limit, page, filter, isActive, ...extraOptions },
+    {
+      skip: 'id' in extraOptions ? !extraOptions.id : false,
+    },
+  );
 
-  // const columns: ColumnsType<IRepresentative> = [
-  //   {
-  //     title: 'Логин',
-  //     dataIndex: 'login',
-  //     key: 'login',
-  //     width: '10%',
-  //   },
-  //   {
-  //     title: 'ФИО',
-  //     dataIndex: 'name',
-  //     key: 'name',
-  //     width: '22%',
-  //     render: (x, record) => {
-  //       return `${record.surname} ${record.name} ${record.patronymic}`;
-  //     },
-  //   },
-  //   {
-  //     title: 'Телефоны',
-  //     dataIndex: 'phoneNumbers',
-  //     key: 'phoneNumbers',
-  //     width: '12%',
-  //     render: (number: string[]) => {
-  //       return number.reduce((p, c) => {
-  //         const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
-  //         return `${p} ${pn}`;
-  //       }, '');
-  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-  //     },
-  //   },
-  //   {
-  //     title: 'Emails',
-  //     dataIndex: 'emails',
-  //     key: 'emails',
-  //     width: '16%',
-  //     render: (emails: string[]) => {
-  //       return emails.reduce((p, c) => {
-  //         return `${p} ${c}`;
-  //       }, '');
-  //       // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-  //     },
-  //   },
-  //   {
-  //     title: 'Дата рождения',
-  //     dataIndex: 'dateOfBirth',
-  //     key: 'dateOfBirth',
-  //     width: '12%',
-  //     render: (date: Date) => {
-  //       return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
-  //     },
-  //   },
-  //   {
-  //     title: 'Пол',
-  //     dataIndex: 'gender',
-  //     key: 'gender',
-  //     width: '8%',
-  //   },
-  //   {
-  //     title: 'Адрес',
-  //     dataIndex: 'address',
-  //     key: 'address',
-  //     width: '20%',
-  //   },
-  //   {
-  //     title: 'Статус',
-  //     dataIndex: 'isActive',
-  //     key: 'isActive',
-  //     width: '10%',
-  //     render: (flag: boolean) => {
-  //       return flag ? (
-  //         <div className={addClass(classes, 'active-table-item__active')}>активен</div>
-  //       ) : (
-  //         <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
-  //       );
-  //     },
-  //     defaultFilteredValue: [isActive],
-  //     // eslint-disable-next-line react/no-unstable-nested-components
-  //     filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
-  //     filters: [
-  //       {
-  //         text: 'активен',
-  //         value: 1,
-  //       },
-  //       {
-  //         text: 'неактивен',
-  //         value: 0,
-  //       },
-  //     ],
-  //   },
-  // ];
-
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    filters: Record<string, FilterValue | null>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // sorter: SorterResult<IRepresentative> | SorterResult<IRepresentative>[],
-  ) => {
+  const handleTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>) => {
     if (filters?.isActive) {
       if (filters?.isActive.length > 1) setIsActive(undefined);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
     } else setIsActive(undefined);
-    // console.log(pagination, filters, sorter);
     setPage(pagination.current ? pagination.current - 1 : 0);
     setLimit(pagination.pageSize ? pagination.pageSize : 0);
   };
@@ -165,6 +75,8 @@ const MyTable: FunctionComponent<MyTableProps> = ({
     setPage(0);
     setFilter(value);
   };
+  console.log(isError);
+  if (isError) return <ErrorResult />;
 
   return (
     <>

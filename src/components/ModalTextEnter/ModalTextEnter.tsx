@@ -1,41 +1,7 @@
 /* eslint-disable @typescript-eslint/indent */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Button,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  DatePicker,
-  Empty,
-  Form,
-  TimePicker,
-  InputNumber,
-  Select,
-  Result,
-  Input,
-} from 'antd';
-import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import type { DatePickerProps } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { addClass } from '../../app/common';
-import classes from './ModalTextEnter.module.scss';
-import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
-import { specialistAPI } from '../../app/services/specialists.service';
-import { appointmentsAPI } from '../../app/services/appointments.service';
-import './antd.rewrite.scss';
-import Shedule from '../Shedule/Shedule';
-import { servicesAPI } from '../../app/services';
-import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
+import { Button, Modal, Typography, Row, Col, Form, Input } from 'antd';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
 
-const { confirm } = Modal;
 const { TextArea } = Input;
 
 interface ModalTextEnterProps extends PropsWithChildren {
@@ -60,10 +26,7 @@ const ModalTextEnter: FunctionComponent<ModalTextEnterProps> = ({
   const onBeforeFinish = (values: any) => {
     onFinish(values.textEnter);
   };
-  const onReset = () => {
-    setIsOpen(false);
-  };
-  console.log(initText);
+
   return (
     <Modal
       destroyOnClose
@@ -82,7 +45,6 @@ const ModalTextEnter: FunctionComponent<ModalTextEnterProps> = ({
           wrapperCol={{ offset: 0, span: 24 }}
           initialValue={initText || ''}
           rules={required ? [{ required: true, message: 'Поле не должно быть пустым' }] : undefined}
-          // label={label}
           name="textEnter"
         >
           <TextArea
@@ -97,15 +59,10 @@ const ModalTextEnter: FunctionComponent<ModalTextEnterProps> = ({
         <Form.Item wrapperCol={{ offset: 0, span: 24 }} style={{ marginBottom: 0 }}>
           <Row>
             <Col span={24} style={{ textAlign: 'right' }}>
-              <Button
-                type="primary"
-                htmlType="submit"
-                style={{ marginRight: '10px' }}
-                className={addClass(classes, 'form-button')}
-              >
+              <Button type="primary" htmlType="submit" style={{ marginRight: '10px' }}>
                 ОК
               </Button>
-              <Button htmlType="button" onClick={() => setIsOpen(false)} className={addClass(classes, 'form-button')}>
+              <Button htmlType="button" onClick={() => setIsOpen(false)}>
                 Отмена
               </Button>
             </Col>
