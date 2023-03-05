@@ -18,9 +18,15 @@ const SpecialistPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) =
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: specialist, isLoading } = specialistAPI.useGetSpecialistByIdQuery({
+  const {
+    data: specialist,
+    isLoading,
+    isError,
+  } = specialistAPI.useGetSpecialistByIdQuery({
     id: params?.id || '',
   });
+
+  if (isError) navigate('/specialists', { replace: true });
 
   const onBackClick = () => {
     navigate('/specialists', { replace: true });

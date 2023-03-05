@@ -20,12 +20,18 @@ const AdminPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) => {
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: admin, isLoading } = adminsAPI.useGetAdminByIdQuery(
+  const {
+    data: admin,
+    isLoading,
+    isError,
+  } = adminsAPI.useGetAdminByIdQuery(
     {
       id: params?.id || '',
     },
     { skip: params?.id === '' },
   );
+
+  if (isError) navigate('/admins', { replace: true });
 
   const onBackClick = () => {
     navigate('/admins', { replace: true });

@@ -15,9 +15,15 @@ const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) =
   const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: representative, isLoading } = representativesAPI.useGetRepresentativeByIdQuery({
+  const {
+    data: representative,
+    isLoading,
+    isError,
+  } = representativesAPI.useGetRepresentativeByIdQuery({
     id: params?.id || '',
   });
+
+  if (isError) navigate('/representatives', { replace: true });
 
   const onBackClick = () => {
     navigate('/representatives', { replace: true });

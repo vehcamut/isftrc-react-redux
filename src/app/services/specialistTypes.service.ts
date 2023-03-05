@@ -1,25 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import dayjs from 'dayjs';
-import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
-import {
-  IAdvertisingSource,
-  IAdvertisingSourceData,
-  IGet,
-  IGetAdvertisingSource,
-  IGetByID,
-  IGetPerson,
-  IPatient,
-  IPatientChangeStatus,
-  IPatientData,
-} from '../../models';
-import baseQuery from './baseQuery';
+import { IAdvertisingSource, IAdvertisingSourceData, IGetAdvertisingSource } from '../../models';
 import { api } from './api.service';
 
 export const specialistTypesAPI = api.injectEndpoints({
-  // reducerPath: 'advertisingSourceAPI',
-  // baseQuery,
-  // tagTypes: ['advertisingSource'],
   endpoints: (build) => ({
     getSpecialistTypes: build.query<IAdvertisingSourceData, IGetAdvertisingSource>({
       query: (params) => ({
@@ -40,8 +23,8 @@ export const specialistTypesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['specialistTypes'],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       transformResponse(apiResponse: IAdvertisingSource[], meta): any {
-        console.log(apiResponse);
         const resp = [];
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });

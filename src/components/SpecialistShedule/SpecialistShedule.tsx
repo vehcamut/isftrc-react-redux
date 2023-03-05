@@ -256,7 +256,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
             name="time"
           >
             {/* <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" disabled={[false, true]} /> */}
-            <TimePicker format="HH:mm" id="time" />
+            <TimePicker format="HH:mm" id="time" showNow={false} />
           </Form.Item>
           <Form.Item
             // initialValue={initValue?.name ? initValue.name : ''}
