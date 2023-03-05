@@ -61,13 +61,13 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
     isActive,
   });
 
-  const onRemove = (patientId: any) => {
+  const onRemove = (patient: any) => {
     const showConfirm = () => {
       confirm({
         title: 'Вы точно хотите отвязать пациента от представителя?',
         icon: <ExclamationCircleFilled />,
         onOk() {
-          removePatientFromRepresentative({ patientId, representativeId: representative?._id || '' });
+          removePatientFromRepresentative({ patientId: patient._id, representativeId: representative?._id || '' });
           messageApi.open({
             type: 'success',
             content: 'Пациент успешно отвязан.',
@@ -312,7 +312,14 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
         width="100%"
         onCancel={onModalAddClose}
       >
-        <PatientsTable onRowClick={onRowClick} representative={representative} />
+        {/* <PatientsTable onRowClick={onRowClick} representative={representative} /> */}
+        <PatientsTable
+          // onRemove={representative?.isActive ? onRemove : false}
+          onRowClick={onRowClick}
+          dataSourseQuery={patientsAPI.useGetPatientsQuery}
+          hasSearch
+          extraOptions={{ representativeId: representative?._id }}
+        />
         {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
         {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
@@ -379,7 +386,19 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
             enterButton
             style={{ marginBottom: '15px' }}
           /> */}
-          <Table
+          {/* const { data, isLoading } = representativesAPI.useGetRepresentativePatientsByIdQuery({
+    id: representative?._id || '',
+    isActive,
+  }); */}
+          <PatientsTable
+            onRemove={representative?.isActive ? onRemove : false}
+            onRowClick={(record) => navigate(`/representatives/${record._id}/info`)}
+            dataSourseQuery={representativesAPI.useGetRepresentativePatientsByIdQuery}
+            hasSearch
+            extraOptions={{ id: representative?._id }}
+            hasPagination
+          />
+          {/* <Table
             components={{
               body: {
                 cell: CustomCell,
@@ -414,7 +433,7 @@ const RepresentativePatients: FunctionComponent<RepresentativePatientsProps> = (
             }
             className={addClass(classes, 'patients-table')}
             onChange={handleTableChange}
-          />
+          /> */}
         </Descriptions.Item>
       </Descriptions>
     </>

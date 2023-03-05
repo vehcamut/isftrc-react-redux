@@ -85,13 +85,19 @@ export const representativesAPI = api.injectEndpoints({
       invalidatesTags: ['representative', 'user'],
     }),
 
-    getRepresentativePatientsById: build.query<IPatient[], IGetRepPatients>({
+    getRepresentativePatientsById: build.query<IPatientData, IGetRepPatients>({
       query: (params) => ({
         url: 'representatives/patients',
         params,
         credentials: 'include',
       }),
       providesTags: ['representative', 'advertisingSource', 'patients'],
+      transformResponse(apiResponse: IPatient[], meta): IPatientData {
+        return { data: apiResponse, count: Number(meta?.response?.headers.get('X-Total-Count')) };
+      },
+      // transformResponse(apiRespons: IRepresentative[], meta): IRepresentativeData {
+      //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
+      // },
     }),
 
     addPatientToRepresentative: build.mutation<any, IAddPatientToRepresentative>({
