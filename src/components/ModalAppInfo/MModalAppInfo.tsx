@@ -1,55 +1,24 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable @typescript-eslint/indent */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Button,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  DatePicker,
-  Empty,
-  Form,
-  TimePicker,
-  InputNumber,
-  Select,
-  Result,
-  Input,
-  Spin,
-  Card,
-  Divider,
-} from 'antd';
+import { Button, Modal, Typography, Descriptions, message, Spin, Card, Divider } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import { EditOutlined, ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import type { DatePickerProps } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { addClass, equalThenNowDate, greaterThenNowDate } from '../../app/common';
-import classes from './ModalAppInfo.module.scss';
-import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
-import { specialistAPI } from '../../app/services/specialists.service';
+import { EditOutlined, ExclamationCircleFilled } from '@ant-design/icons';
+import { useNavigate } from 'react-router-dom';
+import { equalThenNowDate, greaterThenNowDate, mutationErrorHandler } from '../../app/common';
+import { IService } from '../../models';
 import { appointmentsAPI } from '../../app/services/appointments.service';
 import './antd.rewrite.scss';
-import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
-import ModalAddAppToServ from '../ModalAddAppToServ/ModalAddAppToServ';
-import ModalTextEnter from '../ModalTextEnter/ModalTextEnter';
 import { useAppSelector } from '../../app/hooks';
 import MModalAddAppToServ from '../ModalAddAppToServ/MModalAddAppToServ';
 import MModalTextEnter from '../ModalTextEnter/MModalTextEnter';
+import ErrorResult from '../ErrorResult/ErrorResult';
+// import ErrorResult from '../ErrorResult/ErrorResult';
 
 const { confirm } = Modal;
-const { TextArea } = Input;
-const { Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 interface MModalAppInfoProps extends PropsWithChildren {
-  // serviceId: string | undefined;
-
   title: string;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -68,23 +37,24 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
   isPatientLink,
   isSpecialistLink,
 }) => {
-  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
+  const { roles, id } = useAppSelector((state) => state.authReducer);
   const isAdmin = roles.find((r) => r === 'admin');
   const isRepres = roles.find((r) => r === 'representative');
   const isSpec = roles.find((r) => r === 'specialist');
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-
-  // const [appointmentId, setAppointmentId] = useState<string>('');
   const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
   const [currentService, setCurrentService] = useState<IService | undefined>(undefined);
 
-  // API
-  const { data: currentAppointment, isFetching } = appointmentsAPI.useGetAppointmentByIdQuery(
+  const {
+    data: currentAppointment,
+    isFetching,
+    isError,
+  } = appointmentsAPI.useGetAppointmentByIdQuery(
     {
       id: appointmentId || '',
     },
-    { skip: appointmentId === '' },
+    { skip: appointmentId === '' || isChangeServiceTimeOpen || !appointmentId },
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
@@ -104,10 +74,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
         content: 'Запись успешно открыта',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
 
@@ -125,29 +92,11 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
       });
       setIsChangeNoteOpen(false);
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
 
   const [isAddResultOpen, setIsAddResultOpen] = useState(false);
-  // const onAddResult = async (note: string) => {
-  //   try {
-  //     await changeServNote({ id: currentAppointment?.service?._id || '', note }).unwrap();
-  //     messageApi.open({
-  //       type: 'success',
-  //       content: 'Комментарий успешно изменен',
-  //     });
-  //     setIsChangeNoteOpen(false);
-  //   } catch (e) {
-  //     messageApi.open({
-  //       type: 'error',
-  //       content: 'Ошибка связи с сервером',
-  //     });
-  //   }
-  // };
   const onCloseService = async (result: string) => {
     try {
       await closeService({ id: currentAppointment?.service?._id || '', result }).unwrap();
@@ -157,10 +106,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
       });
       setIsAddResultOpen(false);
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
 
@@ -179,19 +125,14 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
             });
             setIsOpen(false);
           } catch (e) {
-            messageApi.open({
-              type: 'error',
-              content: 'Ошибка связи с сервером',
-            });
+            mutationErrorHandler(messageApi, e);
           }
         },
-        // onCancel() {
-        //   console.log('Cancel');
-        // },
       });
     };
     showConfirm();
   };
+  if (isError) return <ErrorResult />;
   return (
     <>
       {contextHolder}
@@ -200,6 +141,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
         isOpen={isChangeServiceTimeOpen}
         setIsOpen={setIsChangeServiceTimeOpen}
         setAppId={setAppointmentId}
+        setOnCancel={setIsOpen}
       />
       <MModalTextEnter
         isOpen={isChangeNoteOpen}
@@ -348,10 +290,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
               currentAppointment?.begDate &&
               !greaterThenNowDate(new Date(currentAppointment?.begDate)) ? (
                 <Card style={{ width: '100%', textAlign: 'center', marginBottom: '10px', backgroundColor: '#e6f4ff' }}>
-                  <Paragraph strong>
-                    {/* В день оказания или позже услугу можно отменить или перенести только связавшись с администратором. */}
-                    Отменить или перенести запись в данный момент невозможно.
-                  </Paragraph>
+                  <Paragraph strong>Отменить или перенести запись в данный момент невозможно.</Paragraph>
                   <Paragraph strong>Свяжитесь с администратором.</Paragraph>
                 </Card>
               ) : null}
@@ -381,11 +320,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
                   span={3}
                   contentStyle={{ color: currentAppointment?.service?.status ? 'green' : 'red' }}
                 >
-                  {
-                    // eslint-disable-next-line no-nested-ternary
-                    currentAppointment?.service ? (currentAppointment?.service?.status ? 'Оказана' : 'Не оказана') : '-'
-                  }
-                  {/* {currentAppointment?.service?.status ? 'Оказана' : 'Не оказана'} */}
+                  {currentAppointment?.service ? (currentAppointment?.service?.status ? 'Оказана' : 'Не оказана') : '-'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Пациент" span={3}>
                   {currentAppointment?.service ? (
@@ -393,7 +328,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
                       <Button
                         type="link"
                         size="small"
-                        onClick={(e) => navigate(`/patients/${currentAppointment.service?.patient?._id}/info`)}
+                        onClick={() => navigate(`/patients/${currentAppointment.service?.patient?._id}/info`)}
                       >{`${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`}</Button>
                     ) : (
                       `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
@@ -401,9 +336,6 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
                   ) : (
                     ' - '
                   )}
-                  {/* {currentAppointment?.service
-                    ? `${currentAppointment.service.patient?.number} ${currentAppointment.service.patient?.surname} ${currentAppointment.service.patient?.name[0]}.${currentAppointment.service.patient?.patronymic[0]}.`
-                    : ' - '} */}
                 </Descriptions.Item>
                 <Descriptions.Item label="Специалист" span={3}>
                   {currentAppointment?.service ? (
@@ -411,7 +343,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
                       <Button
                         type="link"
                         size="small"
-                        onClick={(e) => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
+                        onClick={() => navigate(`/specialists/${currentAppointment.specialist._id}/info`)}
                       >{`${currentAppointment?.specialist?.name}`}</Button>
                     ) : (
                       currentAppointment?.specialist?.name
@@ -421,16 +353,13 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
                   )}
                 </Descriptions.Item>
                 <Descriptions.Item label="Курс" span={3}>
-                  {
-                    // eslint-disable-next-line no-nested-ternary
-                    currentAppointment?.service
-                      ? currentAppointment?.service?.course?.number === 0
-                        ? 'вне курса'
-                        : `№${currentAppointment?.service?.course?.number}${
-                            currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
-                          }`
-                      : '-'
-                  }
+                  {currentAppointment?.service
+                    ? currentAppointment?.service?.course?.number === 0
+                      ? 'вне курса'
+                      : `№${currentAppointment?.service?.course?.number}${
+                          currentAppointment?.service?.course?.status ? '' : ' (ЗАКРЫТ)'
+                        }`
+                    : '-'}
                 </Descriptions.Item>
                 <Descriptions.Item label="Услуга" span={3}>
                   {currentAppointment?.service ? `${currentAppointment?.service?.type?.name}` : ' - '}

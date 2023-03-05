@@ -1,21 +1,11 @@
-/* eslint-disable @typescript-eslint/indent */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { FunctionComponent, PropsWithChildren, useEffect, useState } from 'react';
-import { Typography, Table, Row, Col, Button, Input } from 'antd';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
-import { useNavigate } from 'react-router-dom';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
+import { Button } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { DeleteRowOutlined, FilterFilled } from '@ant-design/icons';
 import classes from './AdminsTable.module.scss';
-import { patientsAPI, representativesAPI } from '../../app/services';
-import { IPatient, IRepresentative } from '../../models';
+import { IRepresentative } from '../../models';
 import { addClass } from '../../app/common';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { patientTableSlice } from '../../app/reducers';
-import CustomCell from '../CustomCell/CustomCell';
 import MyTable from '../MyTable/MyTable';
-
-const { Search } = Input;
 
 interface AdminsTableProps extends PropsWithChildren {
   onRowClick: (record: any) => void;
@@ -39,7 +29,6 @@ const AdminsTable: FunctionComponent<AdminsTableProps> = ({
   slice,
   reduser,
   onRemove,
-  // columns,
 }) => {
   const isActive = slice && reduser ? reduser.isActive : tableState.isActive;
   const columns: ColumnsType<IRepresentative> = [
@@ -68,7 +57,6 @@ const AdminsTable: FunctionComponent<AdminsTableProps> = ({
           const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
           return `${p} ${pn}`;
         }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
     },
     {
@@ -80,7 +68,6 @@ const AdminsTable: FunctionComponent<AdminsTableProps> = ({
         return emails.reduce((p, c) => {
           return `${p} ${c}`;
         }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
     },
     {
@@ -116,7 +103,7 @@ const AdminsTable: FunctionComponent<AdminsTableProps> = ({
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
-      defaultFilteredValue: [isActive],
+      defaultFilteredValue: isActive !== undefined ? [(+isActive).toString()] : undefined,
       // eslint-disable-next-line react/no-unstable-nested-components
       filterIcon: (filtered) => <FilterFilled style={{ color: filtered ? '#e6f4ff' : '#ffffff' }} />,
       filters: [
@@ -140,11 +127,9 @@ const AdminsTable: FunctionComponent<AdminsTableProps> = ({
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
             type="link"
-            // shape="circle"
             icon={<DeleteRowOutlined />}
             disabled={!record.isActive || !onRemove}
             onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               e.stopPropagation();
               if (onRemove) onRemove(record);
             }}
@@ -173,7 +158,6 @@ AdminsTable.defaultProps = {
   hasSearch: true,
   extraOptions: {},
   hasPagination: false,
-  // slice: undefined,
   tableState: {
     limit: 10,
     page: 0,

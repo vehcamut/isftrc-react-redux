@@ -75,6 +75,10 @@ const PatientShedule: FunctionComponent<PatientSheduleProps> = ({ patient }) => 
     setIsAddUpdateModalOpen(false);
   };
 
+  // if (!curAppId) {
+  //   setIsAppInfoOpen(false);
+  // }
+
   const onFinish = async (values: any) => {
     console.log(values);
     values.time = values.time.second(0);

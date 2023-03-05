@@ -4,20 +4,19 @@ import { addClass } from '../../app/common';
 import classes from './AdvertisingSourceForm.module.scss';
 import { IAdvertisingSource } from '../../models';
 
-interface FormDialogProps extends PropsWithChildren {
+interface AdvertisingSourceFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
-  // eslint-disable-next-line react/require-default-props
   initValue?: IAdvertisingSource;
 }
 
-const AdvertisingSourceForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset, initValue }) => {
+const AdvertisingSourceForm: FunctionComponent<AdvertisingSourceFormProps> = ({ onFinish, onReset, initValue }) => {
   return (
-    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 18 }} colon={false} onFinish={onFinish}>
+    <Form labelWrap labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} onFinish={onFinish}>
       <Form.Item
         initialValue={initValue?.name ? initValue.name : ''}
         rules={[{ required: true, message: 'Поле "Название" не должно быть пустым' }]}
-        label={<div className={addClass(classes, 'form-item')}>Название</div>}
+        label="Название"
         name="name"
       >
         <Input id="name" />
@@ -25,12 +24,12 @@ const AdvertisingSourceForm: FunctionComponent<FormDialogProps> = ({ onFinish, o
       <Form.Item
         valuePropName="checked"
         initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
-        label={<div className={addClass(classes, 'form-item')}>Статус</div>}
+        label="Статус"
         name="isActive"
       >
         <Switch id="isActive" />
       </Form.Item>
-      <Form.Item wrapperCol={{ offset: 0, span: 22 }} style={{ marginBottom: 0 }}>
+      <Form.Item wrapperCol={{ offset: 0, span: 24 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
@@ -42,13 +41,17 @@ const AdvertisingSourceForm: FunctionComponent<FormDialogProps> = ({ onFinish, o
               Сохранить
             </Button>
             <Button htmlType="button" onClick={onReset} className={addClass(classes, 'form-button')}>
-              Отменить
+              Назад
             </Button>
           </Col>
         </Row>
       </Form.Item>
     </Form>
   );
+};
+
+AdvertisingSourceForm.defaultProps = {
+  initValue: undefined,
 };
 
 export default AdvertisingSourceForm;

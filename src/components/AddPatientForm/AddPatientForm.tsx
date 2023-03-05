@@ -12,7 +12,6 @@ const { TextArea } = Input;
 interface FormDialogProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
-  // eslint-disable-next-line react/require-default-props
   initValue?: IPatient;
 }
 
@@ -99,11 +98,11 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
       </Form.Item>
       {!isRepres ? (
         <Form.Item label="Примечание" name="note" initialValue={initValue?.note ? initValue.note : ''}>
-          <TextArea rows={4} id="note" />
+          <TextArea rows={4} id="note" autoSize={{ minRows: 4, maxRows: 8 }} />
         </Form.Item>
       ) : null}
 
-      <Form.Item wrapperCol={{ offset: 0, span: isMobile ? 24 : 22 }} style={{ marginBottom: 0 }}>
+      <Form.Item wrapperCol={{ offset: 0, span: isMobile ? 24 : 24 }} style={{ marginBottom: 0 }}>
         <Row>
           <Col span={24} style={{ textAlign: 'right' }}>
             <Button
@@ -115,7 +114,7 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
               Сохранить
             </Button>
             <Button htmlType="button" onClick={onReset} className={addClass(classes, 'form-button')}>
-              Отменить
+              Назад
             </Button>
           </Col>
         </Row>
@@ -124,12 +123,8 @@ const AddPatientForm: FunctionComponent<FormDialogProps> = ({ onFinish, onReset,
   );
 };
 
-export default AddPatientForm;
+AddPatientForm.defaultProps = {
+  initValue: undefined,
+};
 
-// const debounce = (callback: any, delay: number) => {
-//   let timer: ReturnType<typeof setTimeout>;
-//   return (...args: any[]) => {
-//     clearTimeout(timer);
-//     timer = setTimeout(() => callback(...args), delay);
-//   };
-// };
+export default AddPatientForm;

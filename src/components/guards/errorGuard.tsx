@@ -6,7 +6,6 @@ import { useAppSelector } from '../../app/hooks';
 const ErrorGuard = () => {
   const { serverError } = useAppSelector((state) => state.authReducer);
   if (serverError) {
-    console.log('dfd');
     return (
       <Result
         style={{ marginTop: '75px' }}

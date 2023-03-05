@@ -1,17 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// import { PageHeader } from 'antd';
 import React, { FunctionComponent, PropsWithChildren } from 'react';
-// import 'antd/dist/antd.css';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars, import/order
-import classes from './Header.module.scss';
-// import { Header } from 'antd/lib/layout/layout';
-// import 'antd/dist/reset.css';
-// import Button from 'antd/lib/button';
-import Tabs from 'antd/lib/tabs';
-// import TabPane from 'antd/lib/tabs/TabPane';
 import Typography from 'antd/lib/typography';
 import { useNavigate } from 'react-router-dom';
-import { Button /* , Col, Row */ } from 'antd';
+import { Button, Tabs } from 'antd';
+import classes from './Header.module.scss';
 import logo from './logo.svg';
 import { addClass } from '../../app/common';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
@@ -21,16 +12,11 @@ import { authSlice } from '../../app/reducers';
 const { Text } = Typography;
 
 interface ConfirmDialogProps extends PropsWithChildren {
-  // defaultActiveKey: string;
   activeKey: string;
 }
 
 const getTabs = (isAuth: boolean, roles: string[]) => {
-  if (!isAuth)
-    return [
-      // { label: 'Войти', key: 'login' },
-      { label: 'О компании', key: 'notauth/about' },
-    ];
+  if (!isAuth) return [{ label: 'О компании', key: 'notauth/about' }];
   if (roles.find((r) => r === 'admin'))
     return [
       { label: 'Личные данные', key: 'profile' },
@@ -55,65 +41,24 @@ const getTabs = (isAuth: boolean, roles: string[]) => {
   ];
 };
 
-// { label: 'Личные данные', key: 'profile' },
-// // { label: 'Расписание', key: 'shedules' },
-// { label: 'Пациенты', key: 'patients' },
-// { label: 'Представители', key: 'representatives' },
-// { label: 'Специалисты', key: 'specialists' },
-// { label: 'Справочники', key: 'handbooks' },
-// // { label: 'Очтеты', key: 'reports' },
-// isAuth
-const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, */ activeKey }) => {
+const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ activeKey }) => {
   const { isAuth, roles, name, isMobile } = useAppSelector((state) => state.authReducer);
   const tabs = getTabs(isAuth, roles);
-  // const notAuthTabs = [
-  //   // { label: 'Войти', key: 'login' },
-  //   { label: 'О компании', key: 'notauth/about' },
-  // ];
-  // const isAuthTabs = [
-  //   { label: 'Личные данные', key: 'profile' },
-  //   { label: 'Пациенты', key: 'patients' },
-  //   { label: 'Представители', key: 'representatives' },
-  //   { label: 'Специалисты', key: 'specialists' },
-  //   { label: 'Администраторы', key: 'admins' },
-  //   { label: 'Справочники', key: 'handbooks' },
-  //   { label: 'О компании', key: 'about' },
-  // ];
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  // const location = useLocation();
   const [logout] = authAPI.useLogoutMutation();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
   const { setIsAuth, setRoles, setName, setId } = authSlice.actions;
   const onLogout = async () => {
-    try {
-      // await signIN({ login, password }).unwrap();
-      await logout({}).unwrap();
-      dispatch(setIsAuth(false));
-      dispatch(setRoles([]));
-      dispatch(setName(''));
-      dispatch(setId(''));
-      // eslint-disable-next-line no-restricted-globals
-      // location.reload();
-      // const payload = getTokenPayload()?.roles;
-      navigate(0);
-    } catch (e) {
-      // messageApi.open({
-      //   type: 'error',
-      //   content: 'Неправильный логин или пароль',
-      // });
-      // console.log('ERROR!');
-      // dispatch(setLoginHelper('Неправильный логин или пароль'));
-    }
+    logout({}).unwrap();
+    dispatch(setIsAuth(false));
+    dispatch(setRoles([]));
+    dispatch(setName(''));
+    dispatch(setId(''));
+    navigate(0);
   };
   return (
-    // style={{ backgroundColor: '#ffffff', lineHeight: '0px' }}
-    // <Header className={addClass(classes, 'header')}>
-    //   {/* <AppBar defaultActiveKey="patients" /> */}
-    // </Header>
     <>
-      <div className={addClass(classes, 'header-top')} /* style={isMobile ? { flexDirection: 'column' } : undefined} */>
+      <div className={addClass(classes, 'header-top')}>
         {isMobile && isAuth ? null : <img alt="Реацентр Астрахань" src={logo} />}
         <div
           className={addClass(classes, 'header-top__menu')}
@@ -124,10 +69,6 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
               <Text key="0" strong style={{ fontSize: '16px' }}>
                 {name}
               </Text>
-              {/* <Button key="1" type="primary">
-                Справка
-              </Button> */}
-
               <Button key="2" type="primary" onClick={onLogout}>
                 Выйти
               </Button>
@@ -144,20 +85,8 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ /* defaultActiveKey, 
           navigate(`/${path}`);
         }}
         activeKey={activeKey}
-        // defaultActiveKey={defaultActiveKey}
-        // items={isAuth ? isAuthTabs : notAuthTabs}
         items={tabs}
-        // style={{ fontSize: '16px' }}
-        // items={[
-        //   { label: 'Личные данные', key: 'profile' },
-        //   // { label: 'Расписание', key: 'shedules' },
-        //   { label: 'Пациенты', key: 'patients' },
-        //   { label: 'Представители', key: 'representatives' },
-        //   { label: 'Специалисты', key: 'specialists' },
-        //   { label: 'Справочники', key: 'handbooks' },
-        //   // { label: 'Очтеты', key: 'reports' },
-        // ]}
-        size="large"
+        size="middle"
         tabBarStyle={{ marginBottom: '0px' }}
       />
     </>

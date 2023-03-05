@@ -1,39 +1,15 @@
-/* eslint-disable @typescript-eslint/indent */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Button,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  DatePicker,
-  Empty,
-  Form,
-  TimePicker,
-  InputNumber,
-  Select,
-  Result,
-} from 'antd';
+import { Button, Modal, Typography, message, Empty, Select, Result } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import { ExclamationCircleFilled, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import type { DatePickerProps } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
-import { addClass } from '../../app/common';
-import classes from './ModalAddAppToServ.module.scss';
-import { IAppointment, IPatient, IService, ISpecialist } from '../../models';
+import dayjs from 'dayjs';
+import { ExclamationCircleFilled } from '@ant-design/icons';
+import { IAppointment } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
 import { appointmentsAPI } from '../../app/services/appointments.service';
-import './antd.rewrite.scss';
-import Shedule from '../Shedule/Shedule';
 import { servicesAPI } from '../../app/services';
 import { useAppSelector } from '../../app/hooks';
 import MShedule from '../Shedule/MShedule';
+import ErrorResult from '../ErrorResult/ErrorResult';
+import { mutationErrorHandler } from '../../app/common';
 
 const { confirm } = Modal;
 
@@ -41,35 +17,46 @@ interface MModalAddAppToServProps extends PropsWithChildren {
   serviceId: string | undefined;
   isOpen: boolean;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  // eslint-disable-next-line react/require-default-props
   setAppId?: React.Dispatch<React.SetStateAction<string>>;
+  setOnCancel?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ serviceId, isOpen, setIsOpen, setAppId }) => {
-  const { isAuth, roles, name, id } = useAppSelector((state) => state.authReducer);
-  const isAdmin = roles.find((r) => r === 'admin');
-  const isRepres = roles.find((r) => r === 'representative');
+const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({
+  serviceId,
+  isOpen,
+  setIsOpen,
+  setAppId,
+  setOnCancel,
+}) => {
+  const { roles } = useAppSelector((state) => state.authReducer);
   const isSpec = roles.find((r) => r === 'specialist');
   const [isSuccess, setIsSuccess] = useState(0);
   const [messageApi, contextHolder] = message.useMessage();
-  // API
   const [setAppointments] = servicesAPI.useSetAppointmentToServiceMutation();
 
   const [currentSpecialist, setCurrentSpecialist] = useState<string | undefined>(undefined);
-  const { data: currentService, isLoading: isLoadingCurrentServise } = servicesAPI.useGetAllInfoServiceQuery(
+  const {
+    data: currentService,
+    isLoading: isLoadingCurrentServise,
+    isError: isErrorCS,
+  } = servicesAPI.useGetAllInfoServiceQuery(
     {
       id: serviceId || '',
     },
     {
-      skip: !serviceId || !!isSpec,
+      skip: !serviceId || !!isSpec || !!isSuccess,
     },
   );
-  const { data, isLoading } = specialistAPI.useGetSpecificSpecialistsQuery(
+  const {
+    data,
+    isLoading,
+    isError: isErrorSS,
+  } = specialistAPI.useGetSpecificSpecialistsQuery(
     {
       type: currentService?.type._id || '',
     },
     {
-      skip: !currentService?.type._id || !!isSpec,
+      skip: !currentService?.type._id || !!isSpec || !!isSuccess,
     },
   );
 
@@ -103,14 +90,8 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
             setIsSuccess(1);
             if (setAppId) setAppId(result);
           } catch (e) {
-            messageApi.open({
-              type: 'error',
-              content: 'Ошибка связи с сервером',
-            });
+            mutationErrorHandler(messageApi, e);
           }
-        },
-        onCancel() {
-          console.log('Cancel');
         },
       });
     };
@@ -130,15 +111,10 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
             }).unwrap();
             setIsSuccess(-1);
             if (setAppId) setAppId(result);
+            if (setOnCancel) setOnCancel(false);
           } catch (e) {
-            messageApi.open({
-              type: 'error',
-              content: 'Ошибка связи с сервером',
-            });
+            mutationErrorHandler(messageApi, e);
           }
-        },
-        onCancel() {
-          console.log('Cancel');
         },
       });
     };
@@ -150,6 +126,8 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
     setCurrentSpecialist(undefined);
     setIsOpen(false);
   };
+
+  if (isErrorCS || isErrorSS) return <ErrorResult />;
 
   return (
     <>
@@ -189,10 +167,9 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
             status="success"
             title={
               <Typography.Title level={5}>
-                {isSuccess > 0 ? 'Пациент успешно записан на прием к специалисту' : 'Запись пациента отменена'}
+                {isSuccess > 0 ? 'Пациент успешно записан на прием' : 'Запись пациента отменена'}
               </Typography.Title>
             }
-            // subTitle="Order number: 2017182818828182881 Cloud server configuration takes 1-5 minutes, please wait."
             extra={[
               <Button type="primary" key="ok" onClick={onReset} style={{ width: '160px' }}>
                 ОК
@@ -209,6 +186,7 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
               onChange={(v) => setCurrentSpecialist(v)}
               placeholder="Выберите специалиста"
               loading={isLoading}
+              disabled={isLoadingCurrentServise}
             />
             {currentSpecialist ? (
               <MShedule
@@ -231,6 +209,11 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({ servic
       </Modal>
     </>
   );
+};
+
+MModalAddAppToServ.defaultProps = {
+  setAppId: undefined,
+  setOnCancel: undefined,
 };
 
 export default MModalAddAppToServ;
