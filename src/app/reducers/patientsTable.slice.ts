@@ -1,4 +1,4 @@
-import { createSlice /* , PayloadAction */, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IPatientsTableState {
   page: number;
@@ -22,27 +22,21 @@ export const patientTableSlice = createSlice({
   reducers: {
     setPage(state: IPatientsTableState, action: PayloadAction<number>) {
       state.page = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setLimit(state: IPatientsTableState, action: PayloadAction<number>) {
       state.limit = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setSort(state: IPatientsTableState, action: PayloadAction<string>) {
       state.sort = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setOrder(state: IPatientsTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
       state.order = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setFilter(state: IPatientsTableState, action: PayloadAction<string>) {
       state.filter = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setIsActive(state: IPatientsTableState, action: PayloadAction<boolean | undefined>) {
       state.isActive = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
   },
 });

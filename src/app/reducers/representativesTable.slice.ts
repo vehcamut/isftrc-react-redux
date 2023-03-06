@@ -1,4 +1,4 @@
-import { createSlice /* , PayloadAction */, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IRepresentativesTableState {
   page: number;
@@ -22,27 +22,21 @@ export const representativesTableSlice = createSlice({
   reducers: {
     setPage(state: IRepresentativesTableState, action: PayloadAction<number>) {
       state.page = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setLimit(state: IRepresentativesTableState, action: PayloadAction<number>) {
       state.limit = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setSort(state: IRepresentativesTableState, action: PayloadAction<string>) {
       state.sort = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setOrder(state: IRepresentativesTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
       state.order = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setFilter(state: IRepresentativesTableState, action: PayloadAction<string>) {
       state.filter = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setIsActive(state: IRepresentativesTableState, action: PayloadAction<boolean | undefined>) {
       state.isActive = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
   },
 });

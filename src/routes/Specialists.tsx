@@ -14,7 +14,7 @@ import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { patientTableSlice } from '../app/reducers';
 import SpecialistTable from '../components/SpecialistTable/SpecialistTable';
 import { specialistAPI } from '../app/services/specialists.service';
-import { specialistsSlice } from '../app/reducers/specialists.slice';
+import { specialistsTableSlice } from '../app/reducers/specialistsTable.slice';
 
 const Specialists = () => {
   const navigate = useNavigate();
@@ -40,8 +40,8 @@ const Specialists = () => {
       <SpecialistTable
         onRowClick={(record: any) => navigate(`/specialists/${record._id}/info`)}
         dataSourseQuery={specialistAPI.useGetSpecialistsQuery}
-        slice={specialistsSlice}
-        reduser={useAppSelector((state) => state.specialistsReducer)}
+        slice={specialistsTableSlice}
+        reduser={useAppSelector((state) => state.specialistsTableReducer)}
         hasPagination
       />
     </>

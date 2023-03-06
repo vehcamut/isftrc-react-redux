@@ -14,7 +14,7 @@ import {
   // specTypesDialogReducer,
   // specTypesTableReducer,
   adminsTableReducer,
-  specialistsReducer,
+  specialistsTableReducer,
   representativesTableReducer,
   patientTableReducer,
 } from './reducers';
@@ -25,7 +25,7 @@ export const store = configureStore({
     // specTypesTableReducer,
     patientTableReducer,
     representativesTableReducer,
-    specialistsReducer,
+    specialistsTableReducer,
     authReducer,
     adminsTableReducer,
     [api.reducerPath]: api.reducer,

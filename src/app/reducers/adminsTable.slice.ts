@@ -1,4 +1,4 @@
-import { createSlice /* , PayloadAction */, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface IAdminsTableState {
   page: number;
@@ -22,27 +22,21 @@ export const adminsTableSlice = createSlice({
   reducers: {
     setPage(state: IAdminsTableState, action: PayloadAction<number>) {
       state.page = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setLimit(state: IAdminsTableState, action: PayloadAction<number>) {
       state.limit = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setSort(state: IAdminsTableState, action: PayloadAction<string>) {
       state.sort = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setOrder(state: IAdminsTableState, action: PayloadAction<'descend' | 'ascend' | 'desc' | 'asc'>) {
       state.order = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setFilter(state: IAdminsTableState, action: PayloadAction<string>) {
       state.filter = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
     setIsActive(state: IAdminsTableState, action: PayloadAction<boolean | undefined>) {
       state.isActive = action.payload;
-      // Object.assign(state.filter, action.payload);
     },
   },
 });

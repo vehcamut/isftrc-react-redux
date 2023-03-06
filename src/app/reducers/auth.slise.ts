@@ -1,7 +1,6 @@
 /* eslint-disable no-useless-escape */
-/* eslint-disable import/no-cycle */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-// import { authAPI } from '../services';
+
 let check = false;
 declare global {
   interface Window {
@@ -34,17 +33,12 @@ const initialState: IAuthState = {
   roles: localStorage?.roles?.split(',') || [],
   name: localStorage?.name || '',
   id: localStorage?.id || '',
-  isMobile: check, // localStorage?.isMobile || false,
+  isMobile: check,
 };
 
 export const authSlice = createSlice({
   name: 'authState',
   initialState,
-  // : async () => {
-  //   const [refesh] = authAPI.useRefreshTokenQuery({});
-  //   refersh();
-  //   return false;
-  // },
   reducers: {
     setServerError(state: IAuthState, action: PayloadAction<boolean | undefined>) {
       state.serverError = action.payload;
@@ -60,22 +54,14 @@ export const authSlice = createSlice({
     },
     setName(state: IAuthState, action: PayloadAction<string>) {
       state.name = action.payload;
-      // localStorage.name = action.payload;
       if (action.payload.length === 0) localStorage.removeItem('name');
       else localStorage.name = action.payload;
-      // if (action.payload.length === 0) localStorage.removeItem('roles');
-      // else localStorage.roles = action.payload;
     },
     setId(state: IAuthState, action: PayloadAction<string>) {
       state.id = action.payload;
       if (action.payload.length === 0) localStorage.removeItem('id');
       else localStorage.id = action.payload;
     },
-    // setIsMobile(state: IAuthState, action: PayloadAction<boolean>) {
-    //   state.isMobile = action.payload;
-    //   // if (action.payload.length === 0) localStorage.removeItem('id');
-    //   // else localStorage.id = action.payload;
-    // },
   },
 });
 
