@@ -21,17 +21,4 @@ export interface IUserInfo {
   address: string;
   advertisingSources?: IAdvertisingSourceBase[];
   types?: ISpecialistType[];
-
-  // _id: string;
-  // name: string;
-  // surname: string;
-  // patronymic: string;
-  // phoneNumbers: string[];
-  // dateOfBirth: Date;
-  // emails: string[];
-  // login: string;
-  // gender: string;
-  // address: string;
-  // types: ISpecialistType[];
-  // hash?: string;
 }
