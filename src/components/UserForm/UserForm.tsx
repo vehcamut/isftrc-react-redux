@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/indent */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
   AutoComplete,
   Button,
@@ -23,20 +22,16 @@ import { addClass } from '../../app/common';
 import { dadataAPI, advertisingSourceAPI, specialistTypesAPI } from '../../app/services';
 import classes from './UserForm.module.scss';
 import { IAdminWithId, IRepresentative, ISpecialist, IUserInfo } from '../../models';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
-const { TextArea } = Input;
-const { Title, Paragraph, Text, Link } = Typography;
+const { Title } = Typography;
 interface UserFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
   onReset: () => void;
   userType: 'specialist' | 'representative' | 'admin';
   reg?: boolean;
-  // type: 'add' | 'reg';
-  // eslint-disable-next-line react/require-default-props
   initValue?: IRepresentative | ISpecialist | IAdminWithId | IUserInfo;
   mobile?: boolean;
-
-  // advSourse?: boolean;
 }
 
 function* infinite() {
@@ -107,28 +102,36 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
   const onSearchAC: any = debounce((searchText) => {
     setQuery(searchText);
   }, 800);
-  const { data: advSourses, isLoading: isAdvSoursesLoading } = advertisingSourceAPI.useGetAdvSourcesToSelectQuery(
+  const {
+    data: advSourses,
+    isLoading: isAdvSoursesLoading,
+    isError: isAdvSrsError,
+  } = advertisingSourceAPI.useGetAdvSourcesToSelectQuery(
     {
       isActive: true,
     },
     { skip: userType !== 'representative' },
   );
-  const { data: specTypes, isLoading: isSpecTypesLoading } = specialistTypesAPI.useGetSpecialistTypesToSelectQuery(
+  const {
+    data: specTypes,
+    isLoading: isSpecTypesLoading,
+    isError: isSpecTpError,
+  } = specialistTypesAPI.useGetSpecialistTypesToSelectQuery(
     {
       isActive: true,
     },
     { skip: userType !== 'specialist' },
   );
 
+  if (isAdvSrsError || isSpecTpError) return <ErrorResult />;
+
   return (
     <Form
       labelWrap
       labelCol={{ span: mobile ? 24 : 4 }}
       wrapperCol={{ span: mobile ? 24 : 21 }}
-      colon={false}
       onFinish={onBeforeFinish}
       layout={mobile ? 'vertical' : undefined}
-      // style={{ width: '100%' }}
     >
       <Form.Item
         initialValue={initValue?.surname ? initValue.surname : ''}
@@ -201,7 +204,6 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
           initialValue={
             initValue && 'advertisingSources' in initValue && initValue?.advertisingSources
               ? initValue.advertisingSources.map((v) => {
-                  // return { label: v.name, value: v._id };
                   return v._id;
                 })
               : undefined
@@ -225,7 +227,6 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
           initialValue={
             initValue && 'types' in initValue && initValue?.types
               ? initValue.types.map((v) => {
-                  // return { label: v.name, value: v._id };
                   return v._id;
                 })
               : undefined
@@ -267,6 +268,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
                     required: true,
                     message: 'Поле "Номер" не должно быть пустым',
                   },
+                  // eslint-disable-next-line @typescript-eslint/no-unused-vars
                   ({ getFieldValue }) => ({
                     validator(_, value: string) {
                       const phoneNumber = value
@@ -296,7 +298,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
                 <Button
                   style={{ color: 'red' }}
                   icon={<DeleteOutlined />}
-                  onClick={(e: any) => {
+                  onClick={() => {
                     const newArray = phoneNumbers.slice(0);
                     newArray.splice(index, 1);
                     setPhoneNumbers(newArray);
@@ -306,7 +308,6 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
               </Form.Item>
             </Input.Group>
           </Form.Item>
-          // </Form.Item>
         );
       })}
       <Divider />
@@ -347,7 +348,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
                 <Button
                   style={{ color: 'red' }}
                   icon={<DeleteOutlined />}
-                  onClick={(e: any) => {
+                  onClick={() => {
                     const newArray = emails.slice(0);
                     newArray.splice(index, 1);
                     setEmails(newArray);
@@ -366,9 +367,6 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
             Данные для входа
           </Title>
         </Col>
-        {/* <Col>
-          <Button type="link" /* onClick={onGenLogin}/>Включить автоматическую генерацию</Button>
-        </Col> */}
       </Row>
       <Form.Item
         initialValue={initValue?.login ? initValue.login : ''}
@@ -447,6 +445,7 @@ const UserForm: FunctionComponent<UserFormProps> = ({ onFinish, onReset, initVal
 UserForm.defaultProps = {
   reg: false,
   mobile: false,
+  initValue: undefined,
 };
 
 export default UserForm;

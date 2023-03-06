@@ -37,7 +37,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments', 'specialists'],
+      providesTags: ['appointments', 'specialists', 'removeAppointment'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -69,7 +69,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments', 'specialists'],
+      providesTags: ['appointments', 'specialists', 'removeAppointment'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         // console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -101,7 +101,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments', 'specialists'],
+      providesTags: ['appointments', 'specialists', 'removeAppointment'],
       transformResponse(apiResponse: IAppointment[], meta): IAppointment[][] {
         console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
@@ -133,7 +133,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments', 'specialists'],
+      providesTags: ['appointments', 'specialists', 'removeAppointment', 'removeAppointment'],
     }),
     getForPatientAppointmentsOnCurrentDate: build.query<IAppointment[], IGetForPatientAppointment>({
       query: (params) => ({
@@ -141,7 +141,7 @@ export const appointmentsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['appointments', 'specialists'],
+      providesTags: ['appointments', 'specialists', 'removeAppointment'],
     }),
     getForRecordOnCurrentDate: build.query<IAppointment[], IGetFreeAppointmetns>({
       query: (params) => ({
@@ -167,7 +167,7 @@ export const appointmentsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['appointments'],
+      invalidatesTags: ['removeAppointment'],
     }),
     getAppointmentById: build.query<IAppointment, IGetAppointmentById>({
       query: (params) => ({

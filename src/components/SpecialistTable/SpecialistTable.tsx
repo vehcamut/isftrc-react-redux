@@ -57,7 +57,6 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
           const pn = `+7 ${c.slice(0, 3)} ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`;
           return `${p} ${pn}`;
         }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
     },
     {
@@ -69,7 +68,6 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
         return emails.reduce((p, c) => {
           return `${p} ${c}`;
         }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
     },
     {
@@ -102,7 +100,6 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
         return emails.reduce((p, c) => {
           return `${p}${p ? ',' : ''} ${c.name}`;
         }, '');
-        // return new Date(date).toLocaleString('ru', { year: 'numeric', month: 'numeric', day: 'numeric' });
       },
     },
     {
@@ -141,7 +138,6 @@ const SpecialistTable: FunctionComponent<SpecialistTableProps> = ({
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
             type="primary"
-            // shape="circle"
             icon={<DeleteRowOutlined />}
             onClick={(e) => {
               // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -173,7 +169,6 @@ SpecialistTable.defaultProps = {
   hasSearch: true,
   extraOptions: {},
   hasPagination: false,
-  // slice: undefined,
   tableState: {
     limit: 10,
     page: 0,

@@ -1,19 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { Typography, Table, Row, Col, Button, Input } from 'antd';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
-import { useNavigate } from 'react-router-dom';
+import React, { FunctionComponent, PropsWithChildren } from 'react';
+import { Button } from 'antd';
+import type { ColumnsType } from 'antd/es/table';
 import { DeleteRowOutlined, FilterFilled } from '@ant-design/icons';
 import classes from './PatientsTable.module.scss';
-import { patientsAPI } from '../../app/services';
-import { IPatient, IRepresentative } from '../../models';
+import { IPatient } from '../../models';
 import { addClass } from '../../app/common';
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { patientTableSlice } from '../../app/reducers';
 import MyTable from '../MyTable/MyTable';
-
-const { Search } = Input;
 
 interface PatientsTableProps extends PropsWithChildren {
   onRowClick?: (record: any) => void;
@@ -37,7 +29,6 @@ const PatientsTable: FunctionComponent<PatientsTableProps> = ({
   slice,
   reduser,
   onRemove,
-  // columns,
 }) => {
   const isActive = slice && reduser ? reduser.isActive : tableState.isActive;
 
@@ -114,11 +105,9 @@ const PatientsTable: FunctionComponent<PatientsTableProps> = ({
             style={{ color: 'red', backgroundColor: 'white' }}
             size="small"
             type="link"
-            // shape="circle"
             icon={<DeleteRowOutlined />}
             disabled={!record.isActive || !onRemove}
             onClick={(e) => {
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
               e.stopPropagation();
               if (onRemove) onRemove(record);
             }}
@@ -129,29 +118,6 @@ const PatientsTable: FunctionComponent<PatientsTableProps> = ({
     });
   }
 
-  // const handleTableChange = (
-  //   pagination: TablePaginationConfig,
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   filters: Record<string, FilterValue | null>,
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   sorter: SorterResult<IPatient> | SorterResult<IPatient>[],
-  // ) => {
-  //   if (filters?.isActive) {
-  //     if (filters?.isActive.length > 1) setIsActive(undefined);
-  //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  //     else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
-  //   } else setIsActive(undefined);
-  //   // console.log(pagination, filters, sorter);
-  //   setPage(pagination.current ? pagination.current - 1 : 0);
-  //   setLimit(pagination.pageSize ? pagination.pageSize : -1);
-  // };
-  // const onSearch = (value: string) => {
-  //   setPage(0);
-  //   setFilter(value);
-  // };
-  // const onAddClick = () => {
-  //   navigate('/patients/add', { replace: true });
-  // };
   return (
     <MyTable
       columns={columns}

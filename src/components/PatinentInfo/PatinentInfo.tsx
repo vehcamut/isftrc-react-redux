@@ -2,7 +2,7 @@
 /* eslint-disable no-nested-ternary */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { addClass } from '../../app/common';
+import { addClass, mutationErrorHandler } from '../../app/common';
 import { patientsAPI } from '../../app/services';
 import classes from './PatinentInfo.module.scss';
 import { IPatient } from '../../models';
@@ -10,7 +10,6 @@ import AddPatientForm from '../AddPatientForm/AddPatientForm';
 import { useAppSelector } from '../../app/hooks';
 
 interface PatinentInfoProps extends PropsWithChildren {
-  // eslint-disable-next-line react/require-default-props
   patient?: IPatient;
 }
 
@@ -32,10 +31,7 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
       });
       setOpen(false);
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onReset = () => {
@@ -52,10 +48,7 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         content: 'Пациент успешно активирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onDeactivate = async () => {
@@ -66,10 +59,7 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
         content: 'Пациент успешно деактивирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   return (
@@ -161,6 +151,10 @@ const PatinentInfo: FunctionComponent<PatinentInfoProps> = ({ patient }) => {
       </Descriptions>
     </>
   );
+};
+
+PatinentInfo.defaultProps = {
+  patient: undefined,
 };
 
 export default PatinentInfo;

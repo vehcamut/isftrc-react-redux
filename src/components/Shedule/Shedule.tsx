@@ -1,38 +1,20 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Button,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  DatePicker,
-  Empty,
-  Form,
-  TimePicker,
-  InputNumber,
-  Spin,
-} from 'antd';
+import { Button, Descriptions, Tooltip, Row, Col, DatePicker, Empty, Spin } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, ReactNode, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import classes from './Shedule.module.scss';
-import { IAppointment, ISpecialist } from '../../models';
-import { specialistAPI } from '../../app/services/specialists.service';
-import { appointmentsAPI } from '../../app/services/appointments.service';
+import { IAppointment } from '../../models';
 import './antd.rewrite.scss';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 interface SheduleProps extends PropsWithChildren {
   extraOptions?: any;
-  // person?: ISpecialist;
   title: string;
   extra?: ReactNode;
   onAppointmentClick: (appointment: IAppointment) => void;
@@ -42,7 +24,6 @@ interface SheduleProps extends PropsWithChildren {
 }
 
 const Shedule: FunctionComponent<SheduleProps> = ({
-  // person,
   title,
   extra,
   onAppointmentClick,
@@ -51,7 +32,6 @@ const Shedule: FunctionComponent<SheduleProps> = ({
   extraOptions,
   onDateChange,
 }) => {
-  const navigate = useNavigate();
   const params = useParams();
 
   const nowDate = new Date();
@@ -64,7 +44,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
   const [endDate, setEndDate] = useState(today.add(7, 'day').format('YYYY-MM-DD'));
   const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
 
-  const { data, isLoading } = dataAPI(
+  const { data, isLoading, isError } = dataAPI(
     {
       begDate,
       endDate,
@@ -78,13 +58,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
     },
   );
 
-  // const onDateChange = (firstDate: string, secondDate: string) => {
-  //   setBegDate(firstDate);
-  //   setEndDate(secondDate);
-  //   const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
-  //   navigate(path, { replace: true });
-  // };
-  const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
+  const onDPChange: DatePickerProps['onChange'] = (date) => {
     setDatePickerValue(date);
     let newDate: Dayjs;
     if (date) {
@@ -113,6 +87,8 @@ const Shedule: FunctionComponent<SheduleProps> = ({
     setEndDate(secondDate);
     if (onDateChange) onDateChange(firstDate, secondDate);
   };
+
+  if (isError) return <ErrorResult />;
   return (
     <Descriptions
       size="middle"
@@ -132,7 +108,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
         </>
       }
     >
-      <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
+      <Descriptions.Item contentStyle={{ flexDirection: 'column' }}>
         {isLoading ? (
           <div style={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: '20px' }}>
             <Spin tip="Загрузка..." />
@@ -182,7 +158,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
                                     : '',
                                   item.service?.status ? 'appointment-good-service' : '',
                                 )}
-                                onClick={(e) => onAppointmentClick(item)}
+                                onClick={() => onAppointmentClick(item)}
                               >
                                 <div>{time}</div>
                                 {item.service ? (
@@ -224,7 +200,6 @@ const Shedule: FunctionComponent<SheduleProps> = ({
 };
 
 Shedule.defaultProps = {
-  // person: undefined,
   extra: undefined,
   extraOptions: undefined,
   onDateChange: undefined,

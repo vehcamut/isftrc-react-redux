@@ -1,18 +1,14 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-nested-ternary */
+/* eslint-disable @typescript-eslint/indent */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { addClass } from '../../app/common';
-import { patientsAPI, representativesAPI } from '../../app/services';
+import { addClass, mutationErrorHandler } from '../../app/common';
 import classes from './SpecialistInfo.module.scss';
-import { IPatient, IRepresentative, ISpecialist } from '../../models';
-import AddPatientForm from '../AddPatientForm/AddPatientForm';
-// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
+import { ISpecialist } from '../../models';
 import { specialistAPI } from '../../app/services/specialists.service';
 import UserForm from '../UserForm/UserForm';
-// import AddSpecialistForm from '../AddSpecialistForm/AddSpecialistForm';
 
 interface SpecialistInfoProps extends PropsWithChildren {
-  // eslint-disable-next-line react/require-default-props
   specialist?: ISpecialist;
 }
 
@@ -31,10 +27,7 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
       });
       setOpen(false);
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onReset = () => {
@@ -51,10 +44,7 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         content: 'Специалист успешно активирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onDeactivate = async () => {
@@ -65,10 +55,7 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         content: 'Специалист успешно деактивирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   return (
@@ -87,8 +74,6 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         onCancel={onReset}
       >
         <UserForm onFinish={onFinish} onReset={onReset} initValue={specialist} userType="specialist" />
-        {/* <AddSpecialistForm onFinish={onFinish} onReset={onReset} type="add" initValue={specialist} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
       <Descriptions
         bordered
@@ -120,48 +105,55 @@ const SpecialistInfo: FunctionComponent<SpecialistInfoProps> = ({ specialist }) 
         }
       >
         <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
-          {specialist?.surname}
+          {specialist ? specialist.surname : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
-          {specialist?.name}
+          {specialist ? specialist.name : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Отчество" className={addClass(classes, 'des-item')}>
-          {specialist?.patronymic}
+          {specialist ? specialist.patronymic : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Пол" className={addClass(classes, 'des-item')}>
-          {specialist?.gender}
+          {specialist ? specialist.gender : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Дата рождения" className={addClass(classes, 'des-item')}>
-          {new Date(specialist?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
+          {specialist
+            ? new Date(specialist?.dateOfBirth || '').toLocaleString('ru', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              })
+            : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
-          {specialist?.address}
+          {specialist ? specialist.address : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Номера телефонов" className={addClass(classes, 'des-item')}>
-          {specialist?.phoneNumbers
-            .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
-            .join(', ')}
+          {specialist
+            ? specialist.phoneNumbers
+                .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
+                .join(', ')
+            : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Электронные почты" className={addClass(classes, 'des-item')}>
-          {specialist?.emails.join(', ')}
+          {specialist ? specialist.emails.join(', ') : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Специальности" className={addClass(classes, 'des-item')}>
-          {specialist?.types.map((v) => v.name).join(', ')}
+          {specialist ? specialist.types.map((v) => v.name).join(', ') : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Логин" className={addClass(classes, 'des-item')}>
-          {specialist?.login}
+          {specialist ? specialist.login : ''}
         </Descriptions.Item>
-        {/* <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
-          {patient?.note}
-        </Descriptions.Item> */}
-        <Descriptions.Item label="Статус">{specialist?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
+        <Descriptions.Item label="Статус">
+          {specialist ? (specialist.isActive ? 'активен' : 'неактивен') : ''}
+        </Descriptions.Item>
       </Descriptions>
     </>
   );
+};
+
+SpecialistInfo.defaultProps = {
+  specialist: undefined,
 };
 
 export default SpecialistInfo;

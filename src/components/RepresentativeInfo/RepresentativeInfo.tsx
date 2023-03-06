@@ -1,16 +1,15 @@
+/* eslint-disable no-nested-ternary */
+/* eslint-disable @typescript-eslint/indent */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { addClass } from '../../app/common';
-import { patientsAPI, representativesAPI } from '../../app/services';
+import { addClass, mutationErrorHandler } from '../../app/common';
+import { representativesAPI } from '../../app/services';
 import classes from './RepresentativeInfo.module.scss';
-import { IPatient, IRepresentative } from '../../models';
-import AddPatientForm from '../AddPatientForm/AddPatientForm';
+import { IRepresentative } from '../../models';
 import UserForm from '../UserForm/UserForm';
-// import AddRepresentativeForm from '../AddRepresentativeForm/AddRepresentativeForm';
 
 interface RepresentativeInfoProps extends PropsWithChildren {
-  // eslint-disable-next-line react/require-default-props
   representative?: IRepresentative;
 }
 
@@ -29,10 +28,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
       });
       setOpen(false);
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onReset = () => {
@@ -49,10 +45,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         content: 'Представитель успешно активирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   const onDeactivate = async () => {
@@ -63,10 +56,7 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         content: 'Представитель успешно деактивирован',
       });
     } catch (e) {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
+      mutationErrorHandler(messageApi, e);
     }
   };
   return (
@@ -85,8 +75,6 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         onCancel={onReset}
       >
         <UserForm onReset={onReset} onFinish={onFinish} initValue={representative} userType="representative" />
-        {/* <AddRepresentativeForm onFinish={onFinish} onReset={onReset} type="add" initValue={representative} /> */}
-        {/* <AddPatientForm onFinish={onFinish} onReset={onReset} /> */}
       </Modal>
       <Descriptions
         bordered
@@ -118,48 +106,55 @@ const RepresentativeInfo: FunctionComponent<RepresentativeInfoProps> = ({ repres
         }
       >
         <Descriptions.Item label="Фамилия" className={addClass(classes, 'des-item')}>
-          {representative?.surname}
+          {representative ? representative.surname : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Имя" className={addClass(classes, 'des-item')}>
-          {representative?.name}
+          {representative ? representative.name : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Отчество" className={addClass(classes, 'des-item')}>
-          {representative?.patronymic}
+          {representative ? representative.patronymic : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Пол" className={addClass(classes, 'des-item')}>
-          {representative?.gender}
+          {representative ? representative.gender : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Дата рождения" className={addClass(classes, 'des-item')}>
-          {new Date(representative?.dateOfBirth || '').toLocaleString('ru', {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-          })}
+          {representative
+            ? new Date(representative.dateOfBirth || '').toLocaleString('ru', {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              })
+            : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Адрес" className={addClass(classes, 'des-item')}>
-          {representative?.address}
+          {representative ? representative.address : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Номера телефонов" className={addClass(classes, 'des-item')}>
-          {representative?.phoneNumbers
-            .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
-            .join(', ')}
+          {representative
+            ? representative.phoneNumbers
+                .map((c) => `+7 (${c.slice(0, 3)}) ${c.slice(3, 6)}-${c.slice(6, 8)}-${c.slice(8)}`)
+                .join(', ')
+            : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Электронные почты" className={addClass(classes, 'des-item')}>
-          {representative?.emails.join(', ')}
+          {representative ? representative.emails.join(', ') : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Источники рекламы" className={addClass(classes, 'des-item')}>
-          {representative?.advertisingSources.map((v) => v.name).join(', ')}
+          {representative ? representative.advertisingSources.map((v) => v.name).join(', ') : ''}
         </Descriptions.Item>
         <Descriptions.Item label="Логин" className={addClass(classes, 'des-item')}>
-          {representative?.login}
+          {representative ? representative.login : ''}
         </Descriptions.Item>
-        {/* <Descriptions.Item label="Примечание" className={addClass(classes, 'des-item')}>
-          {patient?.note}
-        </Descriptions.Item> */}
-        <Descriptions.Item label="Статус">{representative?.isActive ? 'активен' : 'неактивен'}</Descriptions.Item>
+        <Descriptions.Item label="Статус">
+          {representative ? (representative?.isActive ? 'активен' : 'неактивен') : ''}
+        </Descriptions.Item>
       </Descriptions>
     </>
   );
+};
+
+RepresentativeInfo.defaultProps = {
+  representative: undefined,
 };
 
 export default RepresentativeInfo;

@@ -102,7 +102,7 @@ export const patientsAPI = api.injectEndpoints({
         params,
         credentials: 'include',
       }),
-      providesTags: ['patients', 'representative', 'serviceGroup', 'serviceType'],
+      providesTags: ['patients', 'representative', 'serviceGroup', 'serviceType', 'course'],
       // transformResponse(apiRespons: IRepresentative[], meta): IRepresentativeData {
       //   return { data: apiRespons, count: Number(meta?.response?.headers.get('X-Total-Count')) };
       // },
@@ -114,7 +114,7 @@ export const patientsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['patients'],
+      invalidatesTags: ['patients', 'course'],
     }),
     newCourse: build.mutation<any, IPatientCourse>({
       query: (body) => ({
@@ -123,7 +123,7 @@ export const patientsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['patients'],
+      invalidatesTags: ['patients', 'course'],
     }),
     closeCourse: build.mutation<any, IPatientCourse>({
       query: (body) => ({
@@ -132,7 +132,7 @@ export const patientsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['patients'],
+      invalidatesTags: ['patients', 'course'],
     }),
     addService: build.mutation<any, IAddService>({
       query: (body) => ({
@@ -141,7 +141,7 @@ export const patientsAPI = api.injectEndpoints({
         credentials: 'include',
         body,
       }),
-      invalidatesTags: ['patients'],
+      invalidatesTags: ['patients', 'course'],
     }),
     removeService: build.mutation<any, IRemoveService>({
       query: (body) => ({

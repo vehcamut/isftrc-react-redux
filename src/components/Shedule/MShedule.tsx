@@ -1,38 +1,20 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import {
-  Button,
-  Modal,
-  Typography,
-  Descriptions,
-  message,
-  Tooltip,
-  Row,
-  Col,
-  DatePicker,
-  Empty,
-  Form,
-  TimePicker,
-  InputNumber,
-  Spin,
-} from 'antd';
+import { Button, Descriptions, Row, Col, DatePicker, Empty, Spin } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, ReactNode, useState } from 'react';
 import dayjs, { Dayjs } from 'dayjs';
 import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import type { DatePickerProps } from 'antd';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { addClass } from '../../app/common';
 import classes from './Shedule.module.scss';
-import { IAppointment, ISpecialist } from '../../models';
-import { specialistAPI } from '../../app/services/specialists.service';
-import { appointmentsAPI } from '../../app/services/appointments.service';
+import { IAppointment } from '../../models';
 import './antd.rewrite.scss';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 interface MSheduleProps extends PropsWithChildren {
   extraOptions?: any;
-  // person?: ISpecialist;
   title?: string;
   extra?: ReactNode;
   onAppointmentClick: (appointment: IAppointment) => void;
@@ -51,17 +33,19 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
   extraOptions,
   onDateChange,
 }) => {
-  const navigate = useNavigate();
   const params = useParams();
   const today = Date.parse(params.date || '') ? dayjs(Date.parse(params.date || '')) : dayjs();
   const todayDate = new Date();
-  // const [nowDate, setDate] = useState(today.format('YYYY-MM-DD'));
 
   const [begDate, setBegDate] = useState(today.format('YYYY-MM-DD'));
   const [endDate, setEndDate] = useState(today.add(1, 'day').format('YYYY-MM-DD'));
   const [datePickerValue, setDatePickerValue] = useState<Dayjs | null>(null);
 
-  const { data: appointments, isLoading } = dataAPI(
+  const {
+    data: appointments,
+    isLoading,
+    isError,
+  } = dataAPI(
     {
       begDate,
       endDate,
@@ -74,13 +58,7 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
     },
   );
 
-  // const onDateChange = (firstDate: string, secondDate: string) => {
-  //   setBegDate(firstDate);
-  //   setEndDate(secondDate);
-  //   const path = `${Date.parse(params.date || '') ? './.' : ''}./${firstDate}`;
-  //   navigate(path, { replace: true });
-  // };
-  const onDPChange: DatePickerProps['onChange'] = (date, dateString) => {
+  const onDPChange: DatePickerProps['onChange'] = (date) => {
     setDatePickerValue(date);
     if (date) {
       const firstDate = date.format('YYYY-MM-DD');
@@ -110,14 +88,9 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
   const dayOfWeek = new Date(new Date(begDate).setDate(new Date(begDate).getDate())).toLocaleDateString('ru-RU', {
     weekday: 'short',
   });
+  if (isError) return <ErrorResult />;
   return (
-    <Descriptions
-      // style={{ display: 'flex', flexDirection: 'column' }}
-      size="middle"
-      title={title}
-      extra={extra}
-      column={1}
-    >
+    <Descriptions size="middle" title={title} extra={extra} column={1}>
       <Descriptions.Item>
         <DatePicker
           style={{ marginRight: '10px' }}
@@ -173,7 +146,7 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
                               : '',
                             item.service?.status ? 'appointment-good-service' : '',
                           )}
-                          onClick={(e) => onAppointmentClick(item)}
+                          onClick={() => onAppointmentClick(item)}
                         >
                           <div>{time}</div>
                           {item.service ? (
@@ -216,7 +189,6 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
 };
 
 MShedule.defaultProps = {
-  // person: undefined,
   extra: undefined,
   extraOptions: undefined,
   onDateChange: undefined,

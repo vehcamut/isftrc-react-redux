@@ -20,13 +20,11 @@ const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, on
       isActive: true,
     });
   const onBeforeFinish = (v: any) => {
-    console.log(v);
     v.time = v.time.format('YYYY-MM-DDTHH:mm:ssZ');
-    console.log(v);
     onFinish(v);
   };
   return (
-    <Form labelWrap labelCol={{ span: 5 }} wrapperCol={{ span: 17 }} colon={false} onFinish={onBeforeFinish}>
+    <Form labelWrap labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} onFinish={onBeforeFinish}>
       <Form.Item
         initialValue={initValue?.name ? initValue.name : ''}
         rules={[{ required: true, message: 'Поле "Название" не должно быть пустым' }]}
@@ -81,17 +79,17 @@ const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, on
       <Form.Item
         valuePropName="checked"
         initialValue={initValue?.isActive !== undefined ? initValue?.isActive : true}
-        label={<div className={addClass(classes, 'form-item')}>Статус</div>}
+        label="Статус"
         name="isActive"
       >
         <Switch id="isActive" />
       </Form.Item>
 
       <Form.Item
-        // rules={[{ required: true, message: 'Поле "Стоимость" не должно быть пустым' }]}
-        label="Количество, добавляемое для нового пациента"
+        label="Количество по умолчанию"
         name="defaultAmountPatient"
         initialValue={initValue?.defaultAmountPatient ? initValue.defaultAmountPatient : undefined}
+        help="Заполните это поле, если хотите, чтобы данный тип услуги был добавлен в данном количестве сразу при создании пациента"
       >
         <InputNumber min={0} id="defaultAmountPatient" />
       </Form.Item>
