@@ -1,30 +1,17 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import dayjs from 'dayjs';
-import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
 import {
   IRepresentative,
-  IGet,
   IGetByID,
   IGetPerson,
-  IPatient,
-  IPatientChangeStatus,
-  IPatientData,
   IRepresentativeData,
-  IAddPatientToRepresentative,
-  IGetRepPatients,
   IAdminData,
   IAdmin,
   IAdminWithId,
   IAdminChangeStatus,
 } from '../../models';
-import baseQuery from './baseQuery';
 import { api } from './api.service';
 
 export const adminsAPI = api.injectEndpoints({
-  // reducerPath: 'representativesAPI',
-  // baseQuery,
-  // tagTypes: ['representative'],
   endpoints: (build) => ({
     getAdmins: build.query<IAdminData, IGetPerson>({
       query: (params) => ({

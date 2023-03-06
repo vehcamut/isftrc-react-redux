@@ -1,21 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import dayjs from 'dayjs';
-import { createApi } from '@reduxjs/toolkit/query/react';
 /* eslint-disable import/prefer-default-export */
 import {
   IServiceGroup,
   IServiceGroupWithId,
   IGetServiceType,
   IServiceGroupWithIdAndTypes,
-  IAdvertisingSource,
-  IAdvertisingSourceData,
-  IGet,
-  IGetAdvertisingSource,
-  IGetByID,
-  IGetPerson,
-  IPatient,
-  IPatientChangeStatus,
-  IPatientData,
   IServiceTypeWithId,
   IServiceType,
   IService,
@@ -30,13 +18,9 @@ import {
   IOpenService,
   IChangeNote,
 } from '../../models';
-import baseQuery from './baseQuery';
 import { api } from './api.service';
 
 export const servicesAPI = api.injectEndpoints({
-  // reducerPath: 'advertisingSourceAPI',
-  // baseQuery,
-  // tagTypes: ['advertisingSource'],
   endpoints: (build) => ({
     getGroupsWithTypes: build.query<IServiceGroupWithIdAndTypes[], IGetServiceType>({
       query: (params) => ({
@@ -53,7 +37,7 @@ export const servicesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['serviceGroup', 'serviceType'],
-      transformResponse(apiResponse: IServiceGroupWithId[], meta): any {
+      transformResponse(apiResponse: IServiceGroupWithId[]): any {
         const resp = [];
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
@@ -135,7 +119,7 @@ export const servicesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['serviceGroup', 'serviceType'],
-      transformResponse(apiResponse: IServiceGroupToSelect[], meta): any {
+      transformResponse(apiResponse: IServiceGroupToSelect[]): any {
         const resp: IToSelect[] = [];
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
@@ -151,7 +135,7 @@ export const servicesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['serviceGroup', 'serviceType'],
-      transformResponse(apiResponse: IServiceTypeToSelect[], meta): any {
+      transformResponse(apiResponse: IServiceTypeToSelect[]): any {
         const resp: IToSelect[] = [];
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });

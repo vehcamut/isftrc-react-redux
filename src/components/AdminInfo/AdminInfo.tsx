@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/indent */
 import { Button, Modal, Typography, Descriptions, message } from 'antd';
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
-import { addClass, mutationHandler } from '../../app/common';
+import { addClass, mutationErrorHandler } from '../../app/common';
 import classes from './AdminInfo.module.scss';
 import { IAdminWithId } from '../../models';
 import UserForm from '../UserForm/UserForm';
@@ -19,8 +19,16 @@ const AdminInfo: FunctionComponent<AdminInfoProps> = ({ admin }) => {
   const [open, setOpen] = useState(false);
 
   const onFinish = async (values: any) => {
-    mutationHandler(update, { ...admin, ...values }, messageApi, 'Данные администратора успешно обновлены');
-    setOpen(false);
+    try {
+      await update({ ...admin, ...values }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Данные администратора успешно обновлены',
+      });
+      setOpen(false);
+    } catch (e: any) {
+      mutationErrorHandler(messageApi, e);
+    }
   };
   const onReset = () => {
     setOpen(false);
@@ -29,20 +37,26 @@ const AdminInfo: FunctionComponent<AdminInfoProps> = ({ admin }) => {
     setOpen(true);
   };
   const onActivate = async () => {
-    mutationHandler(
-      changeStatus,
-      { _id: admin?._id ? admin?._id : '', isActive: true },
-      messageApi,
-      'Администратор успешно активирован',
-    );
+    try {
+      await changeStatus({ _id: admin?._id ? admin?._id : '', isActive: true }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Администратор успешно активирован',
+      });
+    } catch (e: any) {
+      mutationErrorHandler(messageApi, e);
+    }
   };
   const onDeactivate = async () => {
-    mutationHandler(
-      changeStatus,
-      { _id: admin?._id ? admin?._id : '', isActive: false },
-      messageApi,
-      'Администратор успешно деактивирован',
-    );
+    try {
+      await changeStatus({ _id: admin?._id ? admin?._id : '', isActive: false }).unwrap();
+      messageApi.open({
+        type: 'success',
+        content: 'Администратор успешно деактивирован',
+      });
+    } catch (e: any) {
+      mutationErrorHandler(messageApi, e);
+    }
   };
   return (
     <>

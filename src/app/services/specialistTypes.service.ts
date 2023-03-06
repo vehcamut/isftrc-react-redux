@@ -23,8 +23,7 @@ export const specialistTypesAPI = api.injectEndpoints({
         credentials: 'include',
       }),
       providesTags: ['specialistTypes'],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      transformResponse(apiResponse: IAdvertisingSource[], meta): any {
+      transformResponse(apiResponse: IAdvertisingSource[]): any {
         const resp = [];
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });

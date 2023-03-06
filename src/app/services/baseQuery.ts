@@ -1,14 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { BaseQueryApi } from '@reduxjs/toolkit/dist/query/baseQueryTypes';
 import { FetchArgs, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { useNavigate } from 'react-router-dom';
 import { authSlice } from '../reducers/auth.slise';
 import getTokenPayload from '../tokenHendler';
 
 const baseQuery = fetchBaseQuery({
-  // baseUrl: 'http://localhost:3333',
-  baseUrl: process.env.REACT_APP_API_URL, // 'http://192.168.1.49:3333',
-
+  baseUrl: process.env.REACT_APP_API_URL,
   credentials: 'include',
 });
 
@@ -16,10 +12,8 @@ export default async (args: string | FetchArgs, api: BaseQueryApi, extraOptions:
   let result = await baseQuery(args, api, extraOptions);
   if (result?.error?.status === 401) {
     const refreshResult = await baseQuery({ url: '/auth/refresh', method: 'PATCH' }, api, extraOptions);
-    console.log('refresh');
     if (refreshResult.error?.status === 401) {
       document.cookie = '';
-      console.log('ERROR!');
       api.dispatch(authSlice.actions.setIsAuth(false));
       api.dispatch(authSlice.actions.setRoles([]));
       api.dispatch(authSlice.actions.setName(''));

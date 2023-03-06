@@ -16,30 +16,6 @@ export const equalThenNowDate = (date: Date): boolean => {
   return compDate === nowDate;
 };
 
-export const mutationHandler = async (mutation: any, params: any, messageApi: any, content: any, type = 'success') => {
-  try {
-    const result = await mutation(params).unwrap();
-    messageApi.open({
-      type,
-      content,
-    });
-    return result;
-  } catch (e: any) {
-    if (e?.data?.message) {
-      messageApi.open({
-        type: 'error',
-        content: e?.data?.message,
-      });
-    } else {
-      messageApi.open({
-        type: 'error',
-        content: 'Ошибка связи с сервером',
-      });
-    }
-  }
-  return 'ERROR';
-};
-
 export const mutationErrorHandler = (messageApi: any, event: any) => {
   if (event?.data?.message) {
     messageApi.open({
