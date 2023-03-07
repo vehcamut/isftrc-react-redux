@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from 'react';
 import { Typography, Table, Row, Col, Button, Input, Modal, message } from 'antd';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
+import { FilterValue } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
 import { FilterFilled } from '@ant-design/icons';
 import classes from './style.module.scss';
 import { advertisingSourceAPI } from '../app/services';
 import { IAdvertisingSource } from '../models';
-import { addClass } from '../app/common';
+import { addClass, mutationErrorHandler } from '../app/common';
 import AdvertisingSourceForm from '../components/AdvertisingSourceForm/AdvertisingSourceForm';
 
 const { Search } = Input;
@@ -63,21 +62,16 @@ const AdvertisingSourcePage = () => {
     },
   ];
 
-  const handleTableChange = (
-    pagination: TablePaginationConfig,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    filters: Record<string, FilterValue | null>,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    sorter: SorterResult<IAdvertisingSource> | SorterResult<IAdvertisingSource>[],
-  ) => {
+  const handleTableChange = (pagination: TablePaginationConfig, filters: Record<string, FilterValue | null>) => {
     if (filters?.isActive) {
       if (filters?.isActive.length > 1) setIsActive(undefined);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
     } else setIsActive(undefined);
-    // console.log(pagination, filters, sorter);
     setPage(pagination.current ? pagination.current - 1 : 0);
     setLimit(pagination.pageSize ? pagination.pageSize : -1);
+    // eslint-disable-next-line no-restricted-globals
+    scroll(0, 0);
   };
   const onSearch = (value: string) => {
     setPage(0);
@@ -104,11 +98,7 @@ const AdvertisingSourcePage = () => {
         });
         onReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     } else {
       try {
@@ -119,11 +109,7 @@ const AdvertisingSourcePage = () => {
         });
         onReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     }
   };

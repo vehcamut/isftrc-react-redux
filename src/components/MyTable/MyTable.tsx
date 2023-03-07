@@ -69,6 +69,8 @@ const MyTable: FunctionComponent<MyTableProps> = ({
     } else setIsActive(undefined);
     setPage(pagination.current ? pagination.current - 1 : 0);
     setLimit(pagination.pageSize ? pagination.pageSize : 0);
+    // eslint-disable-next-line no-restricted-globals
+    scroll(0, 0);
   };
 
   const onSearch = (value: string) => {

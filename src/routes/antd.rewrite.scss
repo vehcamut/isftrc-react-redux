@@ -1,34 +1,8 @@
-// .ant-tabs-card > .ant-tabs-nav .ant-tabs-nav-list .ant-tabs-tab { /* For tabs border */
-//   /*border-color: black;*/
-//   background-color: #ffffff;
-// }
-
-// .ant-tabs-card  .ant-tabs-nav::before { /* For the line to the right and close to the tabs */
-//   border-color: black;
-// }
-
-// .ant-tabs > .ant-tabs-nav { /* So that there is no gap between the content and tabs */
-//   margin-bottom: 0;
-// }
-
-// .ant-tabs-card .ant-tabs-content-holder {
-//   padding: 15px;
-//   /*border: 1px solid black; *//* Border for the content part */
-//   border-top: transparent; /* Remove the top border so that there is no overlap*/
-// }
-
 .ant-tabs-left {
   > .ant-tabs-nav .ant-tabs-nav-list {
     
     .ant-tabs-tab {
       background-color: #ffffff;
-      &.ant-tabs-tab-active {
-        // .ant-tabs-tab-btn {
-        //   color: #ffffff;
-        // }
-        //background-color: #1677FF;
-        //border-right: #ffffff solid 2px;
-      }
     }
   }
   .ant-tabs-content-holder {
@@ -40,26 +14,6 @@
   border: none;
 }
 
-// .ant-table-tbody > tr.ant-table-row:hover > td {
-//   &.my-table-row__active {
-//     background: green !important;
-//   }
-//   &.my-table-row__deactive {
-//     background: red !important;
-//   }
-//   background: blue !important;
-// }
-
-// .ant-table-tbody > tr.ant-table-row {
-//   &.shedule-table-row {
-    
-//     &:hover > td {
-     
-//     background:  #e6f4ff !important;
-//     //rgb(238, 242, 255)
-//   }
-// }
-// }
 .ant-table-wrapper tr.ant-table-expanded-row-level-1 > td {
   background:  #ffffff !important;
 }
@@ -73,10 +27,8 @@
 }
 .ant-table-tbody > tr.ant-table-row {
   &.my-table-row{
-    &:hover > td {
-     
+    &:hover > td { 
     background:  #e6f4ff !important;
-    //rgb(238, 242, 255)
   }
   > td {
     text-overflow: ellipsis;
@@ -90,17 +42,12 @@
       background: #dadada !important;
 
     }
-    &:hover > td {
-     
+    &:hover > td {   
       background:  #e6f4ff !important;
-      //rgb(238, 242, 255)
     }
   }
 }
 
-// .login-form {
-//   max-width: 300px;
-// }
 .login-form-forgot {
   float: right;
 }

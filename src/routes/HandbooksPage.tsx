@@ -1,11 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React from 'react';
-import { Typography, Row, Col, Button, Tabs, message, Spin, List, Avatar } from 'antd';
+import { Typography, Row, Col, Button, List } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import './antd.rewrite.scss';
 
 const HandbooksPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const navigate = useNavigate();
 
   const data = [
@@ -36,7 +34,6 @@ const HandbooksPage = () => {
         </Col>
       </Row>
       <List
-        // bordered
         size="small"
         itemLayout="horizontal"
         dataSource={data}

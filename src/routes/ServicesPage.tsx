@@ -1,39 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState, PropsWithChildren, FunctionComponent } from 'react';
+import React, { useState } from 'react';
 import { Typography, Table, Row, Col, Button, Input, Modal, message, TableColumnsType, Spin } from 'antd';
-import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
-import { FilterValue, SorterResult } from 'antd/es/table/interface';
 import { useNavigate } from 'react-router-dom';
-import { FilterFilled } from '@ant-design/icons';
 import classes from './style.module.scss';
-import { advertisingSourceAPI } from '../app/services';
-import {
-  IAdvertisingSource,
-  IServiceGroupWithId,
-  IServiceGroupWithIdAndTypes,
-  IServiceTypeWithId,
-  ISpecialistType,
-} from '../models';
-import { addClass } from '../app/common';
-import AdvertisingSourceForm from '../components/AdvertisingSourceForm/AdvertisingSourceForm';
+import { IServiceGroupWithId, IServiceGroupWithIdAndTypes, IServiceTypeWithId, ISpecialistType } from '../models';
+import { addClass, mutationErrorHandler } from '../app/common';
 import { servicesAPI } from '../app/services/services.service';
 import ServiceGroupForm from '../components/ServiceGroupForm/ServiceGroupForm';
 import ServiceTypeForm from '../components/ServiceTypeForm/ServiceTypeForm';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 const { Search } = Input;
-
-// interface IExpandedRowRenderProps extends PropsWithChildren {
-//   data: IServiceType[];
-// }
-
-// const expandedRowRender: FunctionComponent<IExpandedRowRenderProps> = ({ data: expandedData }) => {
-//   const columns1: TableColumnsType<IServiceType> = [
-//     { title: 'Название', dataIndex: 'name', key: 'name' },
-//     { title: 'Специалисты', dataIndex: 'specialistTypes', key: 'specialistTypes' },
-//     { title: 'Стутус', dataIndex: 'isActive', key: 'isActive' },
-//   ];
-//   return <Table columns={columns1} dataSource={expandedData} pagination={false} />;
-// };
 
 const ServicesPage = () => {
   const navigate = useNavigate();
@@ -51,10 +27,8 @@ const ServicesPage = () => {
   const [group, setGroup] = useState<IServiceGroupWithId | undefined>(undefined);
   const [type, setType] = useState<IServiceTypeWithId | undefined>(undefined);
   const [filter, setFilter] = useState('');
+  const { data, isLoading, isError } = servicesAPI.useGetGroupsWithTypesQuery({ filter });
 
-  // const { data, isLoading } = advertisingSourceAPI.useGetAdvSourcesQuery({ limit, page, filter, isActive });
-  const { data, isLoading } = servicesAPI.useGetGroupsWithTypesQuery({ filter });
-  console.log(data);
   const columns: TableColumnsType<IServiceGroupWithIdAndTypes> = [
     {
       title: 'Название группы',
@@ -74,28 +48,10 @@ const ServicesPage = () => {
           <div className={addClass(classes, 'active-table-item__not-active')}>неактивен</div>
         );
       },
-      // eslint-disable-next-line react/no-unstable-nested-components
     },
   ];
 
-  // const handleTableChange = (
-  //   pagination: TablePaginationConfig,
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   filters: Record<string, FilterValue | null>,
-  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //   sorter: SorterResult<IAdvertisingSource> | SorterResult<IAdvertisingSource>[],
-  // ) => {
-  //   if (filters?.isActive) {
-  //     if (filters?.isActive.length > 1) setIsActive(undefined);
-  //     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  //     else filters.isActive[0] ? setIsActive(true) : setIsActive(false);
-  //   } else setIsActive(undefined);
-  //   // console.log(pagination, filters, sorter);
-  //   setPage(pagination.current ? pagination.current - 1 : 0);
-  //   setLimit(pagination.pageSize ? pagination.pageSize : -1);
-  // };
   const onSearch = (value: string) => {
-    // setPage(0);
     setFilter(value);
   };
   const onBack = () => {
@@ -122,11 +78,7 @@ const ServicesPage = () => {
         });
         onGroupReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     } else {
       try {
@@ -137,11 +89,7 @@ const ServicesPage = () => {
         });
         onGroupReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     }
   };
@@ -166,11 +114,7 @@ const ServicesPage = () => {
         });
         onTypeReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     } else {
       try {
@@ -181,11 +125,7 @@ const ServicesPage = () => {
         });
         onTypeReset();
       } catch (e: any) {
-        const content = e.status === 400 ? 'Название должно быть уникальным' : 'Ошибка связи с сервером';
-        messageApi.open({
-          type: 'error',
-          content,
-        });
+        mutationErrorHandler(messageApi, e);
       }
     }
   };
@@ -223,9 +163,6 @@ const ServicesPage = () => {
         width: '10%',
         render: (time: string) => {
           return new Date(time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-          // const date = new Date(time);
-          // date.setHours(date.getHours() + date.getTimezoneOffset() / 60);
-          // return new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         },
       },
       {
@@ -264,6 +201,8 @@ const ServicesPage = () => {
       />
     );
   };
+
+  if (isError) return <ErrorResult />;
 
   return (
     <>
@@ -332,7 +271,6 @@ const ServicesPage = () => {
           bordered
           expandable={{
             expandedRowRender,
-            // expandedRowKeys: isLoading ? data?.map((r) => r._id) : undefined,
             defaultExpandedRowKeys: data?.map((r) => r._id),
             rowExpandable: (r) => !!r.types.length,
           }}
