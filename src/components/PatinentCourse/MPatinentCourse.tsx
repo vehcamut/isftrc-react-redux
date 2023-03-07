@@ -36,12 +36,15 @@ const MPatinentCourse: FunctionComponent<MPatinentCourseProps> = ({ patient }) =
     data: paymentData,
     isLoading: isPaymentDataLoading,
     isError: paymentError,
-  } = paymentAPI.useGetPaymentByIdQuery({ id: payment }, { skip: !payment });
+  } = paymentAPI.useGetPaymentByIdQuery({ id: payment }, { skip: !payment, pollingInterval: 15000 });
   const {
     data: coursesData,
     isLoading,
     isError: corsesError,
-  } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' }, { skip: !patient?._id });
+  } = patientsAPI.useGetPatientCoursesQuery(
+    { patient: patient?._id || '' },
+    { skip: !patient?._id, pollingInterval: 15000 },
+  );
 
   const onRowClick = (record: IServiceInCourse) => {
     if (record.kind === 'service') {

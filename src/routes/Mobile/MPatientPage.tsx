@@ -22,7 +22,11 @@ interface MPatientPageProps extends PropsWithChildren {
 const MPatientPage: FunctionComponent<MPatientPageProps> = ({ activeKey }) => {
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading, isError } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
+  const {
+    data: patient,
+    isLoading,
+    isError,
+  } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' }, { pollingInterval: 15000 });
 
   const onChange: MenuProps['onClick'] = ({ key }) => {
     navigate(`/patients/${params?.id}/${key}`, { replace: true });

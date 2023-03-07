@@ -58,6 +58,7 @@ const MyTable: FunctionComponent<MyTableProps> = ({
     { limit, page, filter, isActive, ...extraOptions },
     {
       skip: 'id' in extraOptions ? !extraOptions.id : false,
+      pollingInterval: 15000,
     },
   );
 

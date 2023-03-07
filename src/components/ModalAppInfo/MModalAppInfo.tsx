@@ -52,7 +52,7 @@ const MModalAppInfo: FunctionComponent<MModalAppInfoProps> = ({
     {
       id: appointmentId || '',
     },
-    { skip: appointmentId === '' || isChangeServiceTimeOpen || !appointmentId },
+    { skip: appointmentId === '' || isChangeServiceTimeOpen || !appointmentId, pollingInterval: 15000 },
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();

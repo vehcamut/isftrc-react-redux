@@ -18,9 +18,12 @@ const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) =
     data: representative,
     isLoading,
     isError,
-  } = representativesAPI.useGetRepresentativeByIdQuery({
-    id: params?.id || '',
-  });
+  } = representativesAPI.useGetRepresentativeByIdQuery(
+    {
+      id: params?.id || '',
+    },
+    { pollingInterval: 30000 },
+  );
 
   if (isError) navigate('/representatives', { replace: true });
 

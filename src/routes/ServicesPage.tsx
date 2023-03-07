@@ -27,7 +27,7 @@ const ServicesPage = () => {
   const [group, setGroup] = useState<IServiceGroupWithId | undefined>(undefined);
   const [type, setType] = useState<IServiceTypeWithId | undefined>(undefined);
   const [filter, setFilter] = useState('');
-  const { data, isLoading, isError } = servicesAPI.useGetGroupsWithTypesQuery({ filter });
+  const { data, isLoading, isError } = servicesAPI.useGetGroupsWithTypesQuery({ filter }, { pollingInterval: 15000 });
 
   const columns: TableColumnsType<IServiceGroupWithIdAndTypes> = [
     {

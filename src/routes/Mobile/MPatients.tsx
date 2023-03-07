@@ -19,7 +19,10 @@ const MPatients = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { limit, page, filter, isActive } = useAppSelector((state) => state.patientTableReducer);
-  const { data, isLoading, isError } = patientsAPI.useGetPatientsQuery({ limit, page, filter, isActive });
+  const { data, isLoading, isError } = patientsAPI.useGetPatientsQuery(
+    { limit, page, filter, isActive },
+    { pollingInterval: 10000 },
+  );
 
   const { setPage, setFilter } = patientTableSlice.actions;
 

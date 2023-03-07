@@ -141,17 +141,23 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
     data: paymentData,
     isLoading: isPaymentDataLoading,
     isError: paymentError,
-  } = paymentAPI.useGetPaymentByIdQuery({ id: payment }, { skip: !payment });
+  } = paymentAPI.useGetPaymentByIdQuery({ id: payment }, { skip: !payment, pollingInterval: 15000 });
   const {
     data: coursesData,
     isLoading,
     isError: corsesError,
-  } = patientsAPI.useGetPatientCoursesQuery({ patient: patient?._id || '' }, { skip: !patient?._id });
+  } = patientsAPI.useGetPatientCoursesQuery(
+    { patient: patient?._id || '' },
+    { skip: !patient?._id, pollingInterval: 15000 },
+  );
   const {
     data: advSum,
     // isLoading: isAdvSumLoading,
     isError: advSumError,
-  } = paymentAPI.useGetAdvanceQuery({ patient: patient?._id || '' }, { skip: !isAdmin || !patient?._id });
+  } = paymentAPI.useGetAdvanceQuery(
+    { patient: patient?._id || '' },
+    { skip: !isAdmin || !patient?._id, pollingInterval: 15000 },
+  );
   const {
     data: represToSelect,
     isLoading: isrepresToSelectLoading,
@@ -161,13 +167,16 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
       id: patient?._id || '',
       isActive: true,
     },
-    { skip: !patient?._id || !isAddPaymentOpen },
+    { skip: !patient?._id || !isAddPaymentOpen, pollingInterval: 15000 },
   );
   const {
     data: groupToSelect,
     isLoading: isLoadingGroupToSelect,
     isError: groupError,
-  } = servicesAPI.useGetGroupsQuery({}, { skip: !isAdmin || (!isAddServiceOpen && !isAddPaymentOpen) });
+  } = servicesAPI.useGetGroupsQuery(
+    {},
+    { skip: !isAdmin || (!isAddServiceOpen && !isAddPaymentOpen), pollingInterval: 30000 },
+  );
   const {
     data: typeToSelect,
     isLoading: isLoadingTypeToSelect,
@@ -176,7 +185,7 @@ const PatinentCourse: FunctionComponent<PatinentCourseProps> = ({ patient }) => 
     {
       group: currentGroup || '',
     },
-    { skip: !isAdmin || !currentGroup || !isAddServiceOpen },
+    { skip: !isAdmin || !currentGroup || !isAddServiceOpen, pollingInterval: 30000 },
   );
 
   const onRowClick = (record: IServiceInCourse) => {

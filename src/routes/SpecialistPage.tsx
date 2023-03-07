@@ -17,9 +17,12 @@ const SpecialistPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) =
     data: specialist,
     isLoading,
     isError,
-  } = specialistAPI.useGetSpecialistByIdQuery({
-    id: params?.id || '',
-  });
+  } = specialistAPI.useGetSpecialistByIdQuery(
+    {
+      id: params?.id || '',
+    },
+    { pollingInterval: 30000 },
+  );
 
   if (isError) navigate('/specialists', { replace: true });
 

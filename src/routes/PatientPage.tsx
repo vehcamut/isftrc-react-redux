@@ -15,7 +15,11 @@ interface FormDialogProps extends PropsWithChildren {
 const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading, isError } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
+  const {
+    data: patient,
+    isLoading,
+    isError,
+  } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' }, { pollingInterval: 30000 });
 
   if (isError) navigate('/patients', { replace: true });
 

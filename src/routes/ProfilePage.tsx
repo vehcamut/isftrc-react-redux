@@ -30,7 +30,7 @@ const ProfilePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
-  const { data: user, isLoading, isError } = userAPI.useGetProfileQuery({});
+  const { data: user, isLoading, isError } = userAPI.useGetProfileQuery({}, { pollingInterval: 30000 });
   const [update] = getUpdate(roles);
   const [refreshTokens] = authAPI.useRefreshTokenMutation();
   const userType = getUsetType(roles);

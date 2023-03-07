@@ -17,7 +17,7 @@ const MPatientRepresentatives: FunctionComponent<MPatientRepresentativesProps> =
       id: patient?._id || '',
       isActive: true,
     },
-    { skip: patient?._id === '' || !patient },
+    { skip: patient?._id === '' || !patient, pollingInterval: 30000 },
   );
 
   if (isError) return <ErrorResult />;

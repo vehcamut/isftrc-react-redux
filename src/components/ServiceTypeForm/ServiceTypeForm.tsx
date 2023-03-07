@@ -19,14 +19,17 @@ const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, on
     data: groupsData,
     isLoading: isGroupsDataLoading,
     isError: groupsError,
-  } = servicesAPI.useGetGroupstoSelectQuery({});
+  } = servicesAPI.useGetGroupstoSelectQuery({}, { pollingInterval: 30000 });
   const {
     data: specTypeData,
     isLoading: isSpecTypeDataLoading,
     isError: specTypeError,
-  } = specialistTypesAPI.useGetSpecialistTypesToSelectQuery({
-    isActive: true,
-  });
+  } = specialistTypesAPI.useGetSpecialistTypesToSelectQuery(
+    {
+      isActive: true,
+    },
+    { pollingInterval: 30000 },
+  );
   const onBeforeFinish = (v: any) => {
     v.time = v.time.format('YYYY-MM-DDTHH:mm:ssZ');
     onFinish(v);

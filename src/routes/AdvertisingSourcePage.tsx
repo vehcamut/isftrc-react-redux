@@ -27,7 +27,10 @@ const AdvertisingSourcePage = () => {
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading, isError } = advertisingSourceAPI.useGetAdvSourcesQuery({ limit, page, filter, isActive });
+  const { data, isLoading, isError } = advertisingSourceAPI.useGetAdvSourcesQuery(
+    { limit, page, filter, isActive },
+    { pollingInterval: 30000 },
+  );
 
   const columns: ColumnsType<IAdvertisingSource> = [
     {

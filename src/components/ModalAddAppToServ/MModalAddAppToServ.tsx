@@ -45,6 +45,7 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({
     },
     {
       skip: !serviceId || !!isSpec || !!isSuccess,
+      pollingInterval: 15000,
     },
   );
   const {
@@ -57,6 +58,7 @@ const MModalAddAppToServ: FunctionComponent<MModalAddAppToServProps> = ({
     },
     {
       skip: !currentService?.type._id || !!isSpec || !!isSuccess,
+      pollingInterval: 15000,
     },
   );
 

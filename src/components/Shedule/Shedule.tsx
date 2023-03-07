@@ -54,7 +54,7 @@ const Shedule: FunctionComponent<SheduleProps> = ({
       skip:
         ('patientId' in extraOptions ? !extraOptions.patientId : false) ||
         ('specialistId' in extraOptions ? !extraOptions.specialistId : false),
-      pollingInterval: 3000,
+      pollingInterval: 5000,
     },
   );
 

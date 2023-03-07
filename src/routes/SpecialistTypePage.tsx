@@ -27,7 +27,10 @@ const SpecialistTypePage = () => {
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading, isError } = specialistTypesAPI.useGetSpecialistTypesQuery({ limit, page, filter, isActive });
+  const { data, isLoading, isError } = specialistTypesAPI.useGetSpecialistTypesQuery(
+    { limit, page, filter, isActive },
+    { pollingInterval: 15000 },
+  );
 
   const columns: ColumnsType<IAdvertisingSource> = [
     {

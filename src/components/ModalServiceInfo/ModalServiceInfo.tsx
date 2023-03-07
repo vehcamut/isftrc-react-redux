@@ -45,7 +45,7 @@ const ModalServiceInfo: FunctionComponent<ModalServiceInfoProps> = ({
     {
       id: serviceId || '',
     },
-    { skip: serviceId === '' || !serviceId },
+    { skip: serviceId === '' || !serviceId, pollingInterval: 15000 },
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();

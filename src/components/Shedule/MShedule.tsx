@@ -55,6 +55,7 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
       skip:
         ('patientId' in extraOptions ? !extraOptions.patientId : false) ||
         ('specialistId' in extraOptions ? !extraOptions.specialistId : false),
+      pollingInterval: 5000,
     },
   );
 

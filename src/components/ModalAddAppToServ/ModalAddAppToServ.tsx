@@ -46,6 +46,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({
     },
     {
       skip: !serviceId || !!isSpec || !!isSuccess,
+      pollingInterval: 15000,
     },
   );
   const {
@@ -58,6 +59,7 @@ const ModalAddAppToServ: FunctionComponent<ModalAddAppToServProps> = ({
     },
     {
       skip: !currentService?.type._id || !!isSpec || !!isSuccess,
+      pollingInterval: 15000,
     },
   );
 

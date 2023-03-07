@@ -20,7 +20,7 @@ const AdminPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) => {
     {
       id: params?.id || '',
     },
-    { skip: params?.id === '' },
+    { skip: params?.id === '', pollingInterval: 30000 },
   );
 
   if (isError) navigate('/admins', { replace: true });
