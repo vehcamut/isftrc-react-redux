@@ -9,6 +9,7 @@ import { advertisingSourceAPI } from '../app/services';
 import { IAdvertisingSource } from '../models';
 import { addClass, mutationErrorHandler } from '../app/common';
 import AdvertisingSourceForm from '../components/AdvertisingSourceForm/AdvertisingSourceForm';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 const { Search } = Input;
 
@@ -26,7 +27,7 @@ const AdvertisingSourcePage = () => {
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading } = advertisingSourceAPI.useGetAdvSourcesQuery({ limit, page, filter, isActive });
+  const { data, isLoading, isError } = advertisingSourceAPI.useGetAdvSourcesQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IAdvertisingSource> = [
     {
@@ -117,6 +118,8 @@ const AdvertisingSourcePage = () => {
   const onBack = () => {
     navigate('./../');
   };
+
+  if (isError) return <ErrorResult />;
 
   return (
     <>

@@ -9,6 +9,7 @@ import { specialistAPI } from '../app/services/specialists.service';
 import { authSlice } from '../app/reducers';
 import getTokenPayload from '../app/tokenHendler';
 import { mutationErrorHandler } from '../app/common';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 const getUpdate = (roles: string[]) => {
   if (roles.find((r) => r === 'admin')) return adminsAPI.useUpdateAdminMutation();
@@ -29,7 +30,7 @@ const ProfilePage = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [open, setOpen] = useState(false);
-  const { data: user, isLoading } = userAPI.useGetProfileQuery({});
+  const { data: user, isLoading, isError } = userAPI.useGetProfileQuery({});
   const [update] = getUpdate(roles);
   const [refreshTokens] = authAPI.useRefreshTokenMutation();
   const userType = getUsetType(roles);
@@ -54,6 +55,8 @@ const ProfilePage = () => {
   const onEdit = () => {
     setOpen(true);
   };
+
+  if (isError) return <ErrorResult />;
 
   return (
     <>

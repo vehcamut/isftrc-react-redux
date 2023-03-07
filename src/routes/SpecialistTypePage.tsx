@@ -9,6 +9,7 @@ import { IAdvertisingSource } from '../models';
 import { addClass, mutationErrorHandler } from '../app/common';
 import AdvertisingSourceForm from '../components/AdvertisingSourceForm/AdvertisingSourceForm';
 import { specialistTypesAPI } from '../app/services/specialistTypes.service';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 const { Search } = Input;
 
@@ -26,7 +27,7 @@ const SpecialistTypePage = () => {
   const [filter, setFilter] = useState('');
   const [isActive, setIsActive] = useState<boolean | undefined>(undefined);
 
-  const { data, isLoading } = specialistTypesAPI.useGetSpecialistTypesQuery({ limit, page, filter, isActive });
+  const { data, isLoading, isError } = specialistTypesAPI.useGetSpecialistTypesQuery({ limit, page, filter, isActive });
 
   const columns: ColumnsType<IAdvertisingSource> = [
     {
@@ -117,6 +118,8 @@ const SpecialistTypePage = () => {
   const onBack = () => {
     navigate('./../');
   };
+
+  if (isError) return <ErrorResult />;
 
   return (
     <>

@@ -6,6 +6,7 @@ import { addClass } from '../../app/common';
 import classes from './ServiceTypeForm.module.scss';
 import { IServiceTypeWithId } from '../../models';
 import { servicesAPI, specialistTypesAPI } from '../../app/services';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 interface ServiceTypeFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
@@ -14,15 +15,23 @@ interface ServiceTypeFormProps extends PropsWithChildren {
 }
 
 const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, onReset, initValue }) => {
-  const { data: groupsData, isLoading: isGroupsDataLoading } = servicesAPI.useGetGroupstoSelectQuery({});
-  const { data: specTypeData, isLoading: isSpecTypeDataLoading } =
-    specialistTypesAPI.useGetSpecialistTypesToSelectQuery({
-      isActive: true,
-    });
+  const {
+    data: groupsData,
+    isLoading: isGroupsDataLoading,
+    isError: groupsError,
+  } = servicesAPI.useGetGroupstoSelectQuery({});
+  const {
+    data: specTypeData,
+    isLoading: isSpecTypeDataLoading,
+    isError: specTypeError,
+  } = specialistTypesAPI.useGetSpecialistTypesToSelectQuery({
+    isActive: true,
+  });
   const onBeforeFinish = (v: any) => {
     v.time = v.time.format('YYYY-MM-DDTHH:mm:ssZ');
     onFinish(v);
   };
+  if (groupsError || specTypeError) return <ErrorResult />;
   return (
     <Form labelWrap labelCol={{ span: 6 }} wrapperCol={{ span: 18 }} onFinish={onBeforeFinish}>
       <Form.Item

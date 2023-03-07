@@ -5,19 +5,22 @@ import { addClass } from '../../app/common';
 import { patientsAPI } from '../../app/services';
 import classes from './PatientRepresentatives.module.scss';
 import { IPatient } from '../../models';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 interface MPatientRepresentativesProps extends PropsWithChildren {
   patient?: IPatient;
 }
 
 const MPatientRepresentatives: FunctionComponent<MPatientRepresentativesProps> = ({ patient }) => {
-  const { data, isLoading } = patientsAPI.useGetPatientRepresentativesQuery(
+  const { data, isLoading, isError } = patientsAPI.useGetPatientRepresentativesQuery(
     {
       id: patient?._id || '',
       isActive: true,
     },
     { skip: patient?._id === '' || !patient },
   );
+
+  if (isError) return <ErrorResult />;
 
   return (
     <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>

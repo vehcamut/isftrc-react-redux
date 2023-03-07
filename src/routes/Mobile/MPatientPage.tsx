@@ -13,25 +13,19 @@ import MPatinentInfo from '../../components/PatinentInfo/MPatinentInfo';
 import MPatientRepresentatives from '../../components/PatientRepresentatives/MPatientRepresentatives';
 import MPatinentCourse from '../../components/PatinentCourse/MPatinentCourse';
 import MPatientShedule from '../../components/PatientShedule/MPatientShedule';
+import ErrorResult from '../../components/ErrorResult/ErrorResult';
 
 interface MPatientPageProps extends PropsWithChildren {
   activeKey: 'info' | 'representatives' | 'course' | 'shedule';
 }
 
 const MPatientPage: FunctionComponent<MPatientPageProps> = ({ activeKey }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [messageApi, contextHolder] = message.useMessage();
   const navigate = useNavigate();
   const params = useParams();
-  const { data: patient, isLoading } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
-
-  const onBackClick = () => {
-    navigate('/patients', { replace: true });
-  };
+  const { data: patient, isLoading, isError } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' });
 
   const onChange: MenuProps['onClick'] = ({ key }) => {
     navigate(`/patients/${params?.id}/${key}`, { replace: true });
-    // navigate(`./../${key}`, { replace: true });
   };
 
   const items: MenuProps['items'] = [
@@ -45,7 +39,7 @@ const MPatientPage: FunctionComponent<MPatientPageProps> = ({ activeKey }) => {
     },
     {
       key: 'course',
-      label: 'Курсы',
+      label: 'Услуги',
     },
     {
       key: 'shedule',
@@ -53,97 +47,45 @@ const MPatientPage: FunctionComponent<MPatientPageProps> = ({ activeKey }) => {
     },
   ];
 
+  if (isError) return <ErrorResult />;
+  // navigate('/patients', { replace: true });
+
   return (
-    <>
-      {contextHolder}
-      <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>
-        <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
-          <Col style={{ textAlign: 'center', paddingBottom: '10px' }} span={24}>
-            <Typography.Title level={2} style={{ margin: 0 }}>
-              {!isLoading && patient
-                ? `${patient?.number} ` +
-                  `${patient?.surname} ${patient?.name.slice(0, 1)}.` +
-                  `${patient?.patronymic.slice(0, 1)}.` +
-                  ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
-                    year: 'numeric',
-                    month: 'numeric',
-                    day: 'numeric',
-                  })} ` +
-                  `(${patient?.isActive ? 'активен' : 'неактивен'})`
-                : 'Пациент'}
-            </Typography.Title>
-          </Col>
-          <Col style={{ textAlign: 'center' }} span={24}>
-            {/* <Dropdown
-              menu={{
-                items,
-                selectable: true,
-                defaultSelectedKeys: [activeKey],
-              }}
-            >
-              <Typography.Link>
-                Меню
-                <DownOutlined />
-              </Typography.Link>
-            </Dropdown> */}
-            {/* <Button type="primary" onClick={onBackClick}>
-              К списку
-            </Button> */}
-          </Col>
-          <Col style={{ textAlign: 'center' }} span={24}>
-            <Dropdown
-              menu={{
-                items,
-                selectable: true,
-                defaultSelectedKeys: [activeKey],
-                onClick: onChange,
-              }}
-            >
-              <Button style={{ width: '100%' }}>Меню</Button>
-              {/* <Typography.Link>
-                Меню
-                <DownOutlined />
-              </Typography.Link> */}
-            </Dropdown>
-            {/* <Button type="link" onClick={onBackClick}>
-              К списку
-            </Button> */}
-          </Col>
-        </Row>
-        {activeKey === 'info' ? <MPatinentInfo patient={patient} /> : null}
-        {activeKey === 'representatives' ? <MPatientRepresentatives patient={patient} /> : null}
-        {activeKey === 'course' ? <MPatinentCourse patient={patient} /> : null}
-        {activeKey === 'shedule' ? <MPatientShedule patient={patient} /> : null}
-        {/* <Radio.Group>
-          <Radio.Button value="top">Данные</Radio.Button>
-          <Radio.Button value="bottom">Представители</Radio.Button>
-          <Radio.Button value="left">Курсы</Radio.Button>
-          <Radio.Button value="right">Расписание</Radio.Button>
-        </Radio.Group>
-        <Tabs
-          size="small"
-          onChange={onChange}
-          type="card"
-          activeKey={activeKey}
-          tabPosition="top"
-          items={[
-            {
-              label: 'Данные',
-              key: 'info',
-              children: <PatinentDescription patient={patient} />,
-            },
-            {
-              label: 'Представители',
-              key: 'representatives',
-              children: <PatientRepresentatives patient={patient} />,
-            },
-            { label: 'Курсы', key: 'course', children: <PatinentCourse patient={patient} /> },
-            { label: 'Расписание', key: 'shedule', children: <PatientShedule patient={patient} /> },
-            // { label: 'Документы', key: 'documents' },
-          ]}
-        /> */}
-      </Spin>
-    </>
+    <Spin tip={<div style={{ marginTop: '10px', width: '100%' }}>Загрузка...</div>} size="large" spinning={isLoading}>
+      <Row justify="space-between" align="middle" style={{ marginTop: '10px', marginBottom: '10px' }}>
+        <Col style={{ textAlign: 'center', paddingBottom: '10px' }} span={24}>
+          <Typography.Title level={2} style={{ margin: 0 }}>
+            {!isLoading && patient
+              ? `${patient?.number} ` +
+                `${patient?.surname} ${patient?.name.slice(0, 1)}.` +
+                `${patient?.patronymic.slice(0, 1)}.` +
+                ` ${new Date(patient?.dateOfBirth || '').toLocaleString('ru', {
+                  year: 'numeric',
+                  month: 'numeric',
+                  day: 'numeric',
+                })} ` +
+                `(${patient?.isActive ? 'активен' : 'неактивен'})`
+              : 'Пациент'}
+          </Typography.Title>
+        </Col>
+        <Col style={{ textAlign: 'center' }} span={24}>
+          <Dropdown
+            menu={{
+              items,
+              selectable: true,
+              defaultSelectedKeys: [activeKey],
+              onClick: onChange,
+            }}
+          >
+            <Button style={{ width: '100%' }}>Меню</Button>
+          </Dropdown>
+        </Col>
+      </Row>
+      {activeKey === 'info' ? <MPatinentInfo patient={patient} /> : null}
+      {activeKey === 'representatives' ? <MPatientRepresentatives patient={patient} /> : null}
+      {activeKey === 'course' ? <MPatinentCourse patient={patient} /> : null}
+      {activeKey === 'shedule' ? <MPatientShedule patient={patient} /> : null}
+    </Spin>
   );
 };
 

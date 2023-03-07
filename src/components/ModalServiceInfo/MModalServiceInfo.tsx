@@ -10,6 +10,7 @@ import { patientsAPI, servicesAPI } from '../../app/services';
 import { useAppSelector } from '../../app/hooks';
 import MModalAddAppToServ from '../ModalAddAppToServ/MModalAddAppToServ';
 import MModalTextEnter from '../ModalTextEnter/MModalTextEnter';
+import ErrorResult from '../ErrorResult/ErrorResult';
 
 const { confirm } = Modal;
 const { Paragraph } = Typography;
@@ -38,7 +39,11 @@ const MModalServiceInfo: FunctionComponent<MModalServiceInfoProps> = ({
 
   const [isChangeServiceTimeOpen, setIsChangeServiceTimeOpen] = useState(false);
 
-  const { data: currentService, isFetching } = servicesAPI.useGetAllInfoServiceQuery(
+  const {
+    data: currentService,
+    isFetching,
+    isError,
+  } = servicesAPI.useGetAllInfoServiceQuery(
     {
       id: serviceId || '',
     },
@@ -119,6 +124,8 @@ const MModalServiceInfo: FunctionComponent<MModalServiceInfoProps> = ({
     };
     showConfirm();
   };
+
+  if (isError) return <ErrorResult />;
 
   return (
     <>
