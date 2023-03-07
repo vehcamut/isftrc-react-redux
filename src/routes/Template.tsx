@@ -22,7 +22,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey }) => 
       theme={{
         algorithm: [theme.defaultAlgorithm],
         token: {
-          fontSize: 16,
+          fontSize: 14,
           colorFillAlter: '#1677FF',
           colorPrimary: '#1677FF',
           colorBorder: '#9f9f9f',
@@ -34,7 +34,7 @@ const Template: FunctionComponent<TemplateProps> = ({ children, activeKey }) => 
             colorTextHeading: '#FFFFFF',
           },
           Input: {
-            fontSize: 16,
+            fontSize: 14,
             colorBorder: '#9f9f9f',
           },
         },

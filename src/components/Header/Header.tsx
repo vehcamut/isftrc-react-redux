@@ -66,7 +66,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ activeKey }) => {
         >
           {isAuth ? (
             <>
-              <Text key="0" strong style={{ fontSize: '16px' }}>
+              <Text key="0" strong style={{ fontSize: '14px' }}>
                 {name}
               </Text>
               <Button key="2" type="primary" onClick={onLogout}>

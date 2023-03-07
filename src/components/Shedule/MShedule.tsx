@@ -99,10 +99,23 @@ const MShedule: FunctionComponent<MSheduleProps> = ({
           onChange={onDPChange}
           value={datePickerValue}
           inputReadOnly
+          disabled={isLoading}
         />
 
-        <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevDay} />
-        <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextDay} />
+        <Button
+          type="default"
+          style={{ marginRight: '10px' }}
+          icon={<LeftOutlined />}
+          onClick={onPrevDay}
+          disabled={isLoading}
+        />
+        <Button
+          type="default"
+          style={{ marginRight: '0px' }}
+          icon={<RightOutlined />}
+          onClick={onNextDay}
+          disabled={isLoading}
+        />
       </Descriptions.Item>
       <Descriptions.Item className={addClass(classes, 'des-item')} contentStyle={{ flexDirection: 'column' }}>
         {isLoading ? (

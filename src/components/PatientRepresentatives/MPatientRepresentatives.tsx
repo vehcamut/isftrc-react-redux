@@ -72,8 +72,8 @@ const MPatientRepresentatives: FunctionComponent<MPatientRepresentativesProps> =
           ) : (
             <Empty
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              description="Пациенты не найдены"
-              style={{ backgroundColor: 'white', margin: 0, padding: '40px', borderRadius: '5px' }}
+              description="Представители не найдены"
+              style={{ backgroundColor: 'white', margin: 0, padding: '40px', borderRadius: '5px', width: '100%' }}
             />
           )}
         </Descriptions.Item>

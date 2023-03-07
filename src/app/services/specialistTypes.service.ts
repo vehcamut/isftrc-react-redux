@@ -28,7 +28,6 @@ export const specialistTypesAPI = api.injectEndpoints({
         for (let i = 0; i < apiResponse.length; i += 1) {
           resp.push({ label: apiResponse[i].name, value: apiResponse[i]._id });
         }
-        console.log(resp);
         return resp;
       },
     }),

@@ -52,7 +52,6 @@ export const appointmentsAPI = api.injectEndpoints({
       }),
       providesTags: ['appointments', 'specialists', 'removeAppointment'],
       transformResponse(apiResponse: IAppointment[]): IAppointment[][] {
-        // console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
         apiResponse.forEach((appointment) => {
           const date = new Date(appointment.begDate);
@@ -84,7 +83,6 @@ export const appointmentsAPI = api.injectEndpoints({
       }),
       providesTags: ['appointments', 'specialists', 'removeAppointment'],
       transformResponse(apiResponse: IAppointment[]): IAppointment[][] {
-        console.log(apiResponse);
         const week: IAppointment[][] = [[], [], [], [], [], [], []];
         apiResponse.forEach((appointment) => {
           const date = new Date(appointment.begDate);

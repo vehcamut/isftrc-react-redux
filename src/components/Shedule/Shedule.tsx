@@ -101,10 +101,23 @@ const Shedule: FunctionComponent<SheduleProps> = ({
             format="DD.MM.YYYY"
             onChange={onDPChange}
             value={datePickerValue}
+            disabled={isLoading}
           />
 
-          <Button type="default" style={{ marginRight: '10px' }} icon={<LeftOutlined />} onClick={onPrevWeek} />
-          <Button type="default" style={{ marginRight: '0px' }} icon={<RightOutlined />} onClick={onNextWeek} />
+          <Button
+            type="default"
+            style={{ marginRight: '10px' }}
+            icon={<LeftOutlined />}
+            onClick={onPrevWeek}
+            disabled={isLoading}
+          />
+          <Button
+            type="default"
+            style={{ marginRight: '0px' }}
+            icon={<RightOutlined />}
+            onClick={onNextWeek}
+            disabled={isLoading}
+          />
         </>
       }
     >

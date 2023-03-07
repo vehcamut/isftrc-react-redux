@@ -78,7 +78,6 @@ const MyTable: FunctionComponent<MyTableProps> = ({
     setPage(0);
     setFilter(value);
   };
-  console.log(isError);
   if (isError) return <ErrorResult />;
 
   return (
