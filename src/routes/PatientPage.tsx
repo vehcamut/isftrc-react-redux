@@ -7,6 +7,7 @@ import PatinentDescription from '../components/PatinentInfo/PatinentInfo';
 import PatientRepresentatives from '../components/PatientRepresentatives/PatientRepresentatives';
 import PatinentCourse from '../components/PatinentCourse/PatinentCourse';
 import PatientShedule from '../components/PatientShedule/PatientShedule';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 interface FormDialogProps extends PropsWithChildren {
   activeKey: 'info' | 'representatives' | 'course' | 'shedule';
@@ -21,7 +22,8 @@ const PatientPage: FunctionComponent<FormDialogProps> = ({ activeKey }) => {
     isError,
   } = patientsAPI.useGetPatientByIdQuery({ id: params?.id || '' }, { pollingInterval: 30000 });
 
-  if (isError) navigate('/patients', { replace: true });
+  if (isError) return <ErrorResult />;
+  // if (isError) navigate('/patients', { replace: true });
 
   const onBackClick = () => {
     navigate('/patients', { replace: true });

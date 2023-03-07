@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import './antd.rewrite.scss';
 import { adminsAPI } from '../app/services/admins.service';
 import AdminInfo from '../components/AdminInfo/AdminInfo';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 interface SpecialistPageProps extends PropsWithChildren {
   activeKey: 'info';
@@ -22,8 +23,8 @@ const AdminPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) => {
     },
     { skip: params?.id === '', pollingInterval: 30000 },
   );
-
-  if (isError) navigate('/admins', { replace: true });
+  if (isError) return <ErrorResult />;
+  // if (isError) navigate('/admins', { replace: true });
 
   const onBackClick = () => {
     navigate('/admins', { replace: true });

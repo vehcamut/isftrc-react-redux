@@ -5,6 +5,7 @@ import './antd.rewrite.scss';
 import { specialistAPI } from '../app/services/specialists.service';
 import SpecialistInfo from '../components/SpecialistInfo/SpecialistInfo';
 import SpecialistShedule from '../components/SpecialistShedule/SpecialistShedule';
+import ErrorResult from '../components/ErrorResult/ErrorResult';
 
 interface SpecialistPageProps extends PropsWithChildren {
   activeKey: 'info' | 'shedule';
@@ -23,8 +24,8 @@ const SpecialistPage: FunctionComponent<SpecialistPageProps> = ({ activeKey }) =
     },
     { pollingInterval: 30000 },
   );
-
-  if (isError) navigate('/specialists', { replace: true });
+  if (isError) return <ErrorResult />;
+  // if (isError) navigate('/specialists', { replace: true });
 
   const onBackClick = () => {
     navigate('/specialists', { replace: true });

@@ -25,8 +25,6 @@ const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) =
     { pollingInterval: 30000 },
   );
 
-  if (isError) navigate('/representatives', { replace: true });
-
   const onBackClick = () => {
     navigate('/representatives', { replace: true });
   };
@@ -34,7 +32,7 @@ const RepresentativePage: FunctionComponent<FormDialogProps> = ({ activeKey }) =
   const onChange = (key: string) => {
     navigate(`./../${key}`, { replace: true });
   };
-
+  // if (isError) navigate('/representatives', { replace: true });
   if (isError) return <ErrorResult />;
 
   return (
