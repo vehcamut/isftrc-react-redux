@@ -20,6 +20,11 @@ const SpecShedulePage = () => {
     setIsAppInfoOpen(true);
   };
 
+  // const unsetAppointment = (flag: boolean) => {
+  //   setIsAppInfoOpen(false)
+  //   setCurrentAppointment(undefined);
+  // };
+
   return (
     <>
       <ModalAppInfo

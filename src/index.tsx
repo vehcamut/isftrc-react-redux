@@ -39,6 +39,7 @@ import MPatientPage from './routes/Mobile/MPatientPage';
 import MSpecShedulePage from './routes/Mobile/MSpecShedulePage';
 import MAboutPage from './routes/Mobile/MAboutPage';
 import ErrorGuard from './components/guards/errorGuard';
+import HelpPage from './routes/HelpPage';
 
 let isMobile = false;
 declare global {
@@ -66,6 +67,18 @@ const root = createRoot(container);
 const router = createBrowserRouter([
   {
     children: [
+      {
+        path: 'help',
+        element: isMobile ? (
+          <MTemplate activeKey="">
+            <HelpPage />
+          </MTemplate>
+        ) : (
+          <Template activeKey="">
+            <HelpPage />
+          </Template>
+        ),
+      },
       {
         path: 'notauth/about',
         element: isMobile ? (

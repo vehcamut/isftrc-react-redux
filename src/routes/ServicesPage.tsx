@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Typography, Table, Row, Col, Button, Input, Modal, message, TableColumnsType, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import classes from './style.module.scss';
 import { IServiceGroupWithId, IServiceGroupWithIdAndTypes, IServiceTypeWithId, ISpecialistType } from '../models';
 import { addClass, mutationErrorHandler } from '../app/common';
@@ -8,6 +10,8 @@ import { servicesAPI } from '../app/services/services.service';
 import ServiceGroupForm from '../components/ServiceGroupForm/ServiceGroupForm';
 import ServiceTypeForm from '../components/ServiceTypeForm/ServiceTypeForm';
 import ErrorResult from '../components/ErrorResult/ErrorResult';
+
+dayjs.extend(utc);
 
 const { Search } = Input;
 
@@ -162,7 +166,9 @@ const ServicesPage = () => {
         key: 'time',
         width: '10%',
         render: (time: string) => {
-          return new Date(time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+          const tempDate = dayjs(time);
+          return tempDate.utcOffset(0).format('HH:mm:ss');
+          // return new Date(time).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         },
       },
       {

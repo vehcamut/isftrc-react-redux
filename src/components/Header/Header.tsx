@@ -2,6 +2,7 @@ import React, { FunctionComponent, PropsWithChildren } from 'react';
 import Typography from 'antd/lib/typography';
 import { useNavigate } from 'react-router-dom';
 import { Button, Tabs } from 'antd';
+import { /* QuestionCircleFilled , */ QuestionOutlined } from '@ant-design/icons';
 import classes from './Header.module.scss';
 import logo from './logo.svg';
 import { addClass } from '../../app/common';
@@ -26,6 +27,7 @@ const getTabs = (isAuth: boolean, roles: string[]) => {
       { label: 'Администраторы', key: 'admins' },
       { label: 'Справочники', key: 'handbooks' },
       { label: 'О компании', key: 'about' },
+      // { label: 'Справка', key: 'help' },
     ];
   if (roles.find((r) => r === 'specialist'))
     return [
@@ -54,7 +56,7 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ activeKey }) => {
     dispatch(setRoles([]));
     dispatch(setName(''));
     dispatch(setId(''));
-    navigate(0);
+    navigate('/auth/signin');
   };
   return (
     <>
@@ -64,6 +66,12 @@ const MyHeader: FunctionComponent<ConfirmDialogProps> = ({ activeKey }) => {
           className={addClass(classes, 'header-top__menu')}
           style={isMobile ? { justifyContent: 'flex-end', width: '100%' } : undefined}
         >
+          <Button
+            type="primary"
+            shape="circle"
+            icon={<QuestionOutlined style={{ fontWeight: 'bold', fontSize: '20px' }} />}
+            onClick={() => navigate('/help')}
+          />
           {isAuth ? (
             <>
               <Text key="0" strong style={{ fontSize: '14px' }}>

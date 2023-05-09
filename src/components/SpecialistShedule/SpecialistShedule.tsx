@@ -3,6 +3,7 @@ import { Button, Modal, Typography, message, Row, Col, DatePicker, Form, TimePic
 import React, { FunctionComponent, PropsWithChildren, useState } from 'react';
 import dayjs from 'dayjs';
 import { useNavigate, useParams } from 'react-router-dom';
+import utc from 'dayjs/plugin/utc';
 import { mutationErrorHandler } from '../../app/common';
 import { IAppointment, ISpecialist } from '../../models';
 import { appointmentsAPI } from '../../app/services/appointments.service';
@@ -10,6 +11,7 @@ import Shedule from '../Shedule/Shedule';
 import ModalAppInfo from '../ModalAppInfo/ModalAppInfo';
 import { useAppSelector } from '../../app/hooks';
 
+dayjs.extend(utc);
 interface SpecialistSheduleProps extends PropsWithChildren {
   specialist?: ISpecialist;
 }
@@ -31,7 +33,6 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const begDateField = Form.useWatch('begDate', form);
   const timeField = Form.useWatch('time', form);
   const amountField = Form.useWatch('amount', form);
-
   const params = useParams();
 
   const onAddUpdateReset = () => {
@@ -42,6 +43,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
   const onFinish = async (values: any) => {
     values.time = values.time.second(0);
     values.time = values.time.millisecond(0);
+    values.time.utcOffset(0, true);
     values.begDate = values.begDate.second(0);
     values.begDate = values.begDate.millisecond(0);
     values.time = values.time.format('YYYY-MM-DDTHH:mm:ssZ');
@@ -83,7 +85,7 @@ const SpecialistShedule: FunctionComponent<SpecialistSheduleProps> = ({ speciali
         footer={null}
         title={
           <Typography.Title level={2} style={{ margin: 0, marginBottom: '20px' }}>
-            {currentAppointment ? 'Обновление записи' : 'Добавление записей'}
+            Добавление записей
           </Typography.Title>
         }
         width="500px"

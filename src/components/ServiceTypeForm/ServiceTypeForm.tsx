@@ -2,11 +2,14 @@
 import { Button, Form, Input, Row, Col, Switch, Select, InputNumber, TimePicker } from 'antd';
 import React, { FunctionComponent, PropsWithChildren } from 'react';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { addClass } from '../../app/common';
 import classes from './ServiceTypeForm.module.scss';
 import { IServiceTypeWithId } from '../../models';
 import { servicesAPI, specialistTypesAPI } from '../../app/services';
 import ErrorResult from '../ErrorResult/ErrorResult';
+
+dayjs.extend(utc);
 
 interface ServiceTypeFormProps extends PropsWithChildren {
   onFinish: (values: any) => void;
@@ -31,6 +34,7 @@ const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, on
     { pollingInterval: 30000 },
   );
   const onBeforeFinish = (v: any) => {
+    v.time.utcOffset(0, true);
     v.time = v.time.format('YYYY-MM-DDTHH:mm:ssZ');
     onFinish(v);
   };
@@ -83,7 +87,7 @@ const ServiceTypeForm: FunctionComponent<ServiceTypeFormProps> = ({ onFinish, on
         rules={[{ required: true, message: 'Поле "Длительность" не должно быть пустым' }]}
         label="Длительность"
         name="time"
-        initialValue={initValue?.time ? dayjs(initValue.time) : undefined}
+        initialValue={initValue?.time ? dayjs(initValue.time).utcOffset(0) : undefined}
       >
         <TimePicker format="HH:mm:ss" id="time" />
       </Form.Item>

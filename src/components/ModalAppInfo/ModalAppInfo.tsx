@@ -54,7 +54,7 @@ const ModalAppInfo: FunctionComponent<ModalAppInfoProps> = ({
     {
       id: appointmentId || '',
     },
-    { skip: appointmentId === '' || isChangeServiceTimeOpen || !appointmentId, pollingInterval: 15000 },
+    { skip: !isOpen || appointmentId === '' || isChangeServiceTimeOpen || !appointmentId, pollingInterval: 15000 },
   );
   const [closeService] = servicesAPI.useCloseServiceMutation();
   const [openService] = servicesAPI.useOpenServiceMutation();
